@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Volkhov:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root {
+  --app-font-sans: 'Jost', 'Montserrat', 'Poppins', 'Volkhov', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  --app-text-color: #1E1E1E;
+  --app-background: #ffffff;
+}
+
+html, body, #__next {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--app-background);
+  color: var(--app-text-color);
+  font-family: var(--app-font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Make sure form elements inherit the app font and color */
+input, textarea, button, select {
+  font-family: inherit;
+  color: inherit;
+}
+
+/* Utility: prefer dark scheme fallback (keeps background white but text color remains #1E1E1E unless explicitly overridden) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-background: #ffffff;
+    --app-text-color: #1E1E1E;
+  }
+}
