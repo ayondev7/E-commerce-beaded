@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Navbar from "@/components/generalComponents/Navbar";
+import Footer from "@/components/generalComponents/Footer";
 
 export const metadata: Metadata = {
   title: "Beaded — Fine Jewellery from Bangladesh",
@@ -54,7 +56,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
+        <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
