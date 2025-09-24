@@ -2,7 +2,6 @@
 import React, { useRef } from "react";
 import Image from "next/image";
 import Slider from "react-slick";
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import "slick-carousel/slick/slick.css";
 import ReusableButton from '@/components/generalComponents/ReusableButton';
 
@@ -50,18 +49,14 @@ const Hero = () => {
         </button>
       </div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-between w-[calc(100vw-326px)]">
-        <button
+        <ReusableButton
+          direction="left"
           onClick={() => sliderRef.current?.slickPrev()}
-          className="w-[64px] h-[64px] flex items-center justify-center border-2 border-white rounded-full"
-        >
-          <LuChevronLeft className="text-white size-[30px]" />
-        </button>
-        <button
+        />
+        <ReusableButton
+          direction="right"
           onClick={() => sliderRef.current?.slickNext()}
-          className="w-[64px] h-[64px] flex items-center justify-center border-2 border-white rounded-full"
-        >
-          <LuChevronRight className="text-white size-[30px]" />
-        </button>
+        />
       </div>
     </div>
   );
