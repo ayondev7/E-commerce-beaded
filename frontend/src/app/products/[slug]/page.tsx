@@ -7,15 +7,14 @@ import ReusableButton2 from "@/components/generalComponents/ReusableButton2";
 import { LuHeart } from "react-icons/lu";
 
 interface ProductPageProps {
-  params: {
-    slug: string;
-  };
+  params: Record<string, any> | Promise<Record<string, any>>;
 }
 
-const ProductPage = ({ params }: ProductPageProps) => {
-  // Mock data - replace with actual data fetching based on slug
+const page = ({ params }: ProductPageProps) => {
+
+  const { slug } = React.use(params as any) as Record<string, string>;
   const productData = {
-    id: params.slug,
+    id: slug,
     category: "Necklace",
     title: "LAVENDER AND PINK WOODEN BEAD NECKLACE",
     price: 490,
@@ -78,4 +77,4 @@ const ProductPage = ({ params }: ProductPageProps) => {
   );
 };
 
-export default ProductPage;
+export default page;
