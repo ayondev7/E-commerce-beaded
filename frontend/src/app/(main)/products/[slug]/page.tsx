@@ -69,7 +69,12 @@ const page = ({ params }: ProductPageProps) => {
 
           {/* Add to Cart Button */}
           <div className="mt-[32px]">
-            <ReusableButton2>Add to Cart</ReusableButton2>
+            <ReusableButton2
+            className="border border-[#7D7D7D] hover:border-none"
+            bgClassName="bg-[#00B5A5]"
+            textClassName="group-hover:text-white"
+            >Add to Cart
+            </ReusableButton2>
           </div>
         </div>
       </div>

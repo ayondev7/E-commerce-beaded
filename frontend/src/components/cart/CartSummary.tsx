@@ -69,12 +69,15 @@ export default function CartSummary({
           </span>
         </div>
 
-        <ReusableButton2
-          className="border-white w-full text-sm leading-[20px] tracking-[8%] font-semibold"
+      <div className="mt-6">
+          <ReusableButton2
+          className="border-white border hover:border-none w-full"
           bgClassName="bg-white"
+          textClassName="text-white group-hover:text-[#1e1e1e] text-sm leading-[20px] tracking-[8%] font-semibold"
         >
           Proceed to Checkout
         </ReusableButton2>
+      </div>
       </div>
     </aside>
   );
