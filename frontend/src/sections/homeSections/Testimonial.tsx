@@ -80,8 +80,18 @@ const Testimonial = () => {
       })}
 
       <div className="absolute bottom-[120px] flex gap-x-10 left-[150px] z-50">
-        <ReusableButton direction="left" onClick={handleLeft} aria-label="previous" />
-        <ReusableButton direction="right" onClick={handleRight} aria-label="next" />
+        <ReusableButton
+          direction="left"
+          onClick={handleLeft}
+          aria-label="previous"
+          disabled={visibleCount <= 1}
+        />
+        <ReusableButton
+          direction="right"
+          onClick={handleRight}
+          aria-label="next"
+          disabled={visibleCount >= cards.length}
+        />
       </div>
     </div>
   );
