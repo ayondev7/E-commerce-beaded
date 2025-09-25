@@ -1,26 +1,28 @@
 import React from 'react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
-interface ReusableButtonProps {
+// Extend native button props so callers can pass onClick, aria-label, etc.
+export interface ReusableButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   direction: 'left' | 'right';
-  onClick?: () => void;
   buttonClassName?: string;
   iconClassName?: string;
-  disabled?: boolean;
 }
 
-const ReusableButton: React.FC<ReusableButtonProps> = ({ direction, onClick, buttonClassName, iconClassName, disabled = false }) => {
-  const Icon = direction === 'left' ? LuChevronLeft : LuChevronRight;
+const ReusableButton = React.forwardRef<HTMLButtonElement, ReusableButtonProps>(
+  ({ direction, buttonClassName, iconClassName, disabled = false, className, ...rest }, ref) => {
+    const Icon = direction === 'left' ? LuChevronLeft : LuChevronRight;
 
-  return (
-    <button
-      onClick={disabled ? undefined : onClick}
-      disabled={disabled}
-      className={`w-[64px] h-[64px] flex items-center justify-center border-2 rounded-full ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${buttonClassName || 'border-white'}`}
-    >
-      <Icon className={`size-[30px] ${iconClassName || 'text-white'}`} />
-    </button>
-  );
-};
+    // Merge className props: prefer explicit buttonClassName then fallback to className prop
+    const mergedClass = `w-[64px] h-[64px] hover:cursor-pointer flex items-center justify-center border-2 rounded-full ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${buttonClassName || 'border-white'} ${className || ''}`.trim();
+
+    return (
+      <button ref={ref} disabled={disabled} className={mergedClass} {...rest}>
+        <Icon className={`size-[30px] ${iconClassName || 'text-white'}`} />
+      </button>
+    );
+  }
+);
+
+ReusableButton.displayName = 'ReusableButton';
 
 export default ReusableButton;
