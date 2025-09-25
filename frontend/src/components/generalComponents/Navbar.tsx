@@ -9,7 +9,7 @@ import { LuUser, LuShoppingBag } from "react-icons/lu";
 const Navbar = () => {
   const pathname = usePathname();
   return (
-    <div className="flex flex-col pt-[35px] pb-[49px]">
+    <div className="flex flex-col pt-[26px] pb-[40px] border-b border-[#b0b0b0]">
       <div className="w-full flex justify-center">
         <Image
           src="/logo.png"
