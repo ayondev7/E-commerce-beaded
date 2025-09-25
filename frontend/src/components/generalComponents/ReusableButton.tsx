@@ -3,7 +3,7 @@ import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 
 interface ReusableButtonProps {
   direction: 'left' | 'right';
-  onClick: () => void;
+  onClick?: () => void;
   buttonClassName?: string;
   iconClassName?: string;
 }
@@ -14,9 +14,9 @@ const ReusableButton: React.FC<ReusableButtonProps> = ({ direction, onClick, but
   return (
     <button
       onClick={onClick}
-      className={`w-[64px] h-[64px] flex items-center justify-center border-2 border-white rounded-full ${buttonClassName || ''}`}
+      className={`w-[64px] h-[64px] flex items-center justify-center border-2 rounded-full ${buttonClassName || 'border-white'}`}
     >
-      <Icon className={`text-white size-[30px] ${iconClassName || ''}`} />
+      <Icon className={`size-[30px] ${iconClassName || 'text-white'}`} />
     </button>
   );
 };
