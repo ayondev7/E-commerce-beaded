@@ -1,40 +1,54 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import ReusableButton from '@/components/generalComponents/ReusableButton';
+import useEmblaCarousel from "embla-carousel-react";
+import ReusableButton from "@/components/generalComponents/ReusableButton";
 
 const Hero = () => {
-  const sliderRef = useRef<any>(null);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const settings = {
-    arrows: false,
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-  };
+  const images = [
+    "/home/heroSlider/1.png",
+    "/home/heroSlider/2.jpg",
+    "/home/heroSlider/3.jpg",
+  ];
 
-  const images = ["/home/heroSlider/1.png", "/home/heroSlider/2.jpg", "/home/heroSlider/3.jpg"];
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const update = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+
+    emblaApi.on("select", update);
+    emblaApi.on("reInit", update);
+
+    update();
+  }, [emblaApi]);
 
   return (
     <div className="relative">
-      <Slider ref={sliderRef} {...settings}>
-        {images.map((src, index) => (
-          <div key={index} className="relative">
-            <Image
-              src={src}
-              alt={`Hero Image ${index + 1}`}
-              className="w-screen h-[800px] object-cover"
-              width={1920}
-              height={1080}
-            />
-            <div className="absolute inset-0 h-[800px] w-screen bg-black/45"></div>
-          </div>
-        ))}
-      </Slider>
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex">
+          {images.map((src, index) => (
+            <div key={index} className="relative flex-[0_0_100%]">
+              <Image
+                src={src}
+                alt={`Hero Image ${index + 1}`}
+                className="w-screen h-[800px] object-cover"
+                width={1920}
+                height={1080}
+              />
+              <div className="absolute inset-0 h-[800px] w-screen bg-black/45"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center text-center px-4">
         <h1 className="uppercase text-[64px] font-medium text-xl">
           Arts & Crafts Store
@@ -48,15 +62,10 @@ const Hero = () => {
           SHOP NOW
         </button>
       </div>
+
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-between w-[calc(100vw-326px)]">
-        <ReusableButton
-          direction="left"
-          onClick={() => sliderRef.current?.slickPrev()}
-        />
-        <ReusableButton
-          direction="right"
-          onClick={() => sliderRef.current?.slickNext()}
-        />
+        <ReusableButton direction="left" onClick={scrollPrev} />
+        <ReusableButton direction="right" onClick={scrollNext} />
       </div>
     </div>
   );
