@@ -5,12 +5,14 @@ interface ReusableButton2Props {
   children?: React.ReactNode
   className?: string
   bgClassName?: string
+  textClassName?: string
 }
 
 const ReusableButton2 = ({
   children = "Add to cart",
   className,
   bgClassName,
+  textClassName,
 }: ReusableButton2Props) => {
   return (
     <button
@@ -25,7 +27,7 @@ const ReusableButton2 = ({
           bgClassName
         )}
       />
-      <span className="relative z-10 text-[#7D7D7D] group-hover:text-white transition-colors duration-300">
+      <span className={clsx("relative z-10 transition-colors duration-300", textClassName ?? "text-[#7D7D7D] group-hover:text-white")}>
         {children}
       </span>
     </button>

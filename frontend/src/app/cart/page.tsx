@@ -39,8 +39,8 @@ export default function CartPage() {
   const subTotal = items.reduce((acc, it) => acc + it.price * it.qty, 0)
 
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6 lg:gap-8">
+    <div>
+      <div className="flex gap-x-[172px]">
         <CartTable
           items={items}
           onQtyChange={handleQtyChange}
