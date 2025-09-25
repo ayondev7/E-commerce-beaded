@@ -22,7 +22,7 @@ const SideFilter = () => {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl font-bold text-gray-900 tracking-wide">FILTERS</h2>
+        <h2 className="text-xl font-bold  tracking-wide">FILTERS</h2>
         <Filter className="w-6 h-6 text-gray-700" />
       </div>
 
