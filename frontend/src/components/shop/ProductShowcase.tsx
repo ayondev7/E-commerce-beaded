@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import ProductCard from "../product/ProductCard";
+import CustomPagination from "../generalComponents/CustomPagination";
 
 const ProductShowcase = () => {
   const products = Array.from({ length: 20 }, (_, i) => ({
@@ -40,6 +41,9 @@ const ProductShowcase = () => {
           <ProductCard key={index} {...product} />
         ))}
       </div>
+     <div className="mt-[30px]">
+       <CustomPagination />
+     </div>
     </div>
   );
 };
