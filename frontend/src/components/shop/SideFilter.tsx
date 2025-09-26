@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import { Search, Filter } from 'lucide-react'
+import { LuSearch, LuFilter } from 'react-icons/lu'
 
 const SideFilter = () => {
   const [activeTab, setActiveTab] = useState<'collections' | 'categories'>('collections')
@@ -23,13 +23,13 @@ const SideFilter = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-xl font-bold  tracking-wide">FILTERS</h2>
-        <Filter className="w-6 h-6 text-gray-700" />
+  <LuFilter className="w-6 h-6 text-gray-700" />
       </div>
 
       {/* Search Input */}
       <div className="mb-10">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <LuSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
             type="text"
             placeholder="SEARCH"
