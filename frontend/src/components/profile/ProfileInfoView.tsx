@@ -30,7 +30,7 @@ const ProfileInfoView: React.FC<ProfileInfoViewProps> = ({ data, onEdit }) => {
     <div className="bg-[#fafafa] pt-5 pb-10">
       <div className="px-8 border-b border-[#ebebeb] pb-5 flex w-full justify-between items-center">
         <h3 className="text-[30px] leading-[38px] tracking-[-2%]">Profile Info</h3>
-        <button className="flex gap-x-2 items-center">
+        <button className="flex gap-x-2 items-center hover:cursor-pointer" onClick={onEdit}>
           <span className="text-lg leading-[24px] tracking-[8%] uppercase">Edit</span>
           <FiEdit className="size-[18px]" />
         </button>
