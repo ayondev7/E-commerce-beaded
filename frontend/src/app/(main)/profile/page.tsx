@@ -31,7 +31,7 @@ const ProfilePage = () => {
   );
 
   return (
-    <div className="pb-16 flex justify-center w-full">
+    <div className="pb-16 flex justify-center w-full overflow-y-auto">
       <div className="w-[1000px] overflow-x-hidden">
         <ProfileHeader name={`${profile.firstName} ${profile.lastName}`} />
         <Tabs
