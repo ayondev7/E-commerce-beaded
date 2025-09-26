@@ -1,96 +1,149 @@
-"use client"
-import React from "react"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+"use client";
+import React from "react";
+import SelectField from "@/components/profile/Form/SelectField";
+import InputField, { baseInputClass } from "@/components/profile/Form/InputField";
+import TextareaField from "@/components/profile/Form/TextareaField";
+import {
+  divisions,
+  districtsByDivision,
+  areasByDistrict,
+  precedenceOptions,
+} from "@/constants/addressConstants";
+import ReusableButton2 from "@/components/generalComponents/ReusableButton2";
 
 export interface AddressData {
-  id?: string
-  type: "Home" | "Work" | "Other" | ""
-  name?: string
-  division: string
-  district: string
-  area: string
+  id?: string;
+  type: "Home" | "Work" | "Other" | "";
+  name?: string;
+  division: string;
+  district: string;
+  area: string;
   precedence?: "Default" | "Secondary" | "";
-  address: string
-  zip: string
+  address: string;
+  zip: string;
 }
 
 interface AddressFormProps {
-  title?: string
-  initial: AddressData
-  onCancel?: () => void
-  onSave: (data: AddressData) => void
+  title?: string;
+  initial: AddressData;
+  onCancel?: () => void;
+  onSave: (data: AddressData) => void;
 }
 
-const AddressForm: React.FC<AddressFormProps> = ({ title = "Add New Address", initial, onCancel, onSave }) => {
-  const [form, setForm] = React.useState<AddressData>(initial)
-  const update = (k: keyof AddressData, v: string) => setForm((p) => ({ ...p, [k]: v }))
+const AddressForm: React.FC<AddressFormProps> = ({
+  title = "Add New Address",
+  initial,
+  onCancel,
+  onSave,
+}) => {
+  const [form, setForm] = React.useState<AddressData>(initial);
+  const update = (k: keyof AddressData, v: string) =>
+    setForm((p) => ({ ...p, [k]: v }));
 
   return (
-    <div className="mx-auto max-w-5xl px-4">
-      <div className="mb-6 text-center text-2xl uppercase tracking-wide">{title}</div>
-      <div className="rounded-md border bg-white/50 p-6">
+    <div className="bg-[#fafafa] py-[70px] px-[80px]">
+      <div className="mb-[54px] text-[36px] leading-[42px] text-center">
+        {title}
+      </div>
+      <div className="">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">Select Address Type</label>
-            <Select value={form.type} onValueChange={(v) => update("type", v)}>
-              <SelectTrigger className="w-full justify-between"><SelectValue placeholder="Select" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Home">Home</SelectItem>
-                <SelectItem value="Work">Work</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">Address Name (optional)</label>
-            <Input value={form.name || ""} onChange={(e) => update("name", e.target.value)} placeholder="Enter Address Name" />
-          </div>
-          <div>
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">Select Division</label>
-            <Input value={form.division} onChange={(e) => update("division", e.target.value)} placeholder="Select" />
-          </div>
-          <div>
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">Select District</label>
-            <Input value={form.district} onChange={(e) => update("district", e.target.value)} placeholder="Select" />
-          </div>
-          <div>
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">Select Area</label>
-            <Input value={form.area} onChange={(e) => update("area", e.target.value)} placeholder="Select" />
-          </div>
-          <div>
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">Precedence</label>
-            <Select value={form.precedence || ""} onValueChange={(v) => update("precedence", v)}>
-              <SelectTrigger className="w-full justify-between"><SelectValue placeholder="Select" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Default">Default</SelectItem>
-                <SelectItem value="Secondary">Secondary</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="md:col-span-2">
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">Full Address</label>
-            <textarea
-              className="border-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 w-full rounded-md border bg-transparent p-3 text-sm outline-none"
-              rows={5}
-              value={form.address}
-              placeholder="Please enter your full address"
-              onChange={(e) => update("address", e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">ZIP Code</label>
-            <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} placeholder="Enter ZIP" />
-          </div>
+          <SelectField
+            label={"Select Address Type"}
+            value={form.type}
+            onChange={(v) => update("type", v)}
+            options={["Home", "Work", "Other"]}
+            placeholder={"Select"}
+            triggerClassName={baseInputClass}
+          />
+
+          <InputField
+            label={"Address Name (optional)"}
+            value={form.name || ""}
+            onChange={(v) => update("name", v)}
+            placeholder={"Enter Address Name"}
+            inputClassName={baseInputClass}
+          />
+
+          <SelectField
+            label={"Select Division"}
+            value={form.division}
+            onChange={(v) => {
+              update("division", v);
+              // reset dependent selects
+              update("district", "");
+              update("area", "");
+            }}
+            options={divisions as unknown as string[]}
+            placeholder={"Select"}
+            triggerClassName={baseInputClass}
+          />
+
+          <SelectField
+            label={"Select District"}
+            value={form.district}
+            onChange={(v) => {
+              update("district", v);
+              update("area", "");
+            }}
+            options={
+              form.division ? districtsByDivision[form.division] || [] : []
+            }
+            placeholder={"Select"}
+            triggerClassName={baseInputClass}
+          />
+
+          <SelectField
+            label={"Select Area"}
+            value={form.area}
+            onChange={(v) => update("area", v)}
+            options={form.district ? areasByDistrict[form.district] || [] : []}
+            placeholder={"Select"}
+            triggerClassName={baseInputClass}
+          />
+
+          <SelectField
+            label={"Precedence"}
+            value={form.precedence || ""}
+            onChange={(v) => update("precedence", v)}
+            options={precedenceOptions as unknown as string[]}
+            placeholder={"Select"}
+            triggerClassName={baseInputClass}
+          />
+          <TextareaField
+            label={"Full Address"}
+            value={form.address}
+            onChange={(v) => update("address", v)}
+            placeholder={"Please enter your full address"}
+            rows={5}
+            className={"md:col-span-2"}
+            textareaClassName={""}
+          />
+          <InputField
+            label={"ZIP Code"}
+            value={form.zip}
+            onChange={(v) => update("zip", v)}
+            placeholder={"Enter ZIP"}
+            inputClassName={baseInputClass}
+          />
         </div>
-        <div className="mt-6 flex justify-end gap-3">
-          {onCancel && <Button variant="outline" onClick={onCancel}>Cancel</Button>}
-          <Button onClick={() => onSave(form)}>Save Address</Button>
+        <div className="mt-[54px] flex justify-center gap-6">
+          <ReusableButton2
+            className="border border-[#7D7D7D] py-[15px] w-[290px]"
+            textClassName="text-black"
+          >
+            Cancel
+          </ReusableButton2>
+          <ReusableButton2
+            className="border bg-[#00b5a6] py-[15px] w-[290px]"
+            bgClassName="bg-[#00B5A5]"
+            textClassName="text-white"
+          >
+            Save Address
+          </ReusableButton2>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AddressForm
+export default AddressForm;
