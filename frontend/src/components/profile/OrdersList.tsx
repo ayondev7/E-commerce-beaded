@@ -61,6 +61,27 @@ const OrdersList: React.FC<Props> = ({ onViewDetails }) => {
         qty: 1,
         price: 599,
       },
+      {
+        id: "4",
+        name: "FLOWER CHILD BARBIE BRACELET",
+        image: "/public/home/categories/1.png".replace("/public", ""),
+        qty: 1,
+        price: 599,
+      },
+      {
+        id: "5",
+        name: "FLOWER CHILD BARBIE BRACELET",
+        image: "/public/home/categories/1.png".replace("/public", ""),
+        qty: 1,
+        price: 599,
+      },
+      {
+        id: "6",
+        name: "FLOWER CHILD BARBIE BRACELET",
+        image: "/public/home/categories/1.png".replace("/public", ""),
+        qty: 1,
+        price: 599,
+      },
     ];
 
     onViewDetails?.({
