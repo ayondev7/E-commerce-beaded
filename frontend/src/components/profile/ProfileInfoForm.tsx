@@ -59,16 +59,16 @@ const Field: React.FC<{
   if (field.inputType === 'select' && field.options) {
     return (
       <div>
-        <label className="mb-2 block text-[11px] uppercase tracking-wide text-[#6D6D6D]">
+        <label className="text-[#1E1E1E] text-lg leading-[24px] font-semibold mb-2">
           {field.label}
         </label>
         <Select value={value} onValueChange={onChange}>
-          <SelectTrigger className={cn("w-full justify-between text-xl leading-[30px]", field.className)}>
-            <SelectValue placeholder={field.placeholder || "Select"} />
+          <SelectTrigger className={cn("w-full justify-between !h-[56px] !px-4 !py-3 shadow-none text-xl leading-[30px] rounded-none", field.className)}>
+            <SelectValue className={cn("text-[#1E1E1E] !px-4 !py-3 text-lg leading-[24px] font-semibold")} placeholder={field.placeholder || "Select"} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className={cn("rounded-none shadow-none")}>
             {field.options.map((opt) => (
-              <SelectItem key={opt} value={opt}>
+              <SelectItem className={cn("!px-4 !py-3 text-xl leading-[30px]")} key={opt} value={opt}>
                 {opt}
               </SelectItem>
             ))}
@@ -89,7 +89,7 @@ const Field: React.FC<{
           type="date"
           value={value}
           onChange={(e) => onChange((e.target as HTMLInputElement).value)}
-          className={cn(field.className)}
+          className={cn("text-lg leading-[24px] font-semibold", field.className)}
         />
       </div>
     );
@@ -119,6 +119,10 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({
 }) => {
   const [form, setForm] = React.useState<ProfileData>(initial);
 
+  // Shared input classes to keep date/select visually consistent with HTML inputs
+  const sharedInputClass =
+    "w-full mt-2 px-4 py-3 text-xl leading-[30px] bg-white border border-[#7D7D7D] focus:outline-none focus:border-[#7D7D7D]";
+
   const update = (k: keyof ProfileData, v: string) =>
     setForm((p) => ({ ...p, [k]: v }));
 
@@ -127,8 +131,8 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({
     { label: "Last Name", name: "lastName", inputType: 'html' },
     { label: "Email", name: "email", type: "email", inputType: 'html' },
     { label: "Phone No.", name: "phone", inputType: 'html' },
-    { label: "Gender", name: "gender", inputType: 'select', options: genders },
-    { label: "Date of Birth", name: "dob", inputType: 'date' },
+    { label: "Gender", name: "gender", inputType: 'select', options: genders, className: sharedInputClass },
+    { label: "Date of Birth", name: "dob", inputType: 'date', className: sharedInputClass },
   ];
 
   return (
