@@ -1,27 +1,28 @@
-"use client"
-import React from "react"
-import { LuMinus, LuPlus, LuTrash2, LuX } from "react-icons/lu"
-import { cn } from "@/lib/utils"
-import Image from "next/image"
+"use client";
+import React from "react";
+import { LuMinus, LuPlus, LuTrash2, LuArrowLeft } from "react-icons/lu";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export type CartItem = {
-  id: string | number
-  name: string
-  price: number
-  image: string
-  qty: number
-}
+  id: string | number;
+  name: string;
+  price: number;
+  image: string;
+  qty: number;
+};
 
 type Props = {
-  items: CartItem[]
-  className?: string
-  title?: string
-  onClose?: () => void
-  onQtyChange?: (id: CartItem["id"], qty: number) => void
-  onRemove?: (id: CartItem["id"]) => void
-}
+  items: CartItem[];
+  className?: string;
+  title?: string;
+  onClose?: () => void;
+  onQtyChange?: (id: CartItem["id"], qty: number) => void;
+  onRemove?: (id: CartItem["id"]) => void;
+};
 
-const currency = (n: number) => `TK. ${n.toLocaleString("en-BD", { minimumFractionDigits: 0 })}`
+const currency = (n: number) =>
+  `TK. ${n.toLocaleString("en-BD", { minimumFractionDigits: 0 })}`;
 
 export default function CartTable({
   items,
@@ -34,16 +35,16 @@ export default function CartTable({
   return (
     <section className={cn("bg-white", className)}>
       {/* Header */}
-      <div className="flex items-center gap-3 py-5">
-        <button
-          aria-label="Close cart"
-          onClick={onClose}
-          className="inline-flex size-6 items-center justify-center rounded-full hover:bg-zinc-100"
-        >
-          <LuX className="size-4" />
+      <div className="py-4 flex gap-x-6 items-center">
+        <button>
+          <LuArrowLeft className="size-5" onClick={onClose} />
         </button>
-        <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        <span className="text-sm text-zinc-500">{items.length} Items</span>
+        <div className="flex gap-x-6 items-center">
+          <h2 className="text-[36px] leading-[42px] tracking-[-1%]">{title}</h2>
+          <span className="text-lg leading-[24px] font-medium tracking-[-1%] text-[#9C9C9C]">
+            {items.length} Items
+          </span>
+        </div>
       </div>
 
       {/* Column headers */}
@@ -54,9 +55,14 @@ export default function CartTable({
         <span />
       </div>
 
-      <ul className="divide-y">
-        {items.map((item) => (
-          <li key={item.id} className="grid grid-cols-[1fr] 2xl:grid-cols-[2fr_1fr_0.65fr_0.2fr] items-center gap-x-10 py-9">
+      {/* Scrollable body: only this region will scroll when items overflow. Parent can control overall height. */}
+      <div className="divide-y max-h-[80vh] overflow-x-hidden overflow-y-auto hide-scrollbar">
+        <ul>
+          {items.map((item) => (
+            <li
+              key={item.id}
+              className="grid grid-cols-[1fr] 2xl:grid-cols-[2fr_1fr_0.65fr_0.2fr] items-center gap-x-10 py-9"
+            >
             {/* Item info */}
             <div className="flex items-center gap-x-[30px]">
               <Image
@@ -67,9 +73,7 @@ export default function CartTable({
                 className="object-cover w-[100px] h-[100px]"
               />
               <div>
-                <p className="text-xl uppercase">
-                  {item.name}
-                </p>
+                <p className="text-xl uppercase">{item.name}</p>
               </div>
             </div>
 
@@ -79,7 +83,9 @@ export default function CartTable({
                 <button
                   aria-label="Decrease quantity"
                   className="text-[#7D7D7D]"
-                  onClick={() => onQtyChange?.(item.id, Math.max(1, item.qty - 1))}
+                  onClick={() =>
+                    onQtyChange?.(item.id, Math.max(1, item.qty - 1))
+                  }
                   disabled={item.qty <= 1}
                 >
                   <LuMinus className="size-5" />
@@ -114,7 +120,8 @@ export default function CartTable({
             </div>
           </li>
         ))}
-      </ul>
+        </ul>
+      </div>
     </section>
-  )
+  );
 }
