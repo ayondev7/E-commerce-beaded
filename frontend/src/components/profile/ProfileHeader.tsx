@@ -8,17 +8,11 @@ interface ProfileHeaderProps {
 
 const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, avatarUrl }) => {
   return (
-    <div className="flex flex-col items-center gap-4 py-8">
-      <div className="relative size-28 overflow-hidden rounded-full border">
-        {avatarUrl ? (
-          <Image src={avatarUrl} alt={name} fill className="object-cover" />
-        ) : (
-          <div className="flex size-full items-center justify-center bg-gray-100 text-3xl font-semibold text-gray-500">
-            {name.split(" ").map((n) => n[0]).join("")}
-          </div>
-        )}
+    <div className="flex flex-col items-center mt-[100px] mb-[90px]">
+      <div className="rounded-full">
+          <Image src='/home/categories/1.png' alt={name} width={400} height={400} className="object-cover size-[245px] rounded-full" />
       </div>
-      <h1 className="text-2xl font-semibold uppercase tracking-wide">{name}</h1>
+      <h1 className="text-[40px] font-medium mt-6">{name}</h1>
     </div>
   )}
 

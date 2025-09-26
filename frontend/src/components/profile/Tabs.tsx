@@ -18,21 +18,21 @@ const tabs: { key: TabKey; label: string }[] = [
 
 export const Tabs: React.FC<TabsProps> = ({ value, onChange }) => {
   return (
-    <div className="border-b">
-      <nav className="mx-auto flex max-w-5xl items-center gap-10 overflow-x-auto px-4">
+    <div className="w-full flex justify-center">
+      <nav className="border-b border-[#B7B7B7] w-[1000px] flex items-center justify-between">
         {tabs.map((t) => (
           <button
             key={t.key}
             className={cn(
-              "relative py-4 text-sm uppercase tracking-wide text-[#6D6D6D]", 
-              value === t.key && "text-[#00B5A5]"
+              "relative text-xl font-semibold hover:cursor-pointer uppercase py-4 !text-[#7D7D7D]", 
+              value === t.key && "!text-[#00B5A5]"
             )}
             onClick={() => onChange(t.key)}
           >
             {t.label}
             <span
               className={cn(
-                "absolute -bottom-px left-0 h-[2px] w-full bg-[#00B5A5] transition-opacity",
+                "absolute -bottom-px left-0 h-[4px] w-full bg-[#00B5A5] transition-opacity",
                 value === t.key ? "opacity-100" : "opacity-0"
               )}
             />
