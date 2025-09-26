@@ -9,6 +9,7 @@ import ProfileInfoForm from "@/components/profile/ProfileInfoForm";
 import Addresses from "@/components/profile/Addresses";
 import OrdersList from "@/components/profile/OrdersList";
 import WishlistGrid from "@/components/profile/WishlistGrid";
+import ViewDetailsModal, { type OrderDetails } from "@/components/profile/ViewDetailsModal";
 
 const ProfilePage = () => {
   const [tab, setTab] = React.useState<
@@ -23,6 +24,11 @@ const ProfilePage = () => {
     gender: "Male",
     dob: "1999-12-15",
   });
+
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [selectedOrder, setSelectedOrder] = React.useState<OrderDetails | null>(
+    null
+  );
 
   return (
     <div className="pb-16 flex justify-center w-full">
@@ -52,7 +58,21 @@ const ProfilePage = () => {
             ))}
 
           {tab === "addresses" && <Addresses />}
-          {tab === "orders" && <OrdersList />}
+          {tab === "orders" && (
+            <>
+              <OrdersList
+                onViewDetails={(details) => {
+                  setSelectedOrder(details);
+                  setModalOpen(true);
+                }}
+              />
+              <ViewDetailsModal
+                open={modalOpen}
+                details={selectedOrder}
+                onClose={() => setModalOpen(false)}
+              />
+            </>
+          )}
           {tab === "wishlist" && <WishlistGrid />}
         </div>
       </div>
