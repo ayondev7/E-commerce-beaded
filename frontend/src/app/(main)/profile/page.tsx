@@ -25,7 +25,7 @@ const ProfilePage = () => {
       <ProfileHeader name={`${profile.firstName} ${profile.lastName}`} />
       <Tabs value={tab} onChange={(t) => { setTab(t); if (t !== "profile") setEditing(false) }} />
 
-      <div className="mt-6">
+      <div className="mt-[67px]">
         {tab === "profile" && (
           editing ? (
             <ProfileInfoForm

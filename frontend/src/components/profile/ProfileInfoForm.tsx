@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { ProfileData } from "./ProfileInfoView"
+import { genders } from "@/constants/genders"
 
 interface ProfileInfoFormProps {
   initial: ProfileData
@@ -17,7 +18,7 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ initial, onCancel, on
   const update = (k: keyof ProfileData, v: string) => setForm((p) => ({ ...p, [k]: v }))
 
   return (
-    <div className="mx-auto max-w-5xl px-4">
+    <div className="">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-lg">Edit Profile Info</h3>
         <Button size="sm" onClick={() => onSave(form)}>Save</Button>
@@ -39,9 +40,11 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ initial, onCancel, on
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
-                <SelectItem value="Other">Other</SelectItem>
+                {genders.map((gender) => (
+                  <SelectItem key={gender} value={gender}>
+                    {gender}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
