@@ -1,36 +1,42 @@
-import React from "react"
-import { Button } from "@/components/ui/button"
+import React from "react";
+import { FiEdit } from "react-icons/fi";
 
 export interface ProfileData {
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  gender: "Male" | "Female" | "Other" | ""
-  dob?: string
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  gender: "Male" | "Female" | "Other" | "";
+  dob?: string;
 }
 
 interface ProfileInfoViewProps {
-  data: ProfileData
-  onEdit: () => void
+  data: ProfileData;
+  onEdit: () => void;
 }
 
-const InfoRow: React.FC<{ label: string; value?: string }> = ({ label, value }) => (
-  <div className="flex flex-col gap-1">
-    <span className="text-[11px] uppercase tracking-wide text-[#6D6D6D]">{label}</span>
-    <span className="text-sm">{value || "-"}</span>
+const InfoRow: React.FC<{ label: string; value?: string }> = ({
+  label,
+  value,
+}) => (
+  <div className="flex flex-col gap-y-1">
+    <span className="text-[#6D6D6D] text-lg leading-[24px] font-semibold">{label}</span>
+    <span className="text-xl leading-[30px]">{value || "-"}</span>
   </div>
-)
+);
 
 const ProfileInfoView: React.FC<ProfileInfoViewProps> = ({ data, onEdit }) => {
   return (
-    <div className="mx-auto max-w-5xl px-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-lg">Profile Info</h3>
-        <Button variant="ghost" onClick={onEdit} className="text-sm">Edit</Button>
+    <div className="bg-[#fafafa] pt-5 pb-10">
+      <div className="px-8 border-b border-[#ebebeb] pb-5 flex w-full justify-between items-center">
+        <h3 className="text-[30px] leading-[38px] tracking-[-2%]">Profile Info</h3>
+        <button className="flex gap-x-2 items-center">
+          <span className="text-lg leading-[24px] tracking-[8%] uppercase">Edit</span>
+          <FiEdit className="size-[18px]" />
+        </button>
       </div>
-      <div className="rounded-md border bg-white/50 p-6">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div className="pt-5 px-8">
+        <div className="grid grid-cols-3 gap-x-[21px] gap-y-10">
           <InfoRow label="First name" value={data.firstName} />
           <InfoRow label="Email" value={data.email} />
           <InfoRow label="Gender" value={data.gender} />
@@ -40,7 +46,7 @@ const ProfileInfoView: React.FC<ProfileInfoViewProps> = ({ data, onEdit }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfileInfoView
+export default ProfileInfoView;

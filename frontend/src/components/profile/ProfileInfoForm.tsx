@@ -18,7 +18,7 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({ initial, onCancel, on
   const update = (k: keyof ProfileData, v: string) => setForm((p) => ({ ...p, [k]: v }))
 
   return (
-    <div className="">
+    <div className="bg-red-500">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-lg">Edit Profile Info</h3>
         <Button size="sm" onClick={() => onSave(form)}>Save</Button>

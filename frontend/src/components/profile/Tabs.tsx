@@ -19,7 +19,7 @@ const tabs: { key: TabKey; label: string }[] = [
 export const Tabs: React.FC<TabsProps> = ({ value, onChange }) => {
   return (
     <div className="w-full flex justify-center">
-      <nav className="border-b border-[#B7B7B7] w-[1000px] flex items-center justify-between">
+      <nav className="border-b border-[#B7B7B7] w-full flex items-center justify-between">
         {tabs.map((t) => (
           <button
             key={t.key}
