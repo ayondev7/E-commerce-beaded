@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { asyncHandler } from "@/utils/httpError";
 import { upload, processUploads } from "@/middleware/upload";
-import { requireAuth, optionalAuth } from "@/middleware/auth";
+import { authMiddleware } from "@/middleware/auth";
 import { createProduct, deleteProduct, getProduct, listProducts, updateProduct } from "./product.controller";
 
 const router = Router();
 
-router.get("/", optionalAuth, asyncHandler(listProducts));
-router.get("/:id", optionalAuth, asyncHandler(getProduct));
-router.post("/", requireAuth, upload.array("images", 8), processUploads, asyncHandler(createProduct));
-router.patch("/:id", requireAuth, upload.array("images", 8), processUploads, asyncHandler(updateProduct));
-router.delete("/:id", requireAuth, asyncHandler(deleteProduct));
+router.get("/", asyncHandler(listProducts));
+router.get("/:id", asyncHandler(getProduct));
+router.post("/", authMiddleware, upload.array("images", 3), processUploads, asyncHandler(createProduct));
+router.patch("/:id", authMiddleware, upload.array("images", 3), processUploads, asyncHandler(updateProduct));
+router.delete("/:id", authMiddleware, asyncHandler(deleteProduct));
 
 export default router;

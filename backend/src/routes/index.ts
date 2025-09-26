@@ -5,7 +5,6 @@ import authRoutes from "@/modules/auth/auth.routes";
 const router = Router();
 
 router.get("/health", (_req: Request, res: Response) => res.json({ ok: true }));
-
 router.use("/products", productRoutes);
 router.use("/auth", authRoutes);
 
