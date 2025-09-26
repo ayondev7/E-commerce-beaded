@@ -8,7 +8,7 @@ export default function CartPage() {
     {
       id: 1,
       name: "Flower Child Barbie Bracelet",
-      price: 599,
+      price: 1000,
       qty: 1,
       image: "/home/categories/1.png",
     },
@@ -39,16 +39,16 @@ export default function CartPage() {
   const subTotal = items.reduce((acc, it) => acc + it.price * it.qty, 0)
 
   return (
-    <div>
-      <div className="flex gap-x-[172px]">
+      <div className="flex justify-between w-screen pl-20">
         <CartTable
           items={items}
           onQtyChange={handleQtyChange}
           onRemove={handleRemove}
-          className="shadow-sm"
+          className="w-[65%]"
         />
-        <CartSummary subTotal={subTotal} />
+        <div className="w-[25%]">
+          <CartSummary subTotal={subTotal} />
+        </div>
       </div>
-    </div>
   )
 }

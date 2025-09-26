@@ -25,7 +25,7 @@ export default function CartSummary({
   const grandTotal = subTotal + deliveryFee - discount;
 
   return (
-    <aside className="bg-[#1E1E1E] flex flex-col justify-between min-h-screen w-[350px] pb-[50px] pt-20 px-8">
+    <aside className="bg-[#1E1E1E] flex flex-col justify-between min-h-screen w-full pb-[50px] pt-20 px-8">
       <div>
         <h3 className="text-2xl leading-[32px] tracking-[-2%] text-white mb-10">
           Summary
