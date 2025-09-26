@@ -1,13 +1,14 @@
 "use client"
 import React from "react"
+import { FiPlus } from "react-icons/fi";
 
 const AddCard: React.FC<{ onAdd: () => void }> = ({ onAdd }) => (
   <button
     onClick={onAdd}
-    className="rounded-md border border-dashed p-4 text-center text-[#6D6D6D] hover:bg-gray-50"
+    className="border border-[#D9D9D9] hover:cursor-pointer flex flex-col items-center justify-center"
   >
-    <div className="text-3xl">+</div>
-    <div className="mt-2 text-sm uppercase">Add New Address</div>
+    <div className="text-[32px] size-[52px] text-white rounded-full bg-[#9C9C9C] flex justify-center items-center"><FiPlus /> </div>
+    <div className="mt-4 uppercase text-base leading-[20px] tracking-[8%] font-medium">Add New Address</div>
   </button>
 )
 
