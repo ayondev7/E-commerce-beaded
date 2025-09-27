@@ -4,24 +4,8 @@ import InputField from "@/components/generalComponents/Form/InputField";
 import PasswordField from "@/components/generalComponents/Form/PasswordField";
 import FileDropField from "@/components/generalComponents/Form/FileDropField";
 import Link from "next/link";
-
-const Divider = () => (
-  <div className="flex items-center gap-4 my-6">
-    <div className="h-px bg-[#D9D9D9] flex-1" />
-    <span className="text-[#7D7D7D] text-sm uppercase tracking-wider">OR</span>
-    <div className="h-px bg-[#D9D9D9] flex-1" />
-  </div>
-);
-
-const GoogleButton: React.FC<{ onClick?: () => void }> = ({ onClick }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className="w-full mt-4 px-4 py-3 text-xl leading-[30px] bg-white border border-[#7D7D7D] flex items-center justify-center"
-  >
-    <img src="/icons/settings.png" alt="G" className="h-5 w-5" />
-  </button>
-);
+import GoogleButton from "@/components/auth/GoogleButton";
+import Divider from "@/components/auth/Divider";
 
 const SignupForm: React.FC = () => {
   const [name, setName] = React.useState("");
@@ -37,12 +21,16 @@ const SignupForm: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[520px] py-10">
+    <div className="">
       <h1 className="text-center text-4xl tracking-wide mb-8">SIGN UP</h1>
-      <p className="text-center text-sm text-[#7D7D7D] uppercase mb-2">Connect with</p>
-      <GoogleButton />
+      <p className="text-center text-sm text-[#7D7D7D] uppercase mb-4">
+        Connect with
+      </p>
+      <div className="mb-6">
+        <GoogleButton label="Sign up with Google" />
+      </div>
       <Divider />
-      <form onSubmit={onSubmit} className="space-y-5">
+      <form onSubmit={onSubmit} className="grid mt-6 grid-cols-2 gap-x-10 gap-y-10">
         <InputField
           label="Name"
           placeholder="Please enter your Name"
@@ -85,7 +73,7 @@ const SignupForm: React.FC = () => {
           CREATE YOUR ACCOUNT
         </button>
       </form>
-      <Divider />
+      <Divider showOr={false} />
       <p className="text-center text-[#7D7D7D]">
         Already have an account?{" "}
         <Link href="/sign-in" className="text-teal-600 font-semibold">

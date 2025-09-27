@@ -68,7 +68,6 @@ const FileDropField: React.FC<FileDropFieldProps> = ({
             ? fileNames.join(", ")
             : "Drag & drop or click to upload image(s)"}
         </span>
-        <span className="text-teal-600 font-semibold whitespace-nowrap">Browse</span>
       </div>
       <input
         ref={inputRef}
