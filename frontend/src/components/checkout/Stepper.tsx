@@ -70,26 +70,37 @@ export default function Stepper({
       <div className="w-full" {...rest}>
       {/* Top stepper bar */}
       <div className="mx-auto max-w-5xl">
-        <div className="flex items-center justify-between gap-4 py-6">
-          {stepsArray.map((_, idx) => {
-            const step = idx + 1;
-            const status =
-              currentStep === step ? "active" : currentStep > step ? "complete" : "inactive";
-            const isLast = idx === stepsArray.length - 1;
-            return (
-              <React.Fragment key={step}>
+        <div className="relative py-6">
+          {/* Background line */}
+          <div className="absolute w-[900px] top-1/2 left-1/2 -translate-x-1/2 right-0 h-0.5 bg-neutral-200 -translate-y-1/2" />
+          
+          {/* Progress line */}
+          <motion.div
+            className="absolute top-1/2 left-0 h-0.5 bg-emerald-500 -translate-y-1/2"
+            initial={false}
+            animate={{ 
+              width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` 
+            }}
+            transition={{ duration: 0.4 }}
+          />
+          
+          {/* Step indicators */}
+          <div className="relative flex items-center justify-between">
+            {stepsArray.map((_, idx) => {
+              const step = idx + 1;
+              const status =
+                currentStep === step ? "active" : currentStep > step ? "complete" : "inactive";
+              return (
                 <StepIndicator
+                  key={step}
                   step={step}
                   label={labels[idx] ?? `Step ${step}`}
                   status={status}
                   onClick={() => !disableStepIndicators && goTo(step)}
                 />
-                {!isLast && (
-                  <StepConnector complete={currentStep > step} />
-                )}
-              </React.Fragment>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -180,19 +191,6 @@ export function Step({ children }: { children: ReactNode }) {
   return <div>{children}</div>;
 }
 
-function StepConnector({ complete }: { complete: boolean }) {
-  return (
-    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded bg-neutral-200">
-      <motion.div
-        className="absolute left-0 top-0 h-full"
-        initial={false}
-        animate={{ width: complete ? "100%" : 0, backgroundColor: complete ? "#22c55e" : "transparent" }}
-        transition={{ duration: 0.4 }}
-      />
-    </div>
-  );
-}
-
 function StepIndicator({
   step,
   label,
@@ -206,33 +204,32 @@ function StepIndicator({
 }) {
   const colors = {
     inactive: { bg: "bg-white", ring: "ring-1 ring-zinc-300", text: "text-zinc-400" },
-    active: { bg: "bg-emerald-500", ring: "ring-emerald-500", text: "text-emerald-600" },
-    complete: { bg: "bg-emerald-500", ring: "ring-emerald-500", text: "text-emerald-600" },
+    active: { bg: "bg-emerald-500", ring: "ring-2 ring-emerald-500", text: "text-emerald-600" },
+    complete: { bg: "bg-emerald-500", ring: "ring-2 ring-emerald-500", text: "text-emerald-600" },
   }[status];
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full flex-1 flex-col items-center gap-2 focus:outline-none"
+      className="relative flex flex-col items-center gap-3 focus:outline-none z-10 mt-8"
       aria-current={status === "active"}
     >
       <motion.div
-        className={`grid size-8 place-items-center rounded-full ${colors.bg} ${colors.ring}`}
+        className={`grid size-12 place-items-center rounded-full ${colors.bg} ${colors.ring}`}
         initial={false}
-        animate={{ scale: status === "active" ? 1.05 : 1 }}
         transition={{ duration: 0.2 }}
       >
         {status === "complete" ? (
-          <CheckIcon className="size-4 text-white" />
+          <CheckIcon className="size-6 text-white" />
         ) : status === "active" ? (
-          <span className="text-white text-xs font-semibold">{step}</span>
+          <span className="text-white text-lgfont-semibold">{step}</span>
         ) : (
-          <span className="text-xs font-semibold text-zinc-500">{step}</span>
+          <span className="text-lg font-semibold text-zinc-500">{step}</span>
         )}
       </motion.div>
       <span
-        className={`text-xs font-medium ${colors.text}`}
+        className={`text-lg font-medium ${colors.text} whitespace-nowrap`}
       >
         {label}
       </span>
