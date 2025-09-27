@@ -12,7 +12,8 @@ export default function CheckoutPage() {
         className=""
       >
         <Step>
-          <DeliveryInfo />
+          {/* <DeliveryInfo /> */}
+           <ReviewOrder />
         </Step>
         <Step>
           <ReviewOrder />

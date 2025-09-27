@@ -1,23 +1,27 @@
-"use client";
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { GoCheckCircle } from "react-icons/go";
+import ReusableButton2 from "../generalComponents/ReusableButton2";
 
-export default function Confirmation() {
+const Confirmation = () => {
   return (
-    <section className="mx-auto max-w-3xl py-20 text-center">
-      <div className="flex items-center justify-center">
-        <div className="grid size-20 place-items-center rounded-full bg-emerald-100 text-emerald-600">
-          <svg className="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-      </div>
-      <h1 className="mt-8 text-3xl font-semibold">Your order has been confirmed</h1>
-      <p className="mt-2 text-zinc-500">Thank you for ordering from <span className="font-medium text-zinc-700">Beaded Bangladesh</span>.</p>
-      <p className="mt-6 text-sm text-zinc-600">Order Code: <span className="font-semibold">#10102</span></p>
-      <div className="mt-10">
-        <Button className="rounded-full px-6 bg-emerald-500 hover:bg-emerald-600">View your order</Button>
-      </div>
-    </section>
+    <div className="flex flex-col items-center w-full">
+      <GoCheckCircle className="size-[91px] text-[#67C18C] mb-[34px]" />
+      <h1 className="mb-4 text-[48px] leading-[42px] tracking-[-1%]">
+        Your order has been confirmed
+      </h1>
+      <h2 className="mb-6 text-xl leading-[26px]">
+        <span className="text-[#7D7D7D]">Thank you for ordering from </span>
+        <span>Beaded Bangladesh.</span>
+      </h2>
+      <h3 className="text-xl leading-[24px] font-semibold mb-[66px]">
+        <span className="tracking-[-1%] text-[#333333]">Order Code:</span>
+        <span className="text-[#4F4F4F]"> #123456</span>
+      </h3>
+      <ReusableButton2 className="bg-[#00b5a6]" textClassName="text-white">
+        VIEW YOUR Order
+      </ReusableButton2>
+    </div>
   );
-}
+};
+
+export default Confirmation;
