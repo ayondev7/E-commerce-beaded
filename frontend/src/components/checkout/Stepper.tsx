@@ -70,16 +70,16 @@ export default function Stepper({
       <div className="w-full" {...rest}>
       {/* Top stepper bar */}
       <div className="mx-auto max-w-5xl">
-        <div className="relative">
+        <div className="relative overflow-hidden">
           {/* Background line */}
           <div className="absolute w-[900px] top-6 left-1/2 -translate-x-1/2 right-0 h-0.5 bg-[#d9d9d9]" />
           
           {/* Progress line */}
           <motion.div
-            className="absolute w-[900px] left-1/2 -translate-x-1/2 top-6 h-0.5 bg-[#67c18d]"
+            className="absolute top-6 left-10 h-0.5 bg-[#67c18d]"
             initial={false}
             animate={{ 
-              width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` 
+              width: `${((currentStep - 1) / (totalSteps - 1)) * 92}%` 
             }}
             transition={{ duration: 0.4 }}
           />
@@ -88,8 +88,17 @@ export default function Stepper({
           <div className="relative flex items-center justify-between">
             {stepsArray.map((_, idx) => {
               const step = idx + 1;
-              const status =
-                currentStep === step ? "active" : currentStep > step ? "complete" : "inactive";
+              let status: "inactive" | "active" | "complete";
+              
+              if (currentStep > step) {
+                status = "complete";
+              } else if (currentStep === step) {
+                // For the third step (Confirmation), treat active as complete
+                status = step === 3 ? "complete" : "active";
+              } else {
+                status = "inactive";
+              }
+              
               return (
                 <StepIndicator
                   key={step}

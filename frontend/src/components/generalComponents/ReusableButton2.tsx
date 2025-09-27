@@ -6,6 +6,7 @@ interface ReusableButton2Props {
   className?: string
   bgClassName?: string
   textClassName?: string
+  onClick?: () => void
 }
 
 const ReusableButton2 = ({
@@ -13,9 +14,11 @@ const ReusableButton2 = ({
   className,
   bgClassName,
   textClassName,
+  onClick,
 }: ReusableButton2Props) => {
   return (
     <button
+      onClick={onClick}
       className={clsx(
         "group relative z-0 overflow-hidden uppercase py-4 px-[42px] hover:cursor-pointer text-sm leading-[20px] font-medium rounded-full transition-colors duration-300",
         className
