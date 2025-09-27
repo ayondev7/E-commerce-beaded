@@ -2,7 +2,7 @@
 import React from "react";
 import { LuMinus, LuPlus, LuTrash2, LuArrowLeft } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import CartTableBody from "./CartTableBody";
 
 export type CartItem = {
   id: string | number;
@@ -55,73 +55,8 @@ export default function CartTable({
         <span />
       </div>
 
-      {/* Scrollable body: only this region will scroll when items overflow. Parent can control overall height. */}
-      <div className="divide-y max-h-[80vh] overflow-x-hidden overflow-y-auto hide-scrollbar">
-        <ul>
-          {items.map((item) => (
-            <li
-              key={item.id}
-              className="grid grid-cols-[1fr] 2xl:grid-cols-[2fr_1fr_0.65fr_0.2fr] items-center gap-x-10 py-9"
-            >
-            {/* Item info */}
-            <div className="flex items-center gap-x-[30px]">
-              <Image
-                src={item.image}
-                alt={item.name}
-                width={200}
-                height={200}
-                className="object-cover w-[100px] h-[100px]"
-              />
-              <div>
-                <p className="text-xl uppercase">{item.name}</p>
-              </div>
-            </div>
-
-            {/* Qty control */}
-            <div className="md:justify-self-center">
-              <div className="flex w-[185px] items-center justify-between rounded-full border border-zinc-300 p-4">
-                <button
-                  aria-label="Decrease quantity"
-                  className="text-[#7D7D7D]"
-                  onClick={() =>
-                    onQtyChange?.(item.id, Math.max(1, item.qty - 1))
-                  }
-                  disabled={item.qty <= 1}
-                >
-                  <LuMinus className="size-5" />
-                </button>
-                <span className="text-sm leading-[24px] font-medium tracking-[-1%]">
-                  {String(item.qty).padStart(2, "0")}
-                </span>
-                <button
-                  aria-label="Increase quantity"
-                  className="text-[#7D7D7D]"
-                  onClick={() => onQtyChange?.(item.id, item.qty + 1)}
-                >
-                  <LuPlus className="size-5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Price */}
-            <div className="text-2xl font-medium text-right">
-              {currency(item.price)}
-            </div>
-
-            {/* Remove */}
-            <div className="hidden md:flex justify-end">
-              <button
-                aria-label="Remove item"
-                onClick={() => onRemove?.(item.id)}
-                className="text-[#E55151]"
-              >
-                <LuTrash2 className="text-[#E55151] size-6" />
-              </button>
-            </div>
-          </li>
-        ))}
-        </ul>
-      </div>
+      {/* Body (extracted) */}
+      <CartTableBody items={items} onQtyChange={onQtyChange} onRemove={onRemove} />
     </section>
   );
 }
