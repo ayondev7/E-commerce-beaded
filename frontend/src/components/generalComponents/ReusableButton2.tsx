@@ -26,7 +26,7 @@ const ReusableButton2 = ({
     >
       <span
         className={clsx(
-          "absolute inset-0 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 rounded-full -z-1",
+          "absolute inset-0 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 rounded-full z-10",
           bgClassName
         )}
       />

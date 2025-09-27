@@ -12,7 +12,7 @@ interface FileDropFieldProps {
 }
 
 const baseDropClass =
-  "w-full mt-2 px-4 py-3 text-xl leading-[30px] bg-white border-2 border-dashed border-[#7D7D7D] rounded-none focus:outline-none";
+  "w-full mt-2 px-4 py-[11px] text-xl leading-[30px] bg-white border-2 border-dashed border-[#B7B7B7] rounded-none focus:outline-none";
 
 const FileDropField: React.FC<FileDropFieldProps> = ({
   label,
@@ -66,7 +66,7 @@ const FileDropField: React.FC<FileDropFieldProps> = ({
         <span className="truncate">
           {fileNames.length > 0
             ? fileNames.join(", ")
-            : "Drag & drop or click to upload image(s)"}
+            : "Drag & drop to upload images"}
         </span>
       </div>
       <input
