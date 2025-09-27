@@ -70,7 +70,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave }) 
           value={form.fullAddress}
           onChange={(v) => update("fullAddress", v)}
           placeholder="Enter full address"
-          textareaClassName={"col-span-1 md:col-span-2"}
+          textareaClassName={"col-span-1 md:col-span-2 w-[530px]"}
         />
       </div>
     </div>
