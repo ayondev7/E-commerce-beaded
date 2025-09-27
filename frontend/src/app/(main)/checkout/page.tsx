@@ -6,10 +6,9 @@ import Confirmation from "@/components/checkout/Confirmation";
 
 export default function CheckoutPage() {
   return (
-    <main className="px-4 md:px-8 lg:px-12">
+    <main className="px-4 md:px-8 lg:px-12 py-20">
       <Stepper
         labels={["Delivery Info", "Review Order", "Confirmation"]}
-        contentClassName="mt-2"
         className=""
       >
         <Step>

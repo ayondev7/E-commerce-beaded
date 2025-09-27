@@ -70,13 +70,13 @@ export default function Stepper({
       <div className="w-full" {...rest}>
       {/* Top stepper bar */}
       <div className="mx-auto max-w-5xl">
-        <div className="relative py-6">
+        <div className="relative">
           {/* Background line */}
-          <div className="absolute w-[900px] top-1/2 left-1/2 -translate-x-1/2 right-0 h-0.5 bg-neutral-200 -translate-y-1/2" />
+          <div className="absolute w-[900px] top-6 left-1/2 -translate-x-1/2 right-0 h-0.5 bg-[#d9d9d9]" />
           
           {/* Progress line */}
           <motion.div
-            className="absolute top-1/2 left-0 h-0.5 bg-emerald-500 -translate-y-1/2"
+            className="absolute w-[900px] left-1/2 -translate-x-1/2 top-6 h-0.5 bg-[#67c18d]"
             initial={false}
             animate={{ 
               width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` 
@@ -203,16 +203,18 @@ function StepIndicator({
   onClick: () => void;
 }) {
   const colors = {
-    inactive: { bg: "bg-white", ring: "ring-1 ring-zinc-300", text: "text-zinc-400" },
-    active: { bg: "bg-emerald-500", ring: "ring-2 ring-emerald-500", text: "text-emerald-600" },
-    complete: { bg: "bg-emerald-500", ring: "ring-2 ring-emerald-500", text: "text-emerald-600" },
+    // inactive: background #d9d9d9, text #1e1e1e
+    inactive: { bg: "bg-[#d9d9d9]", ring: "ring-0", text: "text-[#1e1e1e]" },
+    // active & complete: background #67c18d, white text
+    active: { bg: "bg-[#67c18d]", ring: "ring-0", text: "text-white" },
+    complete: { bg: "bg-[#67c18d]", ring: "ring-0", text: "text-white" },
   }[status];
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="relative flex flex-col items-center gap-3 focus:outline-none z-10 mt-8"
+      className="relative flex flex-col items-center gap-3 focus:outline-none z-10"
       aria-current={status === "active"}
     >
       <motion.div
@@ -223,9 +225,10 @@ function StepIndicator({
         {status === "complete" ? (
           <CheckIcon className="size-6 text-white" />
         ) : status === "active" ? (
-          <span className="text-white text-lgfont-semibold">{step}</span>
+          // use the colors.text (white) for active number and fix typo in class
+          <span className={`text-lg font-semibold ${colors.text}`}>{step}</span>
         ) : (
-          <span className="text-lg font-semibold text-zinc-500">{step}</span>
+          <span className={`text-lg font-semibold ${colors.text}`}>{step}</span>
         )}
       </motion.div>
       <span
