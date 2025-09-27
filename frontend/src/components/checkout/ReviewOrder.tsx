@@ -44,52 +44,49 @@ export default function ReviewOrder() {
   };
 
   return (
-    <section className="px-[150px] grid gap-12">
+    <section className="px-[150px] gap-y-12 flex flex-col items-center">
       {/* Product Items (full width) */}
-      <CartTableBody items={cartItems} onQtyChange={handleQtyChange} onRemove={handleRemove} />
+      <CartTableBody className="w-[1000px]" items={cartItems} onQtyChange={handleQtyChange} onRemove={handleRemove} />
 
       {/* Below the table: Delivery Address (left) and Order Summary (right) */}
-      <div className="grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
+      <div className="grid lg:grid-cols-2 w-[1000px] gap-10 items-start">
         {/* Delivery Address */}
-        <div className="pt-2">
-          <h3 className="text-2xl font-semibold mb-4">Delivery Address</h3>
-          <div className="text-base text-gray-700">
+        <div className="">
+          <h3 className="text-[32px] tracking-[-2%]">Delivery Address</h3>
+          <div className="text-lg leading-[26px]">
             <p>H-54, R-8, Niketan, Gulshan,</p>
-            <p>Dhaka</p>
           </div>
         </div>
 
         {/* Order Summary */}
-        <div className="bg-white p-6 rounded">
+        <div className="">
           <div className="space-y-6">
             {/* Summary */}
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 uppercase">
+                <span className="text-base leading-[24px] font-semibold tracking-[-1%] text-[#7D7D7D] uppercase">
                   Sub-Total
                 </span>
                 <span className="text-base font-medium">
-                  ৳ {subTotal.toFixed(2)}
+                  TK. {subTotal.toFixed(2)}
                 </span>
               </div>
 
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-600 uppercase">
+                <span className="text-base leading-[24px] font-semibold tracking-[-1%] text-[#7D7D7D] uppercase">
                   Delivery Fee
                 </span>
                 <span className="text-base font-medium">
-                  ৳ {deliveryFee.toFixed(2)}
+                  TK. {deliveryFee.toFixed(2)}
                 </span>
               </div>
 
-              <hr className="my-4" />
-
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold uppercase">
+              <div className="flex justify-between items-center mt-2">
+                <span className="text-base leading-[24px] font-semibold tracking-[-1%] text-[#1E1E1E] uppercase">
                   Grand Total
                 </span>
-                <span className="text-xl font-bold">
-                  ৳ {grandTotal.toFixed(2)}
+                <span className="text-2xl">
+                  TK. {grandTotal.toFixed(2)}
                 </span>
               </div>
             </div>
