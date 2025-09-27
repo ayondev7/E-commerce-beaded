@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import InputField from "@/components/profile/Form/InputField";
-import PasswordField from "@/components/profile/Form/PasswordField";
-import FileDropField from "@/components/profile/Form/FileDropField";
+import InputField from "@/components/generalComponents/Form/InputField";
+import PasswordField from "@/components/generalComponents/Form/PasswordField";
+import FileDropField from "@/components/generalComponents/Form/FileDropField";
 import Link from "next/link";
 
 const Divider = () => (

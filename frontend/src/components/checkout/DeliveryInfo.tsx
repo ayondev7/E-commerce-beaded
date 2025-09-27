@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { useStepper } from "./Stepper";
-import SelectField from "@/components/profile/Form/SelectField";
+import SelectField from "@/components/generalComponents/Form/SelectField";
 import InputField, {
   baseInputClass,
-} from "@/components/profile/Form/InputField";
+} from "@/components/generalComponents/Form/InputField";
 import AddressView, {
   AddressData as AddressDataView,
 } from "./Address/AddressView";

@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import InputField, { baseInputClass } from "@/components/profile/Form/InputField";
-import SelectField from "@/components/profile/Form/SelectField";
-import TextareaField from "@/components/profile/Form/TextareaField";
+import InputField, { baseInputClass } from "@/components/generalComponents/Form/InputField";
+import SelectField from "@/components/generalComponents/Form/SelectField";
+import TextareaField from "@/components/generalComponents/Form/TextareaField";
 
 export interface AddressData {
   division: string;

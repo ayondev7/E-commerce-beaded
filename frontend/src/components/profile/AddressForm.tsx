@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import SelectField from "@/components/profile/Form/SelectField";
-import InputField, { baseInputClass } from "@/components/profile/Form/InputField";
-import TextareaField from "@/components/profile/Form/TextareaField";
+import SelectField from "@/components/generalComponents/Form/SelectField";
+import InputField, { baseInputClass } from "@/components/generalComponents/Form/InputField";
+import TextareaField from "@/components/generalComponents/Form/TextareaField";
 import {
   divisions,
   districtsByDivision,

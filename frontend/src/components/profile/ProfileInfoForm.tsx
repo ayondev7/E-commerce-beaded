@@ -2,8 +2,8 @@
 import React from "react";
 import type { ProfileData } from "./ProfileInfoView";
 import { genders } from "@/constants/genders";
-import InputField, { baseInputClass } from "./Form/InputField";
-import SelectField from "./Form/SelectField";
+import InputField, { baseInputClass } from "../generalComponents/Form/InputField";
+import SelectField from "../generalComponents/Form/SelectField";
 
 interface ProfileInfoFormProps {
   initial: ProfileData;
