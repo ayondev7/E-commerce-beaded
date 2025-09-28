@@ -14,10 +14,10 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     const userId = payload.sub || payload.id;
     if (!userId) return res.status(401).json({ message: "Invalid token" });
 
-    const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, email: true, name: true } });
-    if (!user) return res.status(401).json({ message: "User not found" });
+  const customer = await prisma.customer.findUnique({ where: { id: userId }, select: { id: true, email: true, name: true } });
+  if (!customer) return res.status(401).json({ message: "Customer not found" });
 
-    req.user = user;
+  req.user = customer;
     next();
   } catch (err) {
     return res.status(401).json({ message: "Unauthorized" });
