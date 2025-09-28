@@ -26,15 +26,11 @@ export interface AddressData {
 interface AddressFormProps {
   title?: string;
   initial: AddressData;
-  onCancel?: () => void;
-  onSave: (data: AddressData) => void;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
   title = "Add New Address",
   initial,
-  onCancel,
-  onSave,
 }) => {
   const [form, setForm] = React.useState<AddressData>(initial);
   const update = (k: keyof AddressData, v: string) =>

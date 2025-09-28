@@ -56,7 +56,7 @@ const SigninForm: React.FC = () => {
       </div>
       <Divider showOr={false} />
       <p className="text-center text-[#7D7D7D]">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/sign-up" className="text-[#00b5a6] font-semibold">
           Sign up
         </Link>

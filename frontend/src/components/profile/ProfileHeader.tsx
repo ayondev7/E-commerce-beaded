@@ -3,10 +3,9 @@ import React from "react"
 
 interface ProfileHeaderProps {
   name: string
-  avatarUrl?: string
 }
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name, avatarUrl }) => {
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name }) => {
   return (
     <div className="flex flex-col items-center mt-[100px] mb-[90px]">
       <div className="rounded-full">

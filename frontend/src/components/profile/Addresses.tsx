@@ -3,7 +3,6 @@ import React from "react"
 import AddressForm, { AddressData } from "./AddressForm"
 import AddressCard from "./Address/AddressCard"
 import AddCard from "./Address/AddCard"
-import { Button } from "@/components/ui/button"
 
 const emptyAddress: AddressData = {
   type: "",
@@ -59,8 +58,6 @@ const Addresses: React.FC = () => {
       <AddressForm
         title="Add New Address"
         initial={emptyAddress}
-        onCancel={() => setMode("list")}
-        onSave={upsert}
       />
     )
   }
@@ -70,8 +67,6 @@ const Addresses: React.FC = () => {
       <AddressForm
         title="Edit Address"
         initial={current}
-        onCancel={() => setMode("list")}
-        onSave={upsert}
       />
     )
   }

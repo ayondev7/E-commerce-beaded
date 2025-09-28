@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { LuMinus, LuPlus, LuTrash2 } from "react-icons/lu";
 import { useStepper } from "./Stepper";
-import Image from "next/image";
 import ReusableButton2 from "../generalComponents/ReusableButton2";
 import CartTableBody from "@/components/cart/CartTableBody";
 
@@ -19,9 +17,6 @@ const items: CartItem[] = [
   { id: 2, name: "Flower child barbie bracelet", price: 599, qty: 1, image: "/home/categories/2.png" },
   { id: 3, name: "Flower child barbie bracelet", price: 599, qty: 1, image: "/home/categories/3.png" },
 ];
-
-const currency = (n: number) =>
-  `৳${n.toLocaleString("en-BD", { minimumFractionDigits: 0 })}`;
 
 export default function ReviewOrder() {
   const { back, next } = useStepper();

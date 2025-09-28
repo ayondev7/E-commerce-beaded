@@ -50,7 +50,6 @@ export default function Stepper({
   const stepsArray = Children.toArray(children);
   const totalSteps = stepsArray.length;
   const isCompleted = currentStep > totalSteps;
-  const isLastStep = currentStep === totalSteps;
 
   const updateStep = (newStep: number) => {
     setCurrentStep(newStep);

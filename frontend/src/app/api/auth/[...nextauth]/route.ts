@@ -1,15 +1,17 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import AUTH_ROUTES from "@/routes/authRoutes";
+import type { JWT } from "next-auth/jwt";
+import type { Account, Profile, User, Session } from "next-auth";
+import { AUTH_ROUTES } from "@/routes/authRoutes";
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+type GoogleProfile = Profile & {
+  name?: string;
+  email?: string;
+  picture?: string;
+};
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,
-  session: { strategy: "jwt" },
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -18,12 +20,18 @@ export const {
     }),
   ],
   callbacks: {
-    async jwt({ token, account, user, profile, trigger }: any) {
+    async jwt({ token, account, user, profile, trigger }: {
+      token: JWT;
+      account?: Account | null;
+      user?: User;
+      profile?: Profile;
+      trigger?: "signIn" | "signUp" | "update";
+    }) {
       // On first sign in with Google, exchange profile with backend to get tokens
       if (account?.provider === "google" && (trigger === "signIn" || !token.accessToken)) {
-        const name = (user?.name || (profile as any)?.name || "").trim();
-        const email = (user?.email || (profile as any)?.email || "").trim().toLowerCase();
-        const image = (user as any)?.image || (profile as any)?.picture || null;
+        const name = (user?.name || (profile as GoogleProfile)?.name || "").trim();
+        const email = (user?.email || (profile as GoogleProfile)?.email || "").trim().toLowerCase();
+        const image = user?.image || (profile as GoogleProfile)?.picture || null;
 
         if (!name || !email) {
           // Abort sign-in without tokens if required fields are missing
@@ -62,28 +70,31 @@ export const {
 
       return token;
     },
-  async session({ session, token }: any) {
+  async session({ session, token }: {
+    session: Session;
+    token: JWT;
+  }) {
       if (token) {
         // Attach tokens to session for client/server usage
-        (session as any).accessToken = (token as any).accessToken;
-        (session as any).refreshToken = (token as any).refreshToken;
+        session.accessToken = token.accessToken;
+        session.refreshToken = token.refreshToken;
         // Prefer backend user shape if available
-        const backendUser = (token as any).backendUser as
-          | { id: string; email: string; name: string | null; image: string | null }
-          | undefined;
+        const backendUser = token.backendUser;
         if (backendUser) {
           session.user = {
             id: backendUser.id,
             email: backendUser.email,
             name: backendUser.name ?? undefined,
             image: backendUser.image ?? undefined,
-          } as any;
+          };
         } else if (session.user) {
           // Ensure id is present if available via token.sub
-          (session.user as any).id = (token as any).sub;
+          session.user.id = token.sub;
         }
       }
       return session;
     },
   },
 });
+
+export const { GET, POST } = handlers;

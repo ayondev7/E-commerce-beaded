@@ -25,14 +25,20 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({
   const update = (k: keyof ProfileData, v: string) =>
     setForm((p) => ({ ...p, [k]: v }));
 
-  const fields = [
+  const fields: readonly {
+    label: string;
+    name: keyof ProfileData;
+    inputType: "html" | "select" | "date";
+    type?: string;
+    options?: readonly string[];
+  }[] = [
     { label: "First Name", name: "firstName", type: "text", inputType: "html" },
     { label: "Last Name", name: "lastName", type: "text", inputType: "html" },
     { label: "Email", name: "email", type: "email", inputType: "html" },
     { label: "Phone No.", name: "phone", type: "text", inputType: "html" },
     { label: "Gender", name: "gender", inputType: "select", options: genders },
     { label: "Date of Birth", name: "dob", inputType: "date" },
-  ] as const;
+  ];
 
   return (
     <div className="bg-[#fafafa] pt-5 pb-10">
@@ -91,7 +97,7 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({
               <InputField
                 key={f.name}
                 label={f.label}
-                type={(f as any).type || "text"}
+                type={f.type || "text"}
                 value={form[f.name] || ""}
                 onChange={(v) => update(f.name, v)}
                 placeholder={"Enter " + f.label}

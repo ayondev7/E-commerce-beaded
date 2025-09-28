@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { LuMinus, LuPlus, LuTrash2, LuArrowLeft } from "react-icons/lu";
+import { LuArrowLeft } from "react-icons/lu";
 import { cn } from "@/lib/utils";
 import CartTableBody from "./CartTableBody";
 
@@ -20,9 +20,6 @@ type Props = {
   onQtyChange?: (id: CartItem["id"], qty: number) => void;
   onRemove?: (id: CartItem["id"]) => void;
 };
-
-const currency = (n: number) =>
-  `TK. ${n.toLocaleString("en-BD", { minimumFractionDigits: 0 })}`;
 
 export default function CartTable({
   items,

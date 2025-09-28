@@ -1,12 +1,11 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import ReusableButton from "@/components/generalComponents/ReusableButton";
 
 const Hero = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
-  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const images = [
     "/home/heroSlider/1.png",
@@ -16,19 +15,6 @@ const Hero = () => {
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-
-    const update = () => {
-      setSelectedIndex(emblaApi.selectedScrollSnap());
-    };
-
-    emblaApi.on("select", update);
-    emblaApi.on("reInit", update);
-
-    update();
-  }, [emblaApi]);
 
   return (
     <div className="relative">

@@ -39,8 +39,6 @@ const Testimonial = () => {
   // z-indexes: 10,20,30,40
   const zIndexes = [10, 20, 30, 40];
 
-  const translateDistanceClass = "translate-x-[120%]"; // same class used in child
-
   const handleRight = async () => {
     if (animatingRef.current) return;
     if (visibleCount >= cards.length) return; // nothing to bring in

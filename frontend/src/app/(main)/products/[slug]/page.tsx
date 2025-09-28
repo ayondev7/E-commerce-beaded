@@ -7,12 +7,12 @@ import ReusableButton2 from "@/components/generalComponents/ReusableButton2";
 import { LuHeart } from "react-icons/lu";
 
 interface ProductPageProps {
-  params: Record<string, any> | Promise<Record<string, any>>;
+  params: Promise<{slug: string}>;
 }
 
-const page = ({ params }: ProductPageProps) => {
+const Page = ({ params }: ProductPageProps) => {
 
-  const { slug } = React.use(params as any) as Record<string, string>;
+  const { slug } = React.use(params);
   const productData = {
     id: slug,
     category: "Necklace",
@@ -25,16 +25,6 @@ const page = ({ params }: ProductPageProps) => {
       "/home/categories/2.png",
       "/home/categories/3.png",
     ],
-  };
-
-  const handleAddToCart = () => {
-    console.log("Added to cart:", productData.id);
-    // Implement add to cart functionality
-  };
-
-  const handleWishlistToggle = (productId: string, isWishlisted: boolean) => {
-    console.log("Wishlist toggled:", productId, isWishlisted);
-    // Implement wishlist functionality
   };
 
   return (
@@ -55,7 +45,6 @@ const page = ({ params }: ProductPageProps) => {
             title={productData.title}
             price={productData.price}
             description={productData.description}
-            onAddToCart={handleAddToCart}
           />
 
           <div className="mt-[44px]">
@@ -82,4 +71,4 @@ const page = ({ params }: ProductPageProps) => {
   );
 };
 
-export default page;
+export default Page;

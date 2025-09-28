@@ -1,4 +1,3 @@
-import CardSlider from '@/components/home/CardSlider'
 import BestSeller from '@/sections/homeSections/BestSeller'
 import Categories from '@/sections/homeSections/Categories'
 import Hero from '@/sections/homeSections/Hero'

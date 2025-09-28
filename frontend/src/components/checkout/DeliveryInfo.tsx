@@ -5,9 +5,7 @@ import SelectField from "@/components/generalComponents/Form/SelectField";
 import InputField, {
   baseInputClass,
 } from "@/components/generalComponents/Form/InputField";
-import AddressView, {
-  AddressData as AddressDataView,
-} from "./Address/AddressView";
+import AddressView from "./Address/AddressView";
 import AddressForm, {
   AddressData as AddressDataForm,
 } from "./Address/AddressForm";

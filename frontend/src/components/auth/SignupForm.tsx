@@ -4,7 +4,6 @@ import InputField from "@/components/generalComponents/Form/InputField";
 import PasswordField from "@/components/generalComponents/Form/PasswordField";
 import FileDropField from "@/components/generalComponents/Form/FileDropField";
 import Link from "next/link";
-import GoogleButton from "@/components/auth/GoogleButton";
 import Divider from "@/components/auth/Divider";
 import ReusableButton2 from "@/components/generalComponents/ReusableButton2";
 import SelectField from "@/components/generalComponents/Form/SelectField";
@@ -17,7 +16,6 @@ const SignupForm: React.FC = () => {
   const [mobile, setMobile] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirm, setConfirm] = React.useState("");
-  const [files, setFiles] = React.useState<File[]>([]);
   const [gender, setGender] = React.useState("");
   const [dob, setDob] = React.useState("");
 
@@ -86,7 +84,6 @@ const SignupForm: React.FC = () => {
         <FileDropField
           label="Profile Image"
           multiple={false}
-          onFilesChange={setFiles}
           className="border-[#B7B7B7]"
         />
       </form>

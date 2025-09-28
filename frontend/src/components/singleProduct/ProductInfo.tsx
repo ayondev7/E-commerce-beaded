@@ -6,7 +6,6 @@ interface ProductInfoProps {
   title: string;
   price: number;
   description: string;
-  onAddToCart: () => void;
 }
 
 const ProductInfo = ({
@@ -14,7 +13,6 @@ const ProductInfo = ({
   title,
   price,
   description,
-  onAddToCart,
 }: ProductInfoProps) => {
   return (
     <div className="flex flex-col">

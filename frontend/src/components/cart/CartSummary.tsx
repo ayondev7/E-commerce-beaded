@@ -7,7 +7,6 @@ type Props = {
   deliveryFee?: number;
   discount?: number;
   className?: string;
-  onCheckout?: () => void;
 };
 
 const currency = (n: number) =>
@@ -20,7 +19,6 @@ export default function CartSummary({
   subTotal,
   deliveryFee = 60,
   discount = 100,
-  onCheckout,
 }: Props) {
   const grandTotal = subTotal + deliveryFee - discount;
 

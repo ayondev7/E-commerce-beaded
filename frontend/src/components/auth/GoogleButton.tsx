@@ -19,7 +19,7 @@ const GoogleButton: React.FC<GoogleButtonProps> = ({ label, className = "", onCl
       {...props}
       onClick={handleClick}
       className={
-        "w-full mt-4 px-4 py-[16.5px] text-xl leading-[30px] bg-white border border-[#7D7D7D] flex items-center justify-center " +
+        "w-full mt-4 px-4 hover:cursor-pointer py-[16.5px] text-xl leading-[30px] bg-white border border-[#7D7D7D] flex items-center justify-center " +
         className
       }
     >
