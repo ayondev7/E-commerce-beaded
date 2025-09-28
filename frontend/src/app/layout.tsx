@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Providers from "@/components/auth/Providers";
 
 export const metadata: Metadata = {
   title: "Beaded — Fine Jewellery from Bangladesh",
@@ -64,7 +65,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
