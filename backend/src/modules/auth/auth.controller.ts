@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { env } from "@/config/env";
 import { HttpError } from "@/utils/httpError";
 import { SignupSchema, SigninSchema } from "./auth.schema";
-import { GoogleSignupSchema, GoogleSigninSchema } from "./auth.schema";
+import { GoogleSigninSchema } from "./auth.schema";
 
 function signToken(payload: object, expiresIn: string | number) {
   return jwt.sign(payload, env.JWT_SECRET as jwt.Secret, { expiresIn } as jwt.SignOptions);
@@ -71,65 +71,52 @@ export const signin = async (req: Request, res: Response) => {
   });
 };
 
-export const googleSignup = async (req: Request, res: Response) => {
-  const parsed = GoogleSignupSchema.safeParse(req.body);
-  if (!parsed.success) throw new HttpError(400, "Invalid google signup data", parsed.error.flatten());
+export const googleSignin = async (req: Request, res: Response) => {
+  const parsed = GoogleSigninSchema.safeParse(req.body);
+  if (!parsed.success) throw new HttpError(400, "Invalid google signin data", parsed.error.flatten());
 
   const data = parsed.data;
   // sanitize
   const name = data.name.trim();
   const email = data.email.trim().toLowerCase();
-  const image = data.image ? data.image.trim() : null;
+  const image = (data as any).image ? (data as any).image.trim() : null;
 
   // ensure name mandatory
   if (!name) throw new HttpError(400, "Name is required");
 
   // check if customer exists
   let customer = await prisma.customer.findUnique({ where: { email } });
-  if (customer) {
-    // return tokens and customer
-    const accessToken = signToken({ sub: customer.id }, "3h");
-    const refreshToken = signToken({ sub: customer.id }, "7d");
-    return res.json({ customer, accessToken, refreshToken, accessTokenExpiresIn: 3 * 60 * 60, refreshTokenExpiresIn: 7 * 24 * 60 * 60 });
+  
+  if (!customer) {
+    // create new customer (password null to indicate OAuth)
+    customer = await prisma.customer.create({
+      data: {
+        name,
+        email,
+        image: image ?? null,
+        password: null,
+      } as any,
+    });
+  } else {
+    if (customer.name !== name) {
+      // Update the name if it's different
+      customer = await prisma.customer.update({
+        where: { id: customer.id },
+        data: { name },
+      });
+    }
   }
 
-  // create new customer (password null to indicate OAuth)
-  customer = await prisma.customer.create({
-    data: {
-      name,
-      email,
-      image: image ?? null,
-      password: null,
-    } as any,
+  const accessToken = signToken({ sub: customer.id }, "3h");
+  const refreshToken = signToken({ sub: customer.id }, "7d");
+
+  res.json({ 
+    user: { id: customer.id, email: customer.email, name: customer.name, image: customer.image },
+    accessToken, 
+    refreshToken, 
+    accessTokenExpiresIn: 3 * 60 * 60, 
+    refreshTokenExpiresIn: 7 * 24 * 60 * 60 
   });
-
-  const accessToken = signToken({ sub: customer.id }, "3h");
-  const refreshToken = signToken({ sub: customer.id }, "7d");
-
-  res.status(201).json({ customer, accessToken, refreshToken, accessTokenExpiresIn: 3 * 60 * 60, refreshTokenExpiresIn: 7 * 24 * 60 * 60 });
-};
-
-export const googleSignin = async (req: Request, res: Response) => {
-  const parsed = GoogleSigninSchema.safeParse(req.body);
-  if (!parsed.success) throw new HttpError(400, "Invalid google signin data", parsed.error.flatten());
-
-  const data = parsed.data;
-  const email = data.email.trim().toLowerCase();
-  const name = data.name.trim();
-
-  // find customer by email
-  const customer = await prisma.customer.findUnique({ where: { email } });
-  if (!customer) throw new HttpError(401, "Customer not found");
-
-  // basic name match check (case-insensitive)
-  if (!customer.name || customer.name.trim().toLowerCase() !== name.toLowerCase()) {
-    throw new HttpError(401, "Invalid credentials");
-  }
-
-  const accessToken = signToken({ sub: customer.id }, "3h");
-  const refreshToken = signToken({ sub: customer.id }, "7d");
-
-  res.json({ customer, accessToken, refreshToken, accessTokenExpiresIn: 3 * 60 * 60, refreshTokenExpiresIn: 7 * 24 * 60 * 60 });
 };
 
 export const me = async (req: Request, res: Response) => {
