@@ -4,57 +4,134 @@ import jwt from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import { env } from "@/config/env";
 import { HttpError } from "@/utils/httpError";
+import { SignupSchema, SigninSchema } from "./auth.schema";
+import { GoogleSignupSchema, GoogleSigninSchema } from "./auth.schema";
 
-const COOKIE_NAME = "accessToken";
+function signToken(payload: object, expiresIn: string | number) {
+  return jwt.sign(payload, env.JWT_SECRET as jwt.Secret, { expiresIn } as jwt.SignOptions);
+}
 
 export const signup = async (req: Request, res: Response) => {
-  const { email, password, name } = req.body;
-  if (!email || !password) throw new HttpError(400, "Email and password required");
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const parsed = SignupSchema.safeParse(req.body);
+  if (!parsed.success) throw new HttpError(400, "Invalid signup data", parsed.error.flatten());
+
+  const data = parsed.data;
+
+  const existing = await prisma.customer.findUnique({ where: { email: data.email } });
   if (existing) throw new HttpError(409, "Email already in use");
-  const hash = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({ data: { email, password: hash, name } });
-  const token = jwt.sign(
-    { sub: user.id },
-    env.JWT_SECRET as jwt.Secret,
-    { expiresIn: env.JWT_EXPIRES_IN as unknown as jwt.SignOptions["expiresIn"] }
-  );
-  res
-    .cookie(COOKIE_NAME, token, cookieOptions())
-    .status(201)
-    .json({ user: { id: user.id, email: user.email, name: user.name } });
+
+  const hash = await bcrypt.hash(data.password, 10);
+
+  const images = (req as any).uploadedImageUrls as string[] | undefined;
+  const image = images && images.length ? images[0] : data.image ?? null;
+
+  const user = await prisma.customer.create({
+    data: {
+      name: data.name ?? null,
+      gender: (data as any).gender ?? null,
+      dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+      phoneNumber: data.phoneNumber ?? null,
+      email: data.email,
+      password: hash,
+      image: image ?? null,
+    } as any,
+  });
+
+  const accessToken = signToken({ sub: user.id }, "3h");
+  const refreshToken = signToken({ sub: user.id }, "7d");
+
+  res.status(201).json({
+    user: { id: user.id, email: user.email, name: user.name, image: user.image },
+    accessToken,
+    accessTokenExpiresIn: 3 * 60 * 60,
+    refreshToken,
+    refreshTokenExpiresIn: 7 * 24 * 60 * 60,
+  });
 };
 
 export const signin = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  if (!email || !password) throw new HttpError(400, "Email and password required");
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw new HttpError(401, "Invalid credentials");
+  const parsed = SigninSchema.safeParse(req.body);
+  if (!parsed.success) throw new HttpError(400, "Invalid signin data", parsed.error.flatten());
+
+  const { email, password } = parsed.data;
+  const user = await prisma.customer.findUnique({ where: { email } });
+  if (!user || !user.password) throw new HttpError(401, "Invalid credentials");
   const match = await bcrypt.compare(password, user.password);
   if (!match) throw new HttpError(401, "Invalid credentials");
-  const token = jwt.sign(
-    { sub: user.id },
-    env.JWT_SECRET as jwt.Secret,
-    { expiresIn: env.JWT_EXPIRES_IN as unknown as jwt.SignOptions["expiresIn"] }
-  );
-  res.cookie(COOKIE_NAME, token, cookieOptions()).json({ user: { id: user.id, email: user.email, name: user.name } });
+
+  const accessToken = signToken({ sub: user.id }, "3h");
+  const refreshToken = signToken({ sub: user.id }, "7d");
+
+  res.json({
+    user: { id: user.id, email: user.email, name: user.name, image: user.image },
+    accessToken,
+    accessTokenExpiresIn: 3 * 60 * 60,
+    refreshToken,
+    refreshTokenExpiresIn: 7 * 24 * 60 * 60,
+  });
+};
+
+export const googleSignup = async (req: Request, res: Response) => {
+  const parsed = GoogleSignupSchema.safeParse(req.body);
+  if (!parsed.success) throw new HttpError(400, "Invalid google signup data", parsed.error.flatten());
+
+  const data = parsed.data;
+  // sanitize
+  const name = data.name.trim();
+  const email = data.email.trim().toLowerCase();
+  const image = data.image ? data.image.trim() : null;
+
+  // ensure name mandatory
+  if (!name) throw new HttpError(400, "Name is required");
+
+  // check if customer exists
+  let customer = await prisma.customer.findUnique({ where: { email } });
+  if (customer) {
+    // return tokens and customer
+    const accessToken = signToken({ sub: customer.id }, "3h");
+    const refreshToken = signToken({ sub: customer.id }, "7d");
+    return res.json({ customer, accessToken, refreshToken, accessTokenExpiresIn: 3 * 60 * 60, refreshTokenExpiresIn: 7 * 24 * 60 * 60 });
+  }
+
+  // create new customer (password null to indicate OAuth)
+  customer = await prisma.customer.create({
+    data: {
+      name,
+      email,
+      image: image ?? null,
+      password: null,
+    } as any,
+  });
+
+  const accessToken = signToken({ sub: customer.id }, "3h");
+  const refreshToken = signToken({ sub: customer.id }, "7d");
+
+  res.status(201).json({ customer, accessToken, refreshToken, accessTokenExpiresIn: 3 * 60 * 60, refreshTokenExpiresIn: 7 * 24 * 60 * 60 });
+};
+
+export const googleSignin = async (req: Request, res: Response) => {
+  const parsed = GoogleSigninSchema.safeParse(req.body);
+  if (!parsed.success) throw new HttpError(400, "Invalid google signin data", parsed.error.flatten());
+
+  const data = parsed.data;
+  const email = data.email.trim().toLowerCase();
+  const name = data.name.trim();
+
+  // find customer by email
+  const customer = await prisma.customer.findUnique({ where: { email } });
+  if (!customer) throw new HttpError(401, "Customer not found");
+
+  // basic name match check (case-insensitive)
+  if (!customer.name || customer.name.trim().toLowerCase() !== name.toLowerCase()) {
+    throw new HttpError(401, "Invalid credentials");
+  }
+
+  const accessToken = signToken({ sub: customer.id }, "3h");
+  const refreshToken = signToken({ sub: customer.id }, "7d");
+
+  res.json({ customer, accessToken, refreshToken, accessTokenExpiresIn: 3 * 60 * 60, refreshTokenExpiresIn: 7 * 24 * 60 * 60 });
 };
 
 export const me = async (req: Request, res: Response) => {
   res.json({ user: req.user || null });
 };
-
-export const signout = async (_req: Request, res: Response) => {
-  res.clearCookie(COOKIE_NAME, cookieOptions()).status(204).send();
-};
-
-function cookieOptions() {
-  const isProd = env.NODE_ENV === "production";
-  return {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? "none" : "lax",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  } as const;
-}
