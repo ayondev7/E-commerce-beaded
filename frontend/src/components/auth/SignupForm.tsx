@@ -7,6 +7,9 @@ import Link from "next/link";
 import GoogleButton from "@/components/auth/GoogleButton";
 import Divider from "@/components/auth/Divider";
 import ReusableButton2 from "@/components/generalComponents/ReusableButton2";
+import SelectField from "@/components/generalComponents/Form/SelectField";
+import DatePicker from "@/components/generalComponents/Form/DatePicker";
+import { genders } from "@/constants/genders";
 
 const SignupForm: React.FC = () => {
   const [name, setName] = React.useState("");
@@ -15,6 +18,8 @@ const SignupForm: React.FC = () => {
   const [password, setPassword] = React.useState("");
   const [confirm, setConfirm] = React.useState("");
   const [files, setFiles] = React.useState<File[]>([]);
+  const [gender, setGender] = React.useState("");
+  const [dob, setDob] = React.useState("");
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,13 +29,6 @@ const SignupForm: React.FC = () => {
   return (
     <div className="">
       <h1 className="text-center text-4xl tracking-wide mb-8">SIGN UP</h1>
-      <p className="text-center text-sm text-[#7D7D7D] uppercase mb-4">
-        Connect with
-      </p>
-      <div className="mb-6">
-        <GoogleButton className="border-[#B7B7B7]" label="Sign up with Google" />
-      </div>
-      <Divider />
       <form
         onSubmit={onSubmit}
         className="grid mt-6 grid-cols-2 gap-x-10 gap-y-10"
@@ -47,6 +45,21 @@ const SignupForm: React.FC = () => {
           placeholder="Please enter your Email"
           value={email}
           onChange={setEmail}
+          inputClassName="border-[#B7B7B7]"
+        />
+        <SelectField
+          label="Gender"
+          value={gender}
+          onChange={setGender}
+          options={genders}
+          placeholder="Select Gender"
+          triggerClassName="border-[#B7B7B7] bg-white"
+        />
+        <DatePicker
+          label="Date of Birth"
+          value={dob}
+          onChange={setDob}
+          placeholder="Select Date"
           inputClassName="border-[#B7B7B7]"
         />
         <InputField

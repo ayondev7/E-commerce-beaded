@@ -4,6 +4,7 @@ import type { ProfileData } from "./ProfileInfoView";
 import { genders } from "@/constants/genders";
 import InputField, { baseInputClass } from "../generalComponents/Form/InputField";
 import SelectField from "../generalComponents/Form/SelectField";
+import DatePicker from "../generalComponents/Form/DatePicker";
 
 interface ProfileInfoFormProps {
   initial: ProfileData;
@@ -75,10 +76,9 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({
 
             if (f.inputType === "date") {
               return (
-                <InputField
+                <DatePicker
                   key={f.name}
                   label={f.label}
-                  type="date"
                   value={form[f.name] || ""}
                   onChange={(v) => update(f.name, v)}
                   placeholder={f.label}
