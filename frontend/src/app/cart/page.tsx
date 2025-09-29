@@ -2,8 +2,9 @@
 import React from "react";
 import CartTable, { CartItem } from "@/components/cart/CartTable";
 import CartSummary from "@/components/cart/CartSummary";
+import { withRouteProtection } from "@/components/auth/RouteProtector";
 
-export default function CartPage() {
+function CartPage() {
   const [items, setItems] = React.useState<CartItem[]>([
     {
       id: 1,
@@ -181,3 +182,5 @@ export default function CartPage() {
     </div>
   );
 }
+
+export default withRouteProtection(CartPage);

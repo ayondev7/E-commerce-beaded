@@ -3,8 +3,9 @@ import Stepper, { Step } from "@/components/checkout/Stepper";
 import DeliveryInfo from "@/components/checkout/DeliveryInfo";
 import ReviewOrder from "@/components/checkout/ReviewOrder";
 import Confirmation from "@/components/checkout/Confirmation";
+import { withRouteProtection } from "@/components/auth/RouteProtector";
 
-export default function CheckoutPage() {
+function CheckoutPage() {
   return (
     <main className="px-4 md:px-8 lg:px-12 py-20">
       <Stepper
@@ -24,3 +25,5 @@ export default function CheckoutPage() {
     </main>
   );
 }
+
+export default withRouteProtection(CheckoutPage);

@@ -10,6 +10,7 @@ import Addresses from "@/components/profile/Addresses";
 import OrdersList from "@/components/profile/OrdersList";
 import WishlistGrid from "@/components/profile/WishlistGrid";
 import ViewDetailsModal, { type OrderDetails } from "@/components/profile/ViewDetailsModal";
+import { withRouteProtection } from "@/components/auth/RouteProtector";
 
 const ProfilePage = () => {
   const [tab, setTab] = React.useState<
@@ -80,4 +81,4 @@ const ProfilePage = () => {
   );
 };
 
-export default ProfilePage;
+export default withRouteProtection(ProfilePage);
