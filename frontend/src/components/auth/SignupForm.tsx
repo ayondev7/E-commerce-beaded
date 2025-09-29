@@ -14,6 +14,7 @@ import { AUTH_ROUTES } from "@/routes/authRoutes";
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { FiLoader } from "react-icons/fi";
 
 const SignupForm: React.FC = () => {
   const [submitting, setSubmitting] = React.useState(false);
@@ -43,20 +44,25 @@ const SignupForm: React.FC = () => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!re.test(values.email.trim())) errors.email = "Invalid email";
       }
-      if (!values.phoneNumber?.trim()) errors.phoneNumber = "Mobile is required";
+      if (!values.phoneNumber?.trim())
+        errors.phoneNumber = "Mobile is required";
       if (!values.gender) errors.gender = "Gender is required";
       if (!values.dateOfBirth) errors.dateOfBirth = "Date of birth is required";
       if (!values.password) errors.password = "Password is required";
-      else if (values.password.length < 6) errors.password = "Password must be at least 6 characters";
+      else if (values.password.length < 6)
+        errors.password = "Password must be at least 6 characters";
       if (!values.confirm) errors.confirm = "Please confirm password";
-      else if (values.confirm !== values.password) errors.confirm = "Passwords do not match";
+      else if (values.confirm !== values.password)
+        errors.confirm = "Passwords do not match";
 
       const f = values.imageFile;
       if (!f) {
         errors.imageFile = "Profile image is required";
       } else {
-        if (!ALLOWED_TYPES.includes(f.type)) errors.imageFile = "Image must be jpeg, png or webp";
-        if (f.size > MAX_IMAGE_BYTES) errors.imageFile = "Image must be 3MB or smaller";
+        if (!ALLOWED_TYPES.includes(f.type))
+          errors.imageFile = "Image must be jpeg, png or webp";
+        if (f.size > MAX_IMAGE_BYTES)
+          errors.imageFile = "Image must be 3MB or smaller";
       }
 
       return errors as any;
@@ -65,27 +71,28 @@ const SignupForm: React.FC = () => {
       setSubmitting(true);
       try {
         // Build FormData
-        const fd = new FormData();
-        fd.append("name", values.name.trim());
-        fd.append("email", values.email.trim().toLowerCase());
-        fd.append("gender", values.gender);
-        fd.append("dateOfBirth", values.dateOfBirth);
-        fd.append("phoneNumber", values.phoneNumber);
-        fd.append("password", values.password);
-        if (values.imageFile) fd.append("image", values.imageFile, values.imageFile.name);
+        const formData = new FormData();
+        formData.append("name", values.name.trim());
+        formData.append("email", values.email.trim().toLowerCase());
+        formData.append("gender", values.gender);
+        formData.append("dateOfBirth", values.dateOfBirth);
+        formData.append("phoneNumber", values.phoneNumber);
+        formData.append("password", values.password);
+        if (values.imageFile)
+          formData.append("image", values.imageFile, values.imageFile.name);
 
         // Send with CORS-friendly options
         let signupRes: Response | null = null;
         try {
           signupRes = await fetch(AUTH_ROUTES.credential.signup, {
             method: "POST",
-            body: fd,
-            mode: "cors",
-            credentials: "include",
+            body: formData,
           });
         } catch (networkError) {
           console.error("Signup network/CORS error:", networkError);
-          toast.error("Network or CORS error while contacting backend. Check backend CORS settings and that the URL is correct.");
+          toast.error(
+            "Network or CORS error while contacting backend. Check backend CORS settings and that the URL is correct."
+          );
           return;
         }
 
@@ -107,10 +114,17 @@ const SignupForm: React.FC = () => {
         }
 
         const data = await signupRes.json();
-        const { accessToken, refreshToken, user: backendUser, customer } = data as any;
+        const {
+          accessToken,
+          refreshToken,
+          user: backendUser,
+          customer,
+        } = data as any;
         const returnedUser = backendUser || customer;
         if (!accessToken || !refreshToken || !returnedUser) {
-          toast.error("Signup succeeded but backend did not return tokens. Please sign in.");
+          toast.error(
+            "Signup succeeded but backend did not return tokens. Please sign in."
+          );
           return;
         }
 
@@ -144,7 +158,9 @@ const SignupForm: React.FC = () => {
           toast.success("Account created! Welcome to Beaded ✨");
           setTimeout(() => router.push("/"), 300);
         } else {
-          toast.error("Signup completed but session not created. Please sign in.");
+          toast.error(
+            "Signup completed but session not created. Please sign in."
+          );
         }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Signup error";
@@ -157,8 +173,10 @@ const SignupForm: React.FC = () => {
   });
 
   // Local helpers to wire custom components to formik
-  const setField = (field: string, value: any) => formik.setFieldValue(field, value);
-  const setTouched = (field: string) => formik.setFieldTouched(field, true, false);
+  const setField = (field: string, value: any) =>
+    formik.setFieldValue(field, value);
+  const setTouched = (field: string) =>
+    formik.setFieldTouched(field, true, false);
 
   return (
     <div className="">
@@ -168,7 +186,7 @@ const SignupForm: React.FC = () => {
         onSubmit={formik.handleSubmit}
         className="grid mt-6 grid-cols-2 gap-x-10 gap-y-10"
       >
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <InputField
             label="Name"
             placeholder="Please enter your Name"
@@ -180,10 +198,12 @@ const SignupForm: React.FC = () => {
             inputClassName="border-[#B7B7B7]"
           />
           {formik.touched.name && formik.errors.name && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.name}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.name}
+            </span>
           )}
         </div>
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <InputField
             label="Email"
             placeholder="Please enter your Email"
@@ -195,10 +215,12 @@ const SignupForm: React.FC = () => {
             inputClassName="border-[#B7B7B7]"
           />
           {formik.touched.email && formik.errors.email && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.email}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.email}
+            </span>
           )}
         </div>
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <SelectField
             label="Gender"
             value={formik.values.gender}
@@ -211,10 +233,12 @@ const SignupForm: React.FC = () => {
             triggerClassName="border-[#B7B7B7] bg-white"
           />
           {formik.touched.gender && formik.errors.gender && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.gender}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.gender}
+            </span>
           )}
         </div>
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <DatePicker
             label="Date of Birth"
             value={formik.values.dateOfBirth}
@@ -226,10 +250,12 @@ const SignupForm: React.FC = () => {
             inputClassName="border-[#B7B7B7]"
           />
           {formik.touched.dateOfBirth && formik.errors.dateOfBirth && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.dateOfBirth}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.dateOfBirth}
+            </span>
           )}
         </div>
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <InputField
             label="Mobile"
             placeholder="Please enter your Number"
@@ -241,10 +267,12 @@ const SignupForm: React.FC = () => {
             inputClassName="border-[#B7B7B7]"
           />
           {formik.touched.phoneNumber && formik.errors.phoneNumber && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.phoneNumber}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.phoneNumber}
+            </span>
           )}
         </div>
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <PasswordField
             label="Password"
             placeholder="Please enter your Password"
@@ -256,10 +284,12 @@ const SignupForm: React.FC = () => {
             inputClassName="border-[#B7B7B7]"
           />
           {formik.touched.password && formik.errors.password && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.password}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.password}
+            </span>
           )}
         </div>
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <PasswordField
             label="Confirm Password"
             placeholder="Please confirm your Password"
@@ -271,10 +301,12 @@ const SignupForm: React.FC = () => {
             inputClassName="border-[#B7B7B7]"
           />
           {formik.touched.confirm && formik.errors.confirm && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.confirm}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.confirm}
+            </span>
           )}
         </div>
-        <div className="relative col-span-2">
+        <div className="relative col-span-1">
           <FileDropField
             label="Profile Image"
             multiple={false}
@@ -285,18 +317,26 @@ const SignupForm: React.FC = () => {
             }}
           />
           {formik.touched.imageFile && formik.errors.imageFile && (
-            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">{formik.errors.imageFile}</span>
+            <span className="absolute left-0 top-full mt-1 text-sm text-red-500">
+              {formik.errors.imageFile}
+            </span>
           )}
         </div>
         <div className="col-span-2 flex justify-center my-5">
           <ReusableButton2
-            className="border border-[#B7B7B7] text-black hover:border-[#00b5a6] w-full"
+            className="border border-[#B7B7B7] text-black hover:border-[#00b5a6] w-full flex items-center justify-center gap-2"
             bgClassName="bg-[#00b5a6]"
             textClassName="group-hover:text-white"
             type="submit"
             disabled={submitting}
           >
-            {submitting ? "Signing up..." : "Sign up"}
+            {submitting ? (
+              <>
+                <FiLoader className="animate-spin size-5" />
+              </>
+            ) : (
+              "Sign up"
+            )}
           </ReusableButton2>
         </div>
       </form>

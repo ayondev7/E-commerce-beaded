@@ -2,12 +2,24 @@
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import navItems from "../../config/navConfig";
-import { LuUser, LuShoppingBag } from "react-icons/lu";
+import { LuUser, LuShoppingBag, LuLogOut } from "react-icons/lu";
+import { signOut, useSession } from "next-auth/react";
+import { useMe } from "@/hooks/customerHooks";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { data: me } = useMe();
+  const userName = me?.name ?? session?.user?.name ?? "";
+  const userImage = me?.image ?? session?.user?.image ?? "";
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    router.push("/sign-in");
+  };
   return (
     <div className="flex flex-col pt-[26px] border-b border-[#b0b0b0]">
       <div className="w-full flex justify-center">
@@ -46,15 +58,43 @@ const Navbar = () => {
         </nav>
 
         <div className="flex items-center gap-x-[32px]">
-          <button className="flex items-center gap-2.5 text-[17px]">
-            <LuUser size={20} />
-            <span>SIGN IN</span>
-          </button>
+          {userName ? (
+            <Link href="/profile" className="flex items-center gap-2.5 text-[17px]">
+              {userImage ? (
+                <Image
+                  src={userImage}
+                  alt={userName}
+                  width={28}
+                  height={28}
+                  className="rounded-full object-cover w-7 h-7"
+                />
+              ) : (
+                <LuUser size={20} />
+              )}
+              <span className="max-w-[160px] truncate">{userName}</span>
+            </Link>
+          ) : (
+            <Link href="/sign-in" className="flex items-center gap-2.5 text-[17px]">
+              <LuUser size={20} />
+              <span>SIGN IN</span>
+            </Link>
+          )}
 
           <button className="flex items-center gap-2.5 text-base">
             <LuShoppingBag size={20} />
             <span>CART: 0</span>
           </button>
+
+          {userName && (
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-2.5 text-[17px]"
+              aria-label="Sign out"
+            >
+              <LuLogOut size={20} />
+              <span>SIGN OUT</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
