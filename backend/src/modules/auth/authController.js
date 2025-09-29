@@ -116,10 +116,24 @@ export const credentialSignin = async (req, res, next) => {
   }
 };
 
+export const getMyInfo = async (req, res, next) => {
+  try {
+    const customer = req.customer;
+    if (!customer) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    return res.json({ name: customer.name, image: customer.image });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 const authController = {
   googleSignin,
   credentialSignup,
   credentialSignin,
+  getMyInfo,
 };
 export default authController;
 
