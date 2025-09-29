@@ -1,0 +1,84 @@
+import { prisma } from "../../config/db.js";
+import processAndUploadImages from "../../utils/imageUtils.js";
+import { validatePatchCategory } from "./categoryValidation.js";
+
+export const getAllCategories = async (req, res, next) => {
+	try {
+		const categories = await prisma.category.findMany({ orderBy: { createdAt: "desc" } });
+		return res.status(200).json({ categories });
+	} catch (err) {
+		return next(err);
+	}
+};
+
+export const getCategoryById = async (req, res, next) => {
+	try {
+		const { categoryId } = req.params;
+		if (!categoryId) return res.status(400).json({ message: "Category ID is required" });
+		const category = await prisma.category.findUnique({ where: { id: categoryId } });
+		if (!category) return res.status(404).json({ message: "Category not found" });
+		return res.status(200).json({ category });
+	} catch (err) {
+		return next(err);
+	}
+};
+
+export const patchCategory = async (req, res, next) => {
+	try {
+		const { categoryId } = req.params;
+		if (!categoryId) return res.status(400).json({ message: "Category ID is required" });
+
+		const existing = await prisma.category.findUnique({ where: { id: categoryId } });
+		if (!existing) return res.status(404).json({ message: "Category not found" });
+
+		const validation = validatePatchCategory(req.body || {});
+		if (!validation.success) {
+			return res.status(400).json({ message: "Invalid input", errors: validation.errors });
+		}
+
+		const data = {};
+		const { name } = validation.data;
+		if (typeof name !== "undefined" && name !== existing.name) {
+			data.name = name;
+		}
+
+		const file = (req.files && req.files[0]) || req.file || null;
+		if (file) {
+			const imageUrl = await processAndUploadImages(file);
+			data.image = imageUrl;
+		}
+
+		if (Object.keys(data).length === 0) {
+			return res.status(400).json({ message: "No fields provided to update" });
+		}
+
+		const updated = await prisma.category.update({ where: { id: categoryId }, data });
+		return res.status(200).json({ message: "Category updated successfully", category: updated });
+	} catch (err) {
+		return next(err);
+	}
+};
+
+export const deleteCategory = async (req, res, next) => {
+	try {
+		const { categoryId } = req.params;
+		if (!categoryId) return res.status(400).json({ message: "Category ID is required" });
+
+		const existing = await prisma.category.findUnique({ where: { id: categoryId } });
+		if (!existing) return res.status(404).json({ message: "Category not found" });
+
+		const deleted = await prisma.category.delete({ where: { id: categoryId } });
+		return res.status(200).json({ message: "Category deleted successfully", category: deleted });
+	} catch (err) {
+		return next(err);
+	}
+};
+
+const categoryController = {
+	getAllCategories,
+	getCategoryById,
+	patchCategory,
+	deleteCategory,
+};
+
+export default categoryController;
