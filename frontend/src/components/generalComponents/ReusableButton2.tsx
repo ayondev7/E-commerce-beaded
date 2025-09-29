@@ -7,6 +7,9 @@ interface ReusableButton2Props {
   bgClassName?: string
   textClassName?: string
   onClick?: () => void
+  type?: "button" | "submit" | "reset"
+  disabled?: boolean
+  form?: string
 }
 
 const ReusableButton2 = ({
@@ -15,12 +18,18 @@ const ReusableButton2 = ({
   bgClassName,
   textClassName,
   onClick,
+  type = "button",
+  disabled,
+  form,
 }: ReusableButton2Props) => {
   return (
     <button
       onClick={onClick}
+      type={type}
+      disabled={disabled}
+      form={form}
       className={clsx(
-        "group relative z-0 overflow-hidden uppercase py-4 px-[42px] hover:cursor-pointer text-sm leading-[20px] font-medium rounded-full transition-colors duration-300",
+        "group relative z-0 overflow-hidden uppercase py-4 px-[42px] hover:cursor-pointer text-sm leading-[20px] font-medium rounded-full transition-colors duration-300 disabled:opacity-60 disabled:cursor-not-allowed",
         className
       )}
     >

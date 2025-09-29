@@ -1,1 +1,1 @@
-export const genders = ["Male", "Female", "Other"] as const;
+export const genders = ["male", "female"] as const;
