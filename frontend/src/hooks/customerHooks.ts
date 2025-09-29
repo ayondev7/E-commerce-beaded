@@ -19,7 +19,7 @@ export function useMe() {
 	return useQuery({
 		queryKey: ["auth", "me"],
 		queryFn: fetchMe,
-		staleTime: 1000 * 60, 
+		staleTime: 1000 * 60 * 30,  // 30 minutes
 		retry: 1,
 	});
 }

@@ -1,22 +1,31 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import ProductCard from "@/components/product/ProductCard";
 import ReusableButton from "@/components/generalComponents/ReusableButton";
+import ProductCardSkeleton from "@/components/skeleton/ProductCardSkeleton";
+import { useBestSellers, Product as ProductType } from "@/hooks/productHooks";
 
-const CardSlider = () => {
-  const products = [
-    { id: 1, image: "/home/categories/1.png", category: "BRACELET", name: "Flower Child Barbie Bracelet", price: 599 },
-    { id: 2, image: "/home/categories/1.png", category: "NECKLACE", name: "Silver Chain Necklace", price: 899 },
-    { id: 3, image: "/home/categories/1.png", category: "EARRINGS", name: "Gold Hoop Earrings", price: 499 },
-    { id: 4, image: "/home/categories/1.png", category: "BRACELET", name: "Beaded Wristband", price: 349 },
-    { id: 5, image: "/home/categories/1.png", category: "NECKLACE", name: "Pearl Pendant Necklace", price: 1299 },
-    { id: 6, image: "/home/categories/1.png", category: "EARRINGS", name: "Diamond Stud Earrings", price: 1999 },
-    { id: 7, image: "/home/categories/1.png", category: "BRACELET", name: "Leather Cuff Bracelet", price: 699 },
-    { id: 8, image: "/home/categories/1.png", category: "NECKLACE", name: "Crystal Choker", price: 799 },
-    { id: 9, image: "/home/categories/1.png", category: "EARRINGS", name: "Turquoise Drop Earrings", price: 649 },
-    { id: 10, image: "/home/categories/1.png", category: "BRACELET", name: "Charm Bracelet", price: 549 },
-  ];
+const CardSlider: FC = () => {
+  const { data: bestSellers, isLoading } = useBestSellers();
+  const bs = bestSellers as any;
+
+  const productsArray: ProductType[] = Array.isArray(bs)
+    ? (bs as ProductType[])
+    : Array.isArray(bs?.products)
+    ? (bs.products as ProductType[])
+    : [];
+
+  const mappedProducts = productsArray.map((p: any, idx: number) => ({
+    id: p.id ?? idx,
+    image:
+      Array.isArray(p.images) && p.images.length
+        ? p.images[0]
+        : "/home/categories/1.png",
+    category: p.categoryName ?? p.category?.name ?? "BRACELET",
+    name: p.productName ?? "Product",
+    price: Number(p.offerPrice ?? p.price ?? 0),
+  }));
 
   const slidesPerPage = 4;
 
@@ -27,14 +36,16 @@ const CardSlider = () => {
     duration: 40,
   });
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   useEffect(() => {
     if (!emblaApi) return;
 
     const update = () => {
-      const pageCount = Math.ceil(products.length / slidesPerPage);
+      const pageCount = Math.ceil(
+        (isLoading ? slidesPerPage * 2 : mappedProducts.length) / slidesPerPage
+      );
       setTotalPages(pageCount);
       setCurrentPage(emblaApi.selectedScrollSnap());
     };
@@ -43,7 +54,13 @@ const CardSlider = () => {
     emblaApi.on("reInit", update);
 
     update();
-  }, [emblaApi, products.length]);
+
+    return () => {
+      if (!emblaApi) return;
+      emblaApi.off("select", update);
+      emblaApi.off("reInit", update);
+    };
+  }, [emblaApi, mappedProducts.length, isLoading]);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -53,21 +70,26 @@ const CardSlider = () => {
     <div>
       <div className="my-[56px] overflow-hidden" ref={emblaRef}>
         <div className="flex">
-          {products.map((product) => (
-            <div key={product.id} className="flex-[0_0_25%] px-2.5">
-              <ProductCard
-                image={product.image}
-                category={product.category}
-                name={product.name}
-                price={product.price}
-              />
-            </div>
-          ))}
+          {isLoading
+            ? Array.from({ length: slidesPerPage * 2 }).map((_, i) => (
+                <div key={`skel-${i}`} className="flex-[0_0_25%] px-2.5">
+                  <ProductCardSkeleton />
+                </div>
+              ))
+            : mappedProducts.map((product) => (
+                <div key={product.id} className="flex-[0_0_25%] px-2.5">
+                  <ProductCard
+                    image={product.image}
+                    category={product.category}
+                    name={product.name}
+                    price={product.price}
+                  />
+                </div>
+              ))}
         </div>
       </div>
 
       <div className="w-full flex items-center justify-between 2xl:px-[18%]">
-        {/* Prev Button */}
         <ReusableButton
           iconClassName="text-[#1E1E1E]"
           buttonClassName="border-[#1E1E1E]"
@@ -76,7 +98,6 @@ const CardSlider = () => {
           onClick={scrollPrev}
         />
 
-        {/* Pagination Dots */}
         <div className="flex items-center gap-x-6">
           {Array.from({ length: totalPages }, (_, i) => (
             <span
@@ -89,7 +110,6 @@ const CardSlider = () => {
           ))}
         </div>
 
-        {/* Next Button */}
         <ReusableButton
           iconClassName="text-[#1E1E1E]"
           buttonClassName="border-[#1E1E1E]"

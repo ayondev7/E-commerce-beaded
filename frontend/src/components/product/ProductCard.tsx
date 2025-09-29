@@ -9,8 +9,6 @@ interface ProductCardProps {
   category: string;
   name: string;
   price: number;
-  // optional class overrides for parts of the card. Provided classes will be merged
-  // with defaults so you can override only specific utilities.
   imageClassName?: string;
   titleClassName?: string;
   categoryClassName?: string;
