@@ -1,8 +1,30 @@
 import { prisma } from "../../config/db.js";
 import processAndUploadImages from "../../utils/imageUtils.js";
-import { validatePatchCategory } from "./categoryValidation.js";
+import { validatePatchCategory, validateCreateCategory } from "./categoryValidation.js";
 
-export const getAllCategories = async (req, res, next) => {
+const addNewCategory = async (req, res, next) => {
+	try {
+		const validation = validateCreateCategory(req.body);
+		if (!validation.success) {
+			return res.status(400).json({ message: "Invalid input", errors: validation.errors });
+		}
+		const { name } = validation.data;
+
+		const file = (req.files && req.files[0]) || req.file || null;
+		if (!file) return res.status(400).json({ message: "Category image is required" });
+
+		const imageUrl = await processAndUploadImages(file);
+
+		const category = await prisma.category.create({
+			data: { name, image: imageUrl },
+		});
+		return res.status(201).json({ message: "Category created successfully", category });
+	} catch (err) {
+		return next(err);
+	}
+};
+
+const getAllCategories = async (req, res, next) => {
 	try {
 		const categories = await prisma.category.findMany({ orderBy: { createdAt: "desc" } });
 		return res.status(200).json({ categories });
@@ -11,7 +33,7 @@ export const getAllCategories = async (req, res, next) => {
 	}
 };
 
-export const getCategoryById = async (req, res, next) => {
+const getCategoryById = async (req, res, next) => {
 	try {
 		const { categoryId } = req.params;
 		if (!categoryId) return res.status(400).json({ message: "Category ID is required" });
@@ -23,7 +45,7 @@ export const getCategoryById = async (req, res, next) => {
 	}
 };
 
-export const patchCategory = async (req, res, next) => {
+const patchCategory = async (req, res, next) => {
 	try {
 		const { categoryId } = req.params;
 		if (!categoryId) return res.status(400).json({ message: "Category ID is required" });
@@ -59,7 +81,7 @@ export const patchCategory = async (req, res, next) => {
 	}
 };
 
-export const deleteCategory = async (req, res, next) => {
+const deleteCategory = async (req, res, next) => {
 	try {
 		const { categoryId } = req.params;
 		if (!categoryId) return res.status(400).json({ message: "Category ID is required" });
@@ -75,6 +97,7 @@ export const deleteCategory = async (req, res, next) => {
 };
 
 const categoryController = {
+	addNewCategory,
 	getAllCategories,
 	getCategoryById,
 	patchCategory,

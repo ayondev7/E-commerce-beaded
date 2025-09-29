@@ -7,6 +7,7 @@ const router = Router();
 
 router.get("/get-all-categories", categoryController.getAllCategories);
 router.get("/get-category/:categoryId", categoryController.getCategoryById);
+router.post("/add-new-category", autMiddleware, upload.single("image"), categoryController.addNewCategory);
 router.patch("/patch-category/:categoryId", autMiddleware, upload.single("image"), categoryController.patchCategory);
 router.delete("/delete-category/:categoryId", autMiddleware, categoryController.deleteCategory);
 
