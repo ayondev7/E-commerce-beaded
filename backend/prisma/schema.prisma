@@ -31,9 +31,9 @@ model Customer {
   dateOfBirth DateTime?
   phoneNumber String?
   email      String   @unique
-  password   String?  // nullable to support OAuth/provider signups
-  providerId String?  // id from OAuth provider, nullable
-  image      String?  // profile image URL, nullable
+  password   String?  
+  providerId String?  
+  image      String?  
   carts      Cart[]
   addresses  Address[]
   orders     Order[]

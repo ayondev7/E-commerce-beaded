@@ -54,7 +54,7 @@ export const createProductSchema = z
 export function validateCreateProduct(data) {
   const result = createProductSchema.safeParse(data);
   if (!result.success) {
-    const errors = result.error.issues.map((e) => e.message).join("; ");
+    const errors = result.error.issues.map((e) => ({ field: e.path.join('.'), message: e.message }));
     return { success: false, errors };
   }
   return { success: true, data: result.data };

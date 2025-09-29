@@ -6,7 +6,7 @@ import categoryRoutes from "../modules/category/categoryRoutes.js";
 const router = Router();
 
 router.use("/auth", authRoutes);
-router.use("/product", productRoutes);
-router.use("/category", categoryRoutes);
+router.use("/products", productRoutes);
+router.use("/categories", categoryRoutes);
 
 export default router;

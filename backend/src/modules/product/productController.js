@@ -69,15 +69,18 @@ export const getProductList = async (req, res, next) => {
 				skip: (pageNum - 1) * limitNum,
 				take: limitNum,
 				orderBy: { createdAt: "desc" },
+				include: { category: true },
 			}),
 		]);
+
+		const productsWithCategoryName = products.map(p => ({ ...p, categoryName: p.category.name }));
 
 		return res.status(200).json({
 			page: pageNum,
 			limit: limitNum,
 			total,
 			totalPages: Math.max(Math.ceil(total / limitNum), 1),
-			products,
+			products: productsWithCategoryName,
 		});
 	} catch (err) {
 		return next(err);
@@ -89,10 +92,15 @@ export const getProductById = async (req, res, next) => {
 		const { productId } = req.params;
 		if (!productId) return res.status(400).json({ message: "Product ID is required" });
 
-		const product = await prisma.product.findUnique({ where: { id: productId } });
+		const product = await prisma.product.findUnique({ 
+			where: { id: productId },
+			include: { category: true },
+		});
 		if (!product) return res.status(404).json({ message: "Product not found" });
 
-		return res.status(200).json({ product });
+		const productWithCategoryName = { ...product, categoryName: product.category.name };
+
+		return res.status(200).json({ product: productWithCategoryName });
 	} catch (err) {
 		return next(err);
 	}
@@ -184,9 +192,11 @@ export const getBestSellerProducts = async (req, res, next) => {
 		const products = await prisma.product.findMany({
 			take: 50,
 			orderBy: { createdAt: "desc" },
+			include: { category: true },
 		});
 		const shuffled = products.sort(() => Math.random() - 0.5).slice(0, 12);
-		return res.status(200).json({ products: shuffled });
+		const productsWithCategoryName = shuffled.map(p => ({ ...p, categoryName: p.category.name }));
+		return res.status(200).json({ products: productsWithCategoryName });
 	} catch (err) {
 		return next(err);
 	}
@@ -197,8 +207,10 @@ export const getLatestCollectionProducts = async (req, res, next) => {
 		const products = await prisma.product.findMany({
 			take: 12,
 			orderBy: { createdAt: "desc" },
+			include: { category: true },
 		});
-		return res.status(200).json({ products });
+		const productsWithCategoryName = products.map(p => ({ ...p, categoryName: p.category.name }));
+		return res.status(200).json({ products: productsWithCategoryName });
 	} catch (err) {
 		return next(err);
 	}

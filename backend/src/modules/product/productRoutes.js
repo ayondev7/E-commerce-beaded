@@ -11,7 +11,7 @@ router.get("/get-product/:productId", productController.getProductById);
 
 router.get("/get-best-seller-products", productController.getBestSellerProducts);
 
-router.get("/get-latest-collection-produts", productController.getLatestCollectionProducts);
+router.get("/get-latest-collection-products", productController.getLatestCollectionProducts);
 
 router.post(
   "/add-new-product",upload.array("images", 3),productController.addNewProduct);
