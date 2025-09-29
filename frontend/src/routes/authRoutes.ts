@@ -1,15 +1,17 @@
 import API_URL from ".";
 
+const BASE = `${API_URL}/auth`;
+
 export const AUTH_ROUTES = {
 	credential: {
-		signup: `${API_URL}/auth/credential/signup`,
-		signin: `${API_URL}/auth/credential/signin`,
+		signup: `${BASE}/credential/signup`,
+		signin: `${BASE}/credential/signin`,
 	},
 	google: {
-		signin: `${API_URL}/auth/google/signin`,
+		signin: `${BASE}/google/signin`,
 	},
-	me: `${API_URL}/auth/me`,
-	protected: `${API_URL}/auth/protected`,
+	me: `${BASE}/me`,
+	protected: `${BASE}/protected`,
 } as const;
 
 export default AUTH_ROUTES;
