@@ -8,11 +8,17 @@ export type Category = {
 	name: string;
 	description?: string;
 	image?: string;
+	createdAt?: string;
+	updatedAt?: string;
+};
+
+export type CategoryListResponse = {
+	categories: Category[];
 };
 
 export const fetchCategoryList = async () => {
 	const { data } = await apiClient.get(CATEGORY_ROUTES.list);
-	return data as Category[];
+	return data as CategoryListResponse;
 };
 
 export function useCategoryList() {

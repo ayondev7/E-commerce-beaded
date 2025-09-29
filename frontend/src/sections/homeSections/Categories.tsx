@@ -1,7 +1,20 @@
+"use client";
 import React from "react";
 import CategoryCard from "@/components/product/CategoryCard";
+import { useCategoryList, Category } from "@/hooks/categoryHooks";
+import ProductCardSkeleton from "@/components/skeleton/ProductCardSkeleton";
 
 const Categories = () => {
+  const { data: categoriesResponse, isLoading } = useCategoryList();
+
+  const categoriesArray = categoriesResponse?.categories || [];
+  
+  const mappedCategories = categoriesArray?.map((category: Category) => ({
+    id: category.id,
+    image: category.image || "/home/categories/1.png",
+    title: category.name,
+  })) || [];
+
   return (
     <div className="bg-[#FAFAFA] py-[100px] px-[150px]">
       <div className="flex flex-col items-center">
@@ -15,10 +28,17 @@ const Categories = () => {
         </h2>
       </div>
       <div className="grid 2xl:grid-cols-4 gap-x-[19px] justify-center">
-        <CategoryCard image="/home/categories/1.png" title="Bracelets" />
-        <CategoryCard image="/home/categories/2.png" title="Necklaces" />
-        <CategoryCard image="/home/categories/3.png" title="Earrings" />
-        <CategoryCard image="/home/categories/4.png" title="Rings" />
+        {isLoading
+          ? Array.from({ length: 4 }).map((_, i) => (
+              <ProductCardSkeleton key={`category-skeleton-${i}`} />
+            ))
+          : mappedCategories.map((category) => (
+              <CategoryCard
+                key={category.id}
+                image={category.image}
+                title={category.title}
+              />
+            ))}
       </div>
     </div>
   );

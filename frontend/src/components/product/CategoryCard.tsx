@@ -1,5 +1,7 @@
-import React from 'react'
-import Image from 'next/image'
+"use client";
+import React from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface CategoryCardProps {
   image: string;
@@ -7,8 +9,19 @@ interface CategoryCardProps {
 }
 
 const CategoryCard: React.FC<CategoryCardProps> = ({ image, title }) => {
+  const router = useRouter();
+
+  const handleNavigate = () => {
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+    router.push(`/${slug}/shop`);
+  };
+
   return (
-    <div className="text-center relative group cursor-pointer overflow-hidden">
+    <div className="text-center relative group overflow-hidden">
       <Image
         src={image}
         alt={title}
@@ -16,12 +29,19 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ image, title }) => {
         height={600}
         className="h-[535px] w-[390px] object-cover"
       />
-      <div className="absolute h-[535px] w-full inset-0 bg-black/40 rounded-lg">
-    <h3 className="absolute group-hover:translate-y-[-100px] bottom-[54px] left-1/2 transform -translate-x-1/2 text-2xl font-medium uppercase text-white transition-transform duration-400 ease-out">{title}</h3>
-  <button className='absolute w-[245px] bottom-[75px] left-1/2 transform -translate-x-1/2 uppercase bg-white text-lg font-medium px-[32px] py-[18px] transition-transform duration-500 ease-out delay-100 translate-y-[150px] group-hover:translate-y-0'>Shop collection</button>
+      <div className="absolute h-[535px] w-full inset-0 bg-black/40">
+        <h3 className="absolute group-hover:translate-y-[-100px] bottom-[54px] left-1/2 transform -translate-x-1/2 text-2xl font-medium uppercase text-white transition-transform duration-400 ease-out">
+          {title}
+        </h3>
+        <button
+          className="absolute cursor-pointer w-[245px] bottom-[75px] left-1/2 transform -translate-x-1/2 uppercase bg-white text-lg font-medium px-[32px] py-[18px] transition-transform duration-500 ease-out delay-100 translate-y-[150px] group-hover:translate-y-0"
+          onClick={handleNavigate}
+        >
+          Shop collection
+        </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CategoryCard
+export default CategoryCard;

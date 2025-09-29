@@ -3,8 +3,10 @@ import React, { useCallback } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import ReusableButton from "@/components/generalComponents/ReusableButton";
+import { useRouter } from "next/navigation";
 
 const Hero = () => {
+  const router = useRouter();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
   const images = [
@@ -44,7 +46,10 @@ const Hero = () => {
           Our selection of fine jewelry features timeless designs in a variety
           of styles, all created with the highest quality materials.
         </h2>
-        <button className="uppercase text-[17px] font-medium px-[56px] py-[18px] border-2 border-white ">
+        <button
+          className="uppercase text-[17px] font-medium px-[56px] py-[18px] border-2 border-white "
+          onClick={() => router.push('/all/shop')}
+        >
           SHOP NOW
         </button>
       </div>
