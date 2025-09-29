@@ -4,6 +4,7 @@ import { hashPassword } from "../../utils/hashPassword.js";
 import processAndUploadImages from "../../utils/imageUtils.js";
 import { generateTokens } from "../../utils/tokenUtils.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export const googleSignin = async (req, res, next) => {
   try {
@@ -116,6 +117,141 @@ export const credentialSignin = async (req, res, next) => {
   }
 };
 
+export const verifyAuth = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    const refreshToken = req.headers["x-refresh-token"];
+
+    // Check if both tokens are provided
+    if (!authHeader || !refreshToken) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Access denied. Tokens missing.",
+        action: "REDIRECT_TO_LOGIN"
+      });
+    }
+
+    // Extract access token
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid token format.",
+        action: "REDIRECT_TO_LOGIN"
+      });
+    }
+
+    const accessToken = authHeader.split(" ")[1];
+
+    try {
+      // Try to verify access token
+      const accessPayload = jwt.verify(accessToken, process.env.JWT_SECRET);
+      const customerId = accessPayload?.id;
+
+      if (!customerId) {
+        return res.status(401).json({ 
+          success: false, 
+          message: "Invalid access token payload.",
+          action: "REDIRECT_TO_LOGIN"
+        });
+      }
+
+      // Verify customer exists in database
+      const customer = await prisma.customer.findUnique({
+        where: { id: customerId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true
+        }
+      });
+
+      if (!customer) {
+        return res.status(401).json({ 
+          success: false, 
+          message: "Customer not found.",
+          action: "REDIRECT_TO_LOGIN"
+        });
+      }
+
+      // Access token is valid and customer exists
+      return res.status(200).json({ 
+        success: true, 
+        message: "Access granted.",
+        action: "ALLOW_ACCESS",
+        customer
+      });
+
+    } catch (accessTokenError) {
+      // Access token is expired or invalid, check refresh token
+      if (accessTokenError.name === "TokenExpiredError") {
+        try {
+          // Verify refresh token
+          const refreshPayload = jwt.verify(refreshToken, process.env.JWT_SECRET);
+          const customerId = refreshPayload?.id;
+
+          if (!customerId) {
+            return res.status(401).json({ 
+              success: false, 
+              message: "Invalid refresh token payload.",
+              action: "REDIRECT_TO_LOGIN"
+            });
+          }
+
+          // Verify customer exists
+          const customer = await prisma.customer.findUnique({
+            where: { id: customerId },
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true
+            }
+          });
+
+          if (!customer) {
+            return res.status(401).json({ 
+              success: false, 
+              message: "Customer not found.",
+              action: "REDIRECT_TO_LOGIN"
+            });
+          }
+
+          // Generate new access token
+          const payload = { id: customer.id, email: customer.email };
+          const { accessToken: newAccessToken } = generateTokens(payload);
+
+          return res.status(200).json({ 
+            success: true, 
+            message: "Access token refreshed.",
+            action: "UPDATE_ACCESS_TOKEN",
+            accessToken: newAccessToken,
+            customer
+          });
+
+        } catch (refreshTokenError) {
+          // Refresh token is also expired or invalid
+          return res.status(401).json({ 
+            success: false, 
+            message: "Session expired. Please login again.",
+            action: "REDIRECT_TO_LOGIN"
+          });
+        }
+      } else {
+        // Access token is invalid (not just expired)
+        return res.status(401).json({ 
+          success: false, 
+          message: "Invalid access token.",
+          action: "REDIRECT_TO_LOGIN"
+        });
+      }
+    }
+
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const getMyInfo = async (req, res, next) => {
   try {
     const customer = req.customer;
@@ -133,6 +269,7 @@ const authController = {
   googleSignin,
   credentialSignup,
   credentialSignin,
+  verifyAuth,
   getMyInfo,
 };
 export default authController;

@@ -10,6 +10,8 @@ router.post("/google/signin", authController.googleSignin);
 router.post("/credential/signup", upload.single("image"), authController.credentialSignup);
 router.post("/credential/signin", authController.credentialSignin);
 
+router.post("/verify", authController.verifyAuth);
+
 router.get("/me", autMiddleware, authController.getMyInfo);
 
 export default router;
