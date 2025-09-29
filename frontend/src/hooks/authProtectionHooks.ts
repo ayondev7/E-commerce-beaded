@@ -117,7 +117,7 @@ export function useAuthProtection() {
   }, [session, update]);
 
   const redirectToLogin = useCallback(() => {
-    router.push("/auth/signin");
+    router.push("/sign-in");
   }, [router]);
 
   useEffect(() => {
