@@ -8,6 +8,7 @@ import { useProductList } from "@/hooks/productHooks";
 import { useCategoryList } from "@/hooks/categoryHooks";
 import { useFilterStore } from "@/store/filterStore";
 import { SORT_OPTIONS, SortOption } from "@/constants/sortOptions";
+import { slugToReadableName } from "@/utils/slugUtils";
 
 interface ProductShowcaseProps {
   initialCollection: string;
@@ -34,8 +35,12 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
   
   const categoryId = useMemo(() => {
     if (!categoriesData?.categories || selectedCategory === "all") return undefined;
+    
+    // Convert selectedCategory slug to readable name for comparison
+    const readableCategoryName = slugToReadableName(selectedCategory);
+    
     const category = categoriesData.categories.find(cat => 
-      cat.name.toLowerCase().replace(/\s+/g, '-') === selectedCategory
+      cat.name.toLowerCase() === readableCategoryName.toLowerCase()
     );
     return category?.id;
   }, [categoriesData, selectedCategory]);
@@ -105,7 +110,7 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
       <h1 className="uppercase text-[48px]">Shop</h1>
       <div className="flex items-center justify-between mb-[30px]">
         <span className="text-[#6D6D6D] text-lg tracking-[-1%] uppercase">
-          Showing {filteredProducts.length} Items
+          Showing {filteredProducts.length} out of {productsData?.totalProductsInDb || 0} results
         </span>
         <SelectField
           value={sortBy}

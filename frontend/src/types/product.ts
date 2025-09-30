@@ -32,6 +32,7 @@ export type ProductListResponse = {
 	limit: number;
 	total: number;
 	totalPages: number;
+	totalProductsInDb: number;
 };
 
 export type CreateProductInput = FormData | Record<string, any>;

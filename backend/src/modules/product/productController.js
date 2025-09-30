@@ -112,6 +112,7 @@ export const getProductList = async (req, res, next) => {
 			limit: limitNum,
 			total,
 			totalPages: Math.max(Math.ceil(total / limitNum), 1),
+			totalProductsInDb,
 			products: productsWithStatus,
 		});
 	} catch (err) {
