@@ -32,18 +32,10 @@ export type CartListResponse = {
 export type AddToCartPayload = {
   productId: string;
   quantity: number;
-  subTotal: number;
-  deliveryFee: number;
-  discount: number;
-  grandTotal: number;
 };
 
 export type UpdateCartItemPayload = {
-  quantity?: number;
-  subTotal?: number;
-  deliveryFee?: number;
-  discount?: number;
-  grandTotal?: number;
+  quantity: number;
 };
 
 // Queries

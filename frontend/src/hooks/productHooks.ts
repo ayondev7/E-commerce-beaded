@@ -7,10 +7,24 @@ import apiClient from "./apiClient";
 // Types
 export type Product = {
 	id: string;
-	name: string;
+	categoryId: string;
+	productCollection: string;
+	productName: string;
+	productDescription: string;
+	productSlug: string;
 	price: number;
+	offerPrice?: number;
+	images: string[];
+	category?: {
+		id: string;
+		name: string;
+		image: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+	// Legacy fields for compatibility
+	name?: string;
 	description?: string;
-	images?: string[];
 };
 
 export type ProductListResponse = {

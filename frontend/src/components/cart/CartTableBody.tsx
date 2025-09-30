@@ -51,7 +51,7 @@ export default function CartTableBody({ items, className, onQtyChange, onRemove 
                 <div className="flex w-[185px] items-center justify-between rounded-full border border-zinc-300 p-4">
                   <button
                     aria-label="Decrease quantity"
-                    className="text-[#7D7D7D]"
+                    className="text-[#7D7D7D] cursor-pointer"
                     onClick={() => onQtyChange?.(item.id, Math.max(1, item.qty - 1))}
                     disabled={item.qty <= 1}
                   >
@@ -62,7 +62,7 @@ export default function CartTableBody({ items, className, onQtyChange, onRemove 
                   </span>
                   <button
                     aria-label="Increase quantity"
-                    className="text-[#7D7D7D]"
+                    className="text-[#7D7D7D] cursor-pointer"
                     onClick={() => onQtyChange?.(item.id, item.qty + 1)}
                   >
                     <LuPlus className="size-5" />
@@ -80,7 +80,7 @@ export default function CartTableBody({ items, className, onQtyChange, onRemove 
                 <button
                   aria-label="Remove item"
                   onClick={() => onRemove?.(item.id)}
-                  className="text-[#E55151]"
+                  className="text-[#E55151] cursor-pointer"
                 >
                   <LuTrash2 className="text-[#E55151] size-6" />
                 </button>

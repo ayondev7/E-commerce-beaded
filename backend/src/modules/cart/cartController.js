@@ -36,7 +36,7 @@ const addToCart = async (req, res, next) => {
 			return res.status(400).json({ message: "Invalid input", errors: validation.errors });
 		}
 		
-		const { productId, quantity, subTotal, deliveryFee, discount, grandTotal } = validation.data;
+		const { productId, quantity } = validation.data;
 		
 		const existingCartItem = await prisma.cart.findFirst({
 			where: { 
@@ -53,6 +53,15 @@ const addToCart = async (req, res, next) => {
 		if (!product) {
 			return res.status(404).json({ message: "Product not found" });
 		}
+		
+		// Calculate values based on product data
+		const price = parseFloat(product.price);
+		const offerPrice = product.offerPrice ? parseFloat(product.offerPrice) : null;
+		const effectivePrice = offerPrice || price;
+		const discount = offerPrice ? (price - offerPrice) * quantity : 0;
+		const subTotal = effectivePrice * quantity;
+		const deliveryFee = 60.00; // Always 60.00 as specified
+		const grandTotal = subTotal + deliveryFee;
 		
 		const cartItem = await prisma.cart.create({
 			data: {
@@ -101,6 +110,9 @@ const updateCartItem = async (req, res, next) => {
 			where: { 
 				id: cartItemId,
 				customerId 
+			},
+			include: {
+				product: true
 			}
 		});
 		
@@ -108,27 +120,29 @@ const updateCartItem = async (req, res, next) => {
 			return res.status(404).json({ message: "Cart item not found" });
 		}
 		
+		const { quantity } = validation.data;
 		const data = {};
-		const { quantity, subTotal, deliveryFee, discount, grandTotal } = validation.data;
 		
+		// If quantity is being updated, recalculate all dependent values
 		if (typeof quantity !== "undefined" && quantity !== existingCartItem.quantity) {
+			const product = existingCartItem.product;
+			const price = parseFloat(product.price);
+			const offerPrice = product.offerPrice ? parseFloat(product.offerPrice) : null;
+			const effectivePrice = offerPrice || price;
+			const discount = offerPrice ? (price - offerPrice) * quantity : 0;
+			const subTotal = effectivePrice * quantity;
+			const deliveryFee = 60.00; // Always 60.00 as specified
+			const grandTotal = subTotal + deliveryFee;
+			
 			data.quantity = quantity;
-		}
-		if (typeof subTotal !== "undefined" && subTotal !== existingCartItem.subTotal) {
 			data.subTotal = subTotal;
-		}
-		if (typeof deliveryFee !== "undefined" && deliveryFee !== existingCartItem.deliveryFee) {
 			data.deliveryFee = deliveryFee;
-		}
-		if (typeof discount !== "undefined" && discount !== existingCartItem.discount) {
 			data.discount = discount;
-		}
-		if (typeof grandTotal !== "undefined" && grandTotal !== existingCartItem.grandTotal) {
 			data.grandTotal = grandTotal;
 		}
 		
 		if (Object.keys(data).length === 0) {
-			return res.status(400).json({ message: "No fields provided to update" });
+			return res.status(400).json({ message: "No valid fields provided to update" });
 		}
 		
 		const updatedCartItem = await prisma.cart.update({

@@ -1,162 +1,146 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import CartTable, { CartItem } from "@/components/cart/CartTable";
 import CartSummary from "@/components/cart/CartSummary";
 import { withRouteProtection } from "@/components/auth/RouteProtector";
+import { useCartList, useUpdateCartItem, useRemoveFromCart } from "@/hooks/cartHooks";
+import { FiLoader } from "react-icons/fi";
+import toast from "react-hot-toast";
+import { 
+  calculateCartTotals, 
+  updatePendingChanges, 
+  getCurrentQuantity, 
+  getEffectivePrice,
+  type QuantityChange 
+} from "@/lib/utils";
 
 function CartPage() {
-  const [items, setItems] = React.useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Flower Child Barbie Bracelet",
-      price: 1000,
-      qty: 1,
-      image: "/home/categories/1.png",
-    },
-    {
-      id: 2,
-      name: "Flower Child Barbie Bracelet",
-      price: 599,
-      qty: 1,
-      image: "/home/categories/1.png",
-    },
-    {
-      id: 3,
-      name: "Flower Child Barbie Bracelet",
-      price: 599,
-      qty: 1,
-      image: "/home/categories/1.png",
-    },
-    {
-      id: 4,
-      name: "Daisy Charm Anklet",
-      price: 450,
-      qty: 2,
-      image: "/home/categories/2.png",
-    },
-    {
-      id: 5,
-      name: "Pearl Stack Ring",
-      price: 799,
-      qty: 1,
-      image: "/home/categories/3.png",
-    },
-    {
-      id: 6,
-      name: "Boho Bead Necklace",
-      price: 1299,
-      qty: 1,
-      image: "/home/categories/4.png",
-    },
-    {
-      id: 7,
-      name: "Gold Plated Hoops",
-      price: 699,
-      qty: 1,
-      image: "/home/categories/1.png",
-    },
-    {
-      id: 8,
-      name: "Minimal Bar Bracelet",
-      price: 349,
-      qty: 3,
-      image: "/home/categories/2.png",
-    },
-    {
-      id: 9,
-      name: "Crystal Drop Earrings",
-      price: 899,
-      qty: 1,
-      image: "/home/categories/3.png",
-    },
-    {
-      id: 10,
-      name: "Charm Initial Necklace",
-      price: 1099,
-      qty: 1,
-      image: "/home/categories/4.png",
-    },
-    {
-      id: 11,
-      name: "Sunburst Pendant",
-      price: 749,
-      qty: 1,
-      image: "/home/categories/1.png",
-    },
-    {
-      id: 12,
-      name: "Luna Opal Ring",
-      price: 1199,
-      qty: 1,
-      image: "/home/categories/2.png",
-    },
-    {
-      id: 13,
-      name: "Beaded Anklet",
-      price: 259,
-      qty: 2,
-      image: "/home/categories/3.png",
-    },
-    {
-      id: 14,
-      name: "Stackable Bands",
-      price: 499,
-      qty: 1,
-      image: "/home/categories/4.png",
-    },
-    {
-      id: 15,
-      name: "Ribbon Choker",
-      price: 399,
-      qty: 1,
-      image: "/home/categories/1.png",
-    },
-    {
-      id: 16,
-      name: "Vintage Locket",
-      price: 1499,
-      qty: 1,
-      image: "/home/categories/2.png",
-    },
-    {
-      id: 17,
-      name: "Hamsa Bracelet",
-      price: 549,
-      qty: 2,
-      image: "/home/categories/3.png",
-    },
-    {
-      id: 18,
-      name: "Ocean Breeze Earrings",
-      price: 799,
-      qty: 1,
-      image: "/home/categories/4.png",
-    },
-    {
-      id: 19,
-      name: "Moonstone Ring",
-      price: 999,
-      qty: 1,
-      image: "/home/categories/1.png",
-    },
-    {
-      id: 20,
-      name: "Personalized Nameplate",
-      price: 1299,
-      qty: 1,
-      image: "/home/categories/2.png",
-    },
-  ]);
+  const router = useRouter();
+  const { data: cartData, isLoading, error } = useCartList();
+  const updateCartItemMutation = useUpdateCartItem();
+  const removeFromCartMutation = useRemoveFromCart();
+  
+  // Local state for pending quantity changes
+  const [pendingChanges, setPendingChanges] = useState<QuantityChange[]>([]);
+  
+  // Transform backend cart data to match CartTable component expectations
+  const items: CartItem[] = React.useMemo(() => {
+    if (!cartData?.cartItems) return [];
+    
+    return cartData.cartItems.map(item => {
+      const quantity = getCurrentQuantity(item.id, item.quantity, pendingChanges);
+      const regularPrice = Number(item.product.price);
+      const offerPrice = item.product.offerPrice ? Number(item.product.offerPrice) : undefined;
+      const effectivePrice = getEffectivePrice(regularPrice, offerPrice);
+      
+      return {
+        id: item.id,
+        name: item.product.productName || item.product.name || "Unknown Product",
+        price: effectivePrice,
+        qty: quantity,
+        image: item.product.images?.[0] || "/home/categories/1.png",
+      };
+    });
+  }, [cartData, pendingChanges]);
 
   const handleQtyChange = (id: CartItem["id"], qty: number) => {
-    setItems((prev) => prev.map((it) => (it.id === id ? { ...it, qty } : it)));
+    setPendingChanges(prev => updatePendingChanges(prev, String(id), qty));
   };
 
   const handleRemove = (id: CartItem["id"]) => {
-    setItems((prev) => prev.filter((it) => it.id !== id));
+    // Remove immediately from backend
+    removeFromCartMutation.mutate(String(id), {
+      onSuccess: () => {
+        toast.success("Item removed from cart");
+        // Also remove any pending changes for this item
+        setPendingChanges(prev => prev.filter(change => change.cartItemId !== String(id)));
+      },
+      onError: (error: any) => {
+        console.error("Remove cart item error:", error);
+        toast.error("Failed to remove item from cart");
+      }
+    });
   };
 
-  const subTotal = items.reduce((acc, it) => acc + it.price * it.qty, 0);
+  const handleProceed = async () => {
+    if (pendingChanges.length === 0) {
+      // No pending changes, proceed directly to checkout
+      router.push('/checkout');
+      return;
+    }
+
+    // Update all pending changes
+    try {
+      for (const change of pendingChanges) {
+        await updateCartItemMutation.mutateAsync({
+          id: change.cartItemId,
+          payload: { quantity: change.newQuantity }
+        });
+      }
+      
+      // Clear pending changes and navigate to checkout
+      setPendingChanges([]);
+      router.push('/checkout');
+      
+    } catch (error) {
+      console.error("Update cart error:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  // Calculate cart totals using utility function
+  const { subTotal, totalDiscount } = React.useMemo(() => {
+    if (!cartData?.cartItems) return { subTotal: 0, totalDiscount: 0 };
+    
+    return calculateCartTotals(cartData.cartItems, pendingChanges);
+  }, [cartData, pendingChanges]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
+          <p className="text-lg font-semibold">Loading your cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <p className="text-lg text-red-500 mb-4">Failed to load cart</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-[#00B5A5] text-white rounded hover:bg-[#00A095] transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty cart state
+  if (items.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <p className="text-lg text-gray-500 mb-4">Your cart is empty</p>
+          <button 
+            onClick={() => window.location.href = '/all/all/shop'} 
+            className="px-4 py-2 bg-[#00B5A5] text-white rounded hover:bg-[#00A095] transition-colors"
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[100vh] w-screen pl-20">
@@ -172,7 +156,14 @@ function CartPage() {
 
         <div className="w-[25%]">
           <div className="sticky">
-            <CartSummary subTotal={subTotal} />
+            <CartSummary 
+              subTotal={subTotal}
+              deliveryFee={60}
+              discount={totalDiscount}
+              onProceed={handleProceed}
+              isProceedLoading={updateCartItemMutation.isPending}
+              hasPendingChanges={pendingChanges.length > 0}
+            />
           </div>
         </div>
       </div>

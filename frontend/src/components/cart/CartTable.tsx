@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { LuArrowLeft } from "react-icons/lu";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import CartTableBody from "./CartTableBody";
 
@@ -29,12 +30,21 @@ export default function CartTable({
   onQtyChange,
   onRemove,
 }: Props) {
+  const router = useRouter();
+
+  const handleBackClick = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      router.back();
+    }
+  };
   return (
     <section className={cn("bg-white", className)}>
       {/* Header */}
       <div className="py-4 flex gap-x-6 items-center">
-        <button>
-          <LuArrowLeft className="size-5" onClick={onClose} />
+        <button className="cursor-pointer" onClick={handleBackClick}>
+          <LuArrowLeft className="size-5" />
         </button>
         <div className="flex gap-x-6 items-center">
           <h2 className="text-[36px] leading-[42px] tracking-[-1%]">{title}</h2>

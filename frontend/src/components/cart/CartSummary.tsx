@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { FiLoader } from "react-icons/fi";
 import ReusableButton2 from "../generalComponents/ReusableButton2";
 
 type Props = {
@@ -7,6 +8,9 @@ type Props = {
   deliveryFee?: number;
   discount?: number;
   className?: string;
+  onProceed?: () => void;
+  isProceedLoading?: boolean;
+  hasPendingChanges?: boolean;
 };
 
 const currency = (n: number) =>
@@ -18,7 +22,10 @@ const currency = (n: number) =>
 export default function CartSummary({
   subTotal,
   deliveryFee = 60,
-  discount = 100,
+  discount = 0,
+  onProceed,
+  isProceedLoading = false,
+  hasPendingChanges = false,
 }: Props) {
   const grandTotal = subTotal + deliveryFee - discount;
 
@@ -69,11 +76,20 @@ export default function CartSummary({
 
       <div className="mt-6">
           <ReusableButton2
+          onClick={onProceed}
+          disabled={isProceedLoading}
           className="border-white border hover:border-none w-full"
           bgClassName="bg-white"
           textClassName="text-white group-hover:text-[#1e1e1e] text-sm leading-[20px] tracking-[8%] font-semibold"
         >
-          Proceed to Checkout
+          {isProceedLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <FiLoader className="animate-spin size-4 text-white" />
+              <span>Processing...</span>
+            </div>
+          ) : (
+            "Proceed to Checkout"
+          )}
         </ReusableButton2>
       </div>
       </div>
