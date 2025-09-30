@@ -16,9 +16,10 @@ interface AddressFormProps {
   initial: AddressData;
   onCancel?: () => void;
   onSave: (data: AddressData) => void;
+  isEditing?: boolean; // New prop to determine if we're editing or adding
 }
 
-const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave }) => {
+const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, isEditing = false }) => {
   const [form, setForm] = React.useState<AddressData>(initial);
 
   const update = (k: keyof AddressData, v: string) => setForm((p) => ({ ...p, [k]: v }));
@@ -26,7 +27,9 @@ const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave }) 
   return (
     <div className="bg-[#fafafa] pt-5 pb-6 px-6 rounded-sm border border-[#f1f1f1]">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[22px] leading-[28px]">Edit Delivery Address</h3>
+        <h3 className="text-[22px] leading-[28px]">
+          {isEditing ? "Edit Delivery Address" : "Add New Delivery Address"}
+        </h3>
         <div className="flex gap-x-4">
           <button className="text-sm uppercase" onClick={() => onSave(form)}>Save</button>
           <button className="text-sm uppercase" onClick={onCancel}>Cancel</button>

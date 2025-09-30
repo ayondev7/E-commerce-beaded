@@ -14,7 +14,7 @@ const LoadingSpinner = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="flex flex-col items-center">
       <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-      <p className="text-lg font-semibold">Loading...</p>
+      <p className="text-lg text-[#7D7D7D]">Loading...</p>
     </div>
   </div>
 );
