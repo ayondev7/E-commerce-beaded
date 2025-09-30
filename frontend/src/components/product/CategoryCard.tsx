@@ -17,7 +17,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ image, title }) => {
       .replace(/[^a-z0-9\s-]/g, "")
       .trim()
       .replace(/\s+/g, "-");
-    router.push(`/${slug}/shop`);
+    router.push(`/all/${slug}/shop`);
   };
 
   return (

@@ -13,8 +13,7 @@ const LoadingSpinner = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
     <div className="text-center">
       <FiLoader className="animate-spin text-4xl text-blue-600 mx-auto mb-4" />
-      <p className="text-gray-600 text-lg">Verifying authentication...</p>
-      <p className="text-gray-400 text-sm mt-2">Please wait while we check your credentials</p>
+      <p className="text-gray-600 text-lg">Loading...</p>
     </div>
   </div>
 );

@@ -23,13 +23,15 @@ const Navbar = () => {
   return (
     <div className="flex flex-col pt-[26px] border-b border-[#b0b0b0]">
       <div className="w-full flex justify-center">
-        <Image
-          src="/logo.png"
-          alt="Beaded Logo"
-          className="w-[180px] h-[54px] object-contain"
-          width={600}
-          height={600}
-        />
+        <Link href="/">
+          <Image
+            src="/logo.png"
+            alt="Beaded Logo"
+            className="w-[180px] h-[54px] object-contain cursor-pointer"
+            width={600}
+            height={600}
+          />
+        </Link>
       </div>
       <div className="2xl:px-[149px] 2xl:py-[36px] flex justify-between items-center">
         <nav>
@@ -41,18 +43,34 @@ const Navbar = () => {
                 href: string;
               }[];
 
-              return items.map((item) => (
-                <li key={item.id}>
-                  <Link
-                    href={item.href}
-                    className={`px-5 py-3 cursor-pointer ${
-                      pathname === item.href ? "border border-black" : ""
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ));
+              return items.map((item) => {
+                // Determine if the current route should be considered active
+                const isActive = () => {
+                  if (item.href === '/') {
+                    // Home should only be active on exact root path
+                    return pathname === '/';
+                  } else if (item.href.includes('/shop')) {
+                    // For shop routes, check if the pathname contains the collection identifier
+                    const collectionPart = item.href.split('/')[1]; // e.g., 'all', 'hot-deals', 'eid-collection'
+                    return pathname.includes(`/${collectionPart}/`) && pathname.includes('/shop');
+                  }
+                  // Fallback to exact match for other routes
+                  return pathname === item.href;
+                };
+
+                return (
+                  <li key={item.id}>
+                    <Link
+                      href={item.href}
+                      className={`px-5 py-3 cursor-pointer ${
+                        isActive() ? "border border-black" : ""
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              });
             })()}
           </ul>
         </nav>

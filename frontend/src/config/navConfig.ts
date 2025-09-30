@@ -1,9 +1,9 @@
 const navItems = [
     { id: 1, label: 'Home', href: '/' },
-    { id: 2, label: 'Shop', href: '/shop' },
-    { id: 3, label: 'Hot Deals', href: '/deals' },
-    { id: 4, label: 'Eid Collection', href: '/collections/eid' },
-    { id: 5, label: 'boishakhi collection', href: '/collections/boishakhi' },
+    { id: 2, label: 'Shop', href: '/all/all/shop' },
+    { id: 3, label: 'Hot Deals', href: '/hot-deals/all/shop' },
+    { id: 4, label: 'Eid Collection', href: '/eid-collection/all/shop' },
+    { id: 5, label: 'boishakhi collection', href: '/boishakhi-collection/all/shop' },
 ];
 
 export default navItems;
