@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import LabelValue from "./LabelValue";
-import { FiEdit,FiTrash } from "react-icons/fi";
+import { FiEdit, FiTrash, FiLoader } from "react-icons/fi";
 import type { AddressData } from "../AddressForm";
 
 type Props = {
@@ -10,6 +10,8 @@ type Props = {
   onEdit: () => void;
   onDelete: () => void;
   onSetDefault?: () => void;
+  isDeleting?: boolean;
+  isSettingDefault?: boolean;
 };
 
 const AddressCard: React.FC<Props> = ({
@@ -18,23 +20,29 @@ const AddressCard: React.FC<Props> = ({
   onEdit,
   onDelete,
   onSetDefault,
+  isDeleting = false,
+  isSettingDefault = false,
 }) => {
   return (
     <div className="relative">
       <div className="bg-[#f8f8f8]">
         <div className="px-5 py-5 flex justify-between items-center border-b-[2px] border-[#ebebeb]">
           <span className="text-xl leading-[26px] ">
-            {data.type || "Address"}
+            {data.addressType || "Address"}
           </span>
           <div className="flex gap-x-2.5">
             <FiEdit
               className="inline size-[18px] hover:cursor-pointer"
               onClick={onEdit}
             />
-            <FiTrash
-              className="inline size-[18px] hover:cursor-pointer"
-              onClick={onDelete}
-            />
+            {isDeleting ? (
+              <FiLoader className="inline size-[18px] animate-spin" />
+            ) : (
+              <FiTrash
+                className="inline size-[18px] hover:cursor-pointer"
+                onClick={onDelete}
+              />
+            )}
           </div>
         </div>
 
@@ -42,8 +50,8 @@ const AddressCard: React.FC<Props> = ({
           <LabelValue label="Division" value={data.division} />
           <LabelValue label="District" value={data.district} />
           <LabelValue label="Area" value={data.area} />
-          <LabelValue label="ZIP Code" value={data.zip} />
-          <LabelValue label="Full Address" value={data.address} colSpan />
+          <LabelValue label="ZIP Code" value={data.zipCode} />
+          <LabelValue label="Full Address" value={data.fullAddress} colSpan />
         </div>
       </div>
       <div className="absolute bottom-[-45px] left-1/2 -translate-x-1/2 text-lg leading-[24px] flex items-center justify-center">
@@ -53,9 +61,11 @@ const AddressCard: React.FC<Props> = ({
           </span>
         ) : (
           <button
-            className=" uppercase"
+            className="uppercase flex items-center gap-1"
             onClick={onSetDefault}
+            disabled={isSettingDefault}
           >
+            {isSettingDefault && <FiLoader className="animate-spin size-4" />}
             Set as Address
           </button>
         )}

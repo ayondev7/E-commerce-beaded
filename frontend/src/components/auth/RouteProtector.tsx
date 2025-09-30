@@ -11,8 +11,8 @@ interface RouteProtectorProps {
 
 const LoadingSpinner = () => (
   <div className="min-h-screen flex items-center justify-center">
-    <div className="text-center">
-      <FiLoader className="animate-spin size-[30px] text-[#00B5A5] mb-4" />
+    <div className="flex flex-col items-center">
+      <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
       <p className="text-lg font-semibold">Loading...</p>
     </div>
   </div>

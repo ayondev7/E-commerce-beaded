@@ -10,31 +10,50 @@ import {
   precedenceOptions,
 } from "@/constants/addressConstants";
 import ReusableButton2 from "@/components/generalComponents/ReusableButton2";
+import { FiLoader } from "react-icons/fi";
 
 export interface AddressData {
   id?: string;
-  type: "Home" | "Work" | "Other" | "";
-  name?: string;
+  addressType: "Home" | "Work" | "Other" | "";
+  addressName?: string;
   division: string;
   district: string;
   area: string;
-  precedence?: "Default" | "Secondary" | "";
-  address: string;
-  zip: string;
+  isDefault?: boolean;
+  fullAddress: string;
+  zipCode: string;
 }
 
 interface AddressFormProps {
   title?: string;
   initial: AddressData;
+  onSave?: (data: AddressData) => void;
+  onCancel?: () => void;
+  isLoading?: boolean;
 }
 
 const AddressForm: React.FC<AddressFormProps> = ({
   title = "Add New Address",
   initial,
+  onSave,
+  onCancel,
+  isLoading = false,
 }) => {
   const [form, setForm] = React.useState<AddressData>(initial);
-  const update = (k: keyof AddressData, v: string) =>
+  const update = (k: keyof AddressData, v: string | boolean) =>
     setForm((p) => ({ ...p, [k]: v }));
+
+  const handleSave = () => {
+    if (onSave) {
+      onSave(form);
+    }
+  };
+
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    }
+  };
 
   return (
     <div className="bg-[#fafafa] py-[70px] px-[80px]">
@@ -45,8 +64,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <SelectField
             label={"Select Address Type"}
-            value={form.type}
-            onChange={(v) => update("type", v)}
+            value={form.addressType}
+            onChange={(v) => update("addressType", v)}
             options={["Home", "Work", "Other"]}
             placeholder={"Select"}
             triggerClassName={baseInputClass}
@@ -54,8 +73,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
           <InputField
             label={"Address Name (optional)"}
-            value={form.name || ""}
-            onChange={(v) => update("name", v)}
+            value={form.addressName || ""}
+            onChange={(v) => update("addressName", v)}
             placeholder={"Enter Address Name"}
             inputClassName={baseInputClass}
           />
@@ -99,16 +118,16 @@ const AddressForm: React.FC<AddressFormProps> = ({
 
           <SelectField
             label={"Precedence"}
-            value={form.precedence || ""}
-            onChange={(v) => update("precedence", v)}
-            options={precedenceOptions as unknown as string[]}
+            value={form.isDefault ? "Default" : "Secondary"}
+            onChange={(v) => update("isDefault", v === "Default" ? true : false)}
+            options={["Default", "Secondary"]}
             placeholder={"Select"}
             triggerClassName={baseInputClass}
           />
           <TextareaField
             label={"Full Address"}
-            value={form.address}
-            onChange={(v) => update("address", v)}
+            value={form.fullAddress}
+            onChange={(v) => update("fullAddress", v)}
             placeholder={"Please enter your full address"}
             rows={5}
             className={"md:col-span-2"}
@@ -116,8 +135,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
           />
           <InputField
             label={"ZIP Code"}
-            value={form.zip}
-            onChange={(v) => update("zip", v)}
+            value={form.zipCode}
+            onChange={(v) => update("zipCode", v)}
             placeholder={"Enter ZIP"}
             inputClassName={baseInputClass}
           />
@@ -126,15 +145,19 @@ const AddressForm: React.FC<AddressFormProps> = ({
           <ReusableButton2
             className="border border-[#7D7D7D] py-[15px] w-[290px]"
             textClassName="text-black"
+            onClick={handleCancel}
+            disabled={isLoading}
           >
             Cancel
           </ReusableButton2>
           <ReusableButton2
-            className="border bg-[#00b5a6] py-[15px] w-[290px]"
+            className="border bg-[#00b5a6] py-[15px] w-[290px] flex items-center justify-center gap-2"
             bgClassName="bg-[#00B5A5]"
             textClassName="text-white"
+            onClick={handleSave}
+            disabled={isLoading}
           >
-            Save Address
+            {isLoading ? <FiLoader className="animate-spin size-5" /> : "Save Address"}
           </ReusableButton2>
         </div>
       </div>
