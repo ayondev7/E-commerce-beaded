@@ -1,7 +1,7 @@
 import { prisma } from "../../config/db.js";
 import { validateCreateProduct } from "./productValidation.js";
 import processAndUploadImages from "../../utils/imageUtils.js";
-import slugify from "slugify";
+import { generateUniqueSlug } from "../../utils/slugUtils.js";
 
 export const addNewProduct = async (req, res, next) => {
 	try {
@@ -26,7 +26,7 @@ export const addNewProduct = async (req, res, next) => {
 
 		const imageUrls = await processAndUploadImages(files);
 
-		const slug = slugify(productName);
+		const slug = await generateUniqueSlug(productName);
 
 		const product = await prisma.product.create({
 			data: {
@@ -118,14 +118,14 @@ export const getProductList = async (req, res, next) => {
 	}
 };
 
-export const getProductById = async (req, res, next) => {
+export const getProductBySlug = async (req, res, next) => {
 	try {
 		const { productSlug } = req.params;
 		const customerId = req.customer?.id;
 		
 		if (!productSlug) return res.status(400).json({ message: "Product slug is required" });
 
-		const product = await prisma.product.findUnique({ 
+		const product = await prisma.product.findFirst({ 
 			where: { productSlug: productSlug },
 			include: { category: true },
 		});
@@ -189,7 +189,7 @@ export const patchProduct = async (req, res, next) => {
 
 		if (typeof productName !== "undefined" && productName !== existing.productName) {
 			data.productName = productName;
-			data.productSlug = slugify(productName);
+			data.productSlug = await generateUniqueSlug(productName);
 		}
 
 		if (typeof productDescription !== "undefined" && productDescription !== existing.productDescription) {
@@ -339,7 +339,7 @@ export const getLatestCollectionProducts = async (req, res, next) => {
 const productController = {
 	addNewProduct,
 	getProductList,
-	getProductById,
+	getProductBySlug,
 	patchProduct,
 	deleteProduct,
 	getBestSellerProducts,

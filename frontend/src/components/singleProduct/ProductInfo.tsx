@@ -26,16 +26,7 @@ const ProductInfo = ({
 
       {/* Price */}
       <div className="text-[32px] text-[#00B5A5] mb-[14px] flex items-center justify-start gap-x-1">
-        <span>
-          <Image
-            src="/icons/taka.png"
-            alt="Taka Icon"
-            width={100}
-            height={100}
-            className="inline-block object-contain h-[46px] w-[21px]"
-          />
-        </span>
-        <span>{price}</span>
+        <span>TK. {price}</span>
       </div>
 
       {/* Description */}

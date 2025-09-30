@@ -43,6 +43,7 @@ const WishlistGrid: React.FC = () => {
           <div key={item.id} className="flex flex-col items-center">
             <ProductCard 
               productId={item.product.id}
+              productSlug={item.product.productSlug}
               titleClassName="text-lg" 
               imageClassName="2xl:w-[320px] 2xl:h-[380px]" 
               image={item.product.images?.[0] || ""} 

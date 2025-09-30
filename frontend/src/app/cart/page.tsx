@@ -114,12 +114,6 @@ function CartPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center">
           <p className="text-lg text-red-500 mb-4">Failed to load cart</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-[#00B5A5] text-white rounded hover:bg-[#00A095] transition-colors"
-          >
-            Retry
-          </button>
         </div>
       </div>
     );

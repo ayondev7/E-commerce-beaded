@@ -19,6 +19,7 @@ const CardSlider: FC = () => {
 
   const mappedProducts = productsArray.map((p: any, idx: number) => ({
     id: p.id ?? idx,
+    productSlug: p.productSlug ?? ``,
     image:
       Array.isArray(p.images) && p.images.length
         ? p.images[0]
@@ -97,6 +98,7 @@ const CardSlider: FC = () => {
                     name={product.name}
                     price={product.price}
                     isInCart={product.isInCart}
+                    productSlug={product.productSlug}
                     isInWishlist={product.isInWishlist}
                   />
                 </div>

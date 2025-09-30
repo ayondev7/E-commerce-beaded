@@ -70,30 +70,35 @@ const ProductCard: React.FC<ProductCardProps> = ({
       },
       onError: (error: any) => {
         console.log("Cart error:", error);
-        
+
         if (error?.response) {
           const status = error.response.status;
           const message = error.response.data?.message;
-          
+
           if (status === 401) {
             toast.error("Please sign in to add items to your cart");
-          } else if (status === 400 && message === "Product already exists in cart") {
+          } else if (
+            status === 400 &&
+            message === "Product already exists in cart"
+          ) {
             toast.error("This product is already in your cart");
           } else if (status === 404) {
             toast.error("This product is no longer available");
-          } else if (message && typeof message === 'string') {
+          } else if (message && typeof message === "string") {
             toast.error(message);
           } else {
             toast.error("Failed to add to cart. Please try again");
           }
         } else if (error?.request) {
-          toast.error("Network error. Please check your connection and try again");
+          toast.error(
+            "Network error. Please check your connection and try again"
+          );
         } else if (error?.message) {
           toast.error(`Error: ${error.message}`);
         } else {
           toast.error("Failed to add to cart. Please try again");
         }
-      }
+      },
     });
   };
 
@@ -112,30 +117,35 @@ const ProductCard: React.FC<ProductCardProps> = ({
       },
       onError: (error: any) => {
         console.log("Wishlist error:", error);
-        
+
         if (error?.response) {
           const status = error.response.status;
           const message = error.response.data?.message;
-          
+
           if (status === 401) {
             toast.error("Please sign in to add items to your wishlist");
-          } else if (status === 400 && message === "Product already exists in wishlist") {
+          } else if (
+            status === 400 &&
+            message === "Product already exists in wishlist"
+          ) {
             toast.error("This product is already in your wishlist");
           } else if (status === 404) {
             toast.error("This product is no longer available");
-          } else if (message && typeof message === 'string') {
+          } else if (message && typeof message === "string") {
             toast.error(message);
           } else {
             toast.error("Failed to add to wishlist. Please try again");
           }
         } else if (error?.request) {
-          toast.error("Network error. Please check your connection and try again");
+          toast.error(
+            "Network error. Please check your connection and try again"
+          );
         } else if (error?.message) {
           toast.error(`Error: ${error.message}`);
         } else {
           toast.error("Failed to add to wishlist. Please try again");
         }
-      }
+      },
     });
   };
 
@@ -151,44 +161,50 @@ const ProductCard: React.FC<ProductCardProps> = ({
       },
       onError: (error: any) => {
         console.log("Remove wishlist error:", error);
-        
+
         if (error?.response) {
           const status = error.response.status;
           const message = error.response.data?.message;
-          
+
           if (status === 401) {
             toast.error("Please sign in to manage your wishlist");
           } else if (status === 404) {
             toast.error("Item not found in wishlist");
-          } else if (message && typeof message === 'string') {
+          } else if (message && typeof message === "string") {
             toast.error(message);
           } else {
             toast.error("Failed to remove from wishlist. Please try again");
           }
         } else if (error?.request) {
-          toast.error("Network error. Please check your connection and try again");
+          toast.error(
+            "Network error. Please check your connection and try again"
+          );
         } else if (error?.message) {
           toast.error(`Error: ${error.message}`);
         } else {
           toast.error("Failed to remove from wishlist. Please try again");
         }
-      }
+      },
     });
   };
   return (
     <div className="max-w-[390px]">
       <div className="relative overflow-hidden group">
         <Image
+          onClick={handleImageClick}
           src={image}
           alt="product"
           width={500}
           height={500}
-          className={cn("object-cover 2xl:w-[390px] 2xl:h-[495px]", imageClassName)}
+          className={cn(
+            "object-cover 2xl:w-[390px] 2xl:h-[495px] cursor-pointer",
+            imageClassName
+          )}
         />
         <div className="bg-white/35 absolute w-full bottom-0 h-[100px] transform translate-y-[120%] transition-transform duration-300 ease-out group-hover:translate-y-0">
           <div className="flex justify-center h-full items-center gap-x-3 text-[#7D7D7D]">
             {showRemoveWishlist ? (
-              <button 
+              <button
                 onClick={handleRemoveFromWishlist}
                 disabled={removeFromWishlistMutation.isPending}
                 className="bg-[#00B5A5] p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors"
@@ -196,36 +212,43 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <LuHeartOff className="size-[24px] text-white" />
               </button>
             ) : (
-              <button 
+              <button
                 onClick={handleAddToWishlist}
                 disabled={addToWishlistMutation.isPending}
                 className={`p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors ${
-                  isInWishlist 
-                    ? "bg-[#00B5A5] text-white" 
-                    : "bg-white"
+                  isInWishlist ? "bg-[#00B5A5] text-white" : "bg-white"
                 }`}
               >
-                <LuHeart className={`size-[24px] ${isInWishlist ? "text-white" : ""}`} />
+                <LuHeart
+                  className={`size-[24px] ${isInWishlist ? "text-white" : ""}`}
+                />
               </button>
             )}
-            <button 
+            <button
               onClick={handleAddToCart}
               disabled={addToCartMutation.isPending}
               className={`p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors ${
-                isInCart 
-                  ? "bg-[#00B5A5] text-white" 
-                  : "bg-white"
+                isInCart ? "bg-[#00B5A5] text-white" : "bg-white"
               }`}
             >
-              <LuShoppingBag className={`size-[24px] ${isInCart ? "text-white" : ""}`} />
+              <LuShoppingBag
+                className={`size-[24px] ${isInCart ? "text-white" : ""}`}
+              />
             </button>
           </div>
         </div>
       </div>
       <div className="flex flex-col mt-[18px] uppercase items-center">
-        <h1 className={cn("text-sm text-[#6D6D6D]", categoryClassName)}>{category}</h1>
+        <h1 className={cn("text-sm text-[#6D6D6D]", categoryClassName)}>
+          {category}
+        </h1>
         <h2 className={cn("mt-[12px] text-xl", titleClassName)}>{name}</h2>
-        <div className={cn("mt-1.5 text-2xl font-medium text-[#00B5A5] flex items-center justify-center", priceClassName)}>
+        <div
+          className={cn(
+            "mt-1.5 text-2xl font-medium text-[#00B5A5] flex items-center justify-center",
+            priceClassName
+          )}
+        >
           <span>
             <TbCurrencyTaka className="text-[26px]" />
           </span>
