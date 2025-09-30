@@ -3,6 +3,14 @@ import {
   validateCreateOrder,
   validateUpdateOrderStatus,
 } from "./orderValidation.js";
+import {
+  findCartWithProduct,
+  findAddressForCustomer,
+  getOrderIncludeOptions,
+  findOrderByIdAndCustomer,
+  validateOrderStatusUpdate,
+  validateOrderCancellation
+} from "./orderServices.js";
 
 const getUserOrders = async (req, res, next) => {
   try {
@@ -10,18 +18,7 @@ const getUserOrders = async (req, res, next) => {
 
     const orders = await prisma.order.findMany({
       where: { customerId },
-      include: {
-        cart: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        address: true,
-      },
+      include: getOrderIncludeOptions(),
       orderBy: { createdAt: "desc" },
     });
 
@@ -40,24 +37,7 @@ const getOrderById = async (req, res, next) => {
       return res.status(400).json({ message: "Order ID is required" });
     }
 
-    const order = await prisma.order.findFirst({
-      where: {
-        id: orderId,
-        customerId,
-      },
-      include: {
-        cart: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        address: true,
-      },
-    });
+    const order = await findOrderByIdAndCustomer(orderId, customerId);
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -82,28 +62,13 @@ const createOrder = async (req, res, next) => {
 
     const { cartId, addressId, notes } = validation.data;
 
-    // Check if cart exists and belongs to the customer
-    const cart = await prisma.cart.findFirst({
-      where: {
-        id: cartId,
-        customerId,
-      },
-      include: {
-        product: true,
-      },
-    });
+    const cart = await findCartWithProduct(cartId, customerId);
 
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    // Check if address exists and belongs to the customer
-    const address = await prisma.address.findFirst({
-      where: {
-        id: addressId,
-        customerId,
-      },
-    });
+    const address = await findAddressForCustomer(addressId, customerId);
 
     if (!address) {
       return res.status(404).json({ message: "Address not found" });
@@ -118,18 +83,7 @@ const createOrder = async (req, res, next) => {
         notes: notes || "",
         orderStatus: "pending",
       },
-      include: {
-        cart: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        address: true,
-      },
+      include: getOrderIncludeOptions(),
     });
     try {
       await prisma.cart.update({
@@ -138,16 +92,7 @@ const createOrder = async (req, res, next) => {
       });
       const refreshedOrder = await prisma.order.findUnique({
         where: { id: order.id },
-        include: {
-          cart: {
-            include: {
-              product: {
-                include: { category: true },
-              },
-            },
-          },
-          address: true,
-        },
+        include: getOrderIncludeOptions(),
       });
 
       return res.status(201).json({
@@ -184,52 +129,21 @@ const updateOrderStatus = async (req, res, next) => {
 
     const { orderStatus } = validation.data;
 
-    // Check if order exists and belongs to the customer
-    const existingOrder = await prisma.order.findFirst({
-      where: {
-        id: orderId,
-        customerId,
-      },
-    });
+    const existingOrder = await findOrderByIdAndCustomer(orderId, customerId);
 
     if (!existingOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Check if the order can be updated (not already delivered or cancelled)
-    if (
-      existingOrder.orderStatus === "delivered" ||
-      existingOrder.orderStatus === "cancelled"
-    ) {
-      return res.status(400).json({
-        message: `Cannot update order status. Order is already ${existingOrder.orderStatus}`,
-      });
-    }
-
-    // Prevent customers from updating certain statuses (only allow cancellation)
-    const allowedCustomerStatuses = ["cancelled"];
-    if (!allowedCustomerStatuses.includes(orderStatus)) {
-      return res.status(403).json({
-        message:
-          "You can only cancel orders. Other status updates are handled by the system.",
-      });
+    const statusValidation = validateOrderStatusUpdate(existingOrder.orderStatus, orderStatus);
+    if (!statusValidation.valid) {
+      return res.status(400).json({ message: statusValidation.message });
     }
 
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data: { orderStatus },
-      include: {
-        cart: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        address: true,
-      },
+      include: getOrderIncludeOptions(),
     });
 
     return res.status(200).json({
@@ -250,41 +164,21 @@ const cancelOrder = async (req, res, next) => {
       return res.status(400).json({ message: "Order ID is required" });
     }
 
-    // Check if order exists and belongs to the customer
-    const existingOrder = await prisma.order.findFirst({
-      where: {
-        id: orderId,
-        customerId,
-      },
-    });
+    const existingOrder = await findOrderByIdAndCustomer(orderId, customerId);
 
     if (!existingOrder) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Check if the order can be cancelled
-    const nonCancellableStatuses = ["delivered", "cancelled", "shipped"];
-    if (nonCancellableStatuses.includes(existingOrder.orderStatus)) {
-      return res.status(400).json({
-        message: `Cannot cancel order. Order is already ${existingOrder.orderStatus}`,
-      });
+    const cancellationValidation = validateOrderCancellation(existingOrder.orderStatus);
+    if (!cancellationValidation.valid) {
+      return res.status(400).json({ message: cancellationValidation.message });
     }
 
     const cancelledOrder = await prisma.order.update({
       where: { id: orderId },
       data: { orderStatus: "cancelled" },
-      include: {
-        cart: {
-          include: {
-            product: {
-              include: {
-                category: true,
-              },
-            },
-          },
-        },
-        address: true,
-      },
+      include: getOrderIncludeOptions(),
     });
 
     return res.status(200).json({

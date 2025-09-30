@@ -1,5 +1,11 @@
 import { prisma } from "../../config/db.js";
 import { validateAddToCart, validateUpdateCartItem } from "./cartValidation.js";
+import {
+  calculateCartItemPrices,
+  findCartItemByCustomerAndId,
+  findExistingCartItem,
+  getCartIncludeOptions
+} from "./cartServices.js";
 
 const getUserCart = async (req, res, next) => {
   try {
@@ -13,13 +19,7 @@ const getUserCart = async (req, res, next) => {
           { isInOrderList: null },
         ],
       },
-      include: {
-        product: {
-          include: {
-            category: true,
-          },
-        },
-      },
+      include: getCartIncludeOptions(),
       orderBy: { createdAt: "desc" },
     });
 
@@ -46,12 +46,7 @@ const addToCart = async (req, res, next) => {
 
     const { productId, quantity } = validation.data;
 
-    const existingCartItem = await prisma.cart.findFirst({
-      where: {
-        customerId,
-        productId,
-      },
-    });
+    const existingCartItem = await findExistingCartItem(customerId, productId);
 
     if (existingCartItem) {
       return res
@@ -66,34 +61,16 @@ const addToCart = async (req, res, next) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Calculate values based on product data
-    const price = parseFloat(product.price);
-    const offerPrice = product.offerPrice
-      ? parseFloat(product.offerPrice)
-      : null;
-    const effectivePrice = offerPrice || price;
-    const discount = offerPrice ? (price - offerPrice) * quantity : 0;
-    const subTotal = effectivePrice * quantity;
-    const deliveryFee = 60.0; // Always 60.00 as specified
-    const grandTotal = subTotal + deliveryFee;
+    const prices = calculateCartItemPrices(product, quantity);
 
     const cartItem = await prisma.cart.create({
       data: {
         customerId,
         productId,
         quantity,
-        subTotal,
-        deliveryFee,
-        discount,
-        grandTotal,
+        ...prices
       },
-      include: {
-        product: {
-          include: {
-            category: true,
-          },
-        },
-      },
+      include: getCartIncludeOptions(),
     });
 
     return res.status(201).json({
@@ -122,15 +99,7 @@ const updateCartItem = async (req, res, next) => {
     }
 
     // Check if cart item exists and belongs to the customer
-    const existingCartItem = await prisma.cart.findFirst({
-      where: {
-        id: cartItemId,
-        customerId,
-      },
-      include: {
-        product: true,
-      },
-    });
+    const existingCartItem = await findCartItemByCustomerAndId(cartItemId, customerId);
 
     if (!existingCartItem) {
       return res.status(404).json({ message: "Cart item not found" });
@@ -144,22 +113,9 @@ const updateCartItem = async (req, res, next) => {
       typeof quantity !== "undefined" &&
       quantity !== existingCartItem.quantity
     ) {
-      const product = existingCartItem.product;
-      const price = parseFloat(product.price);
-      const offerPrice = product.offerPrice
-        ? parseFloat(product.offerPrice)
-        : null;
-      const effectivePrice = offerPrice || price;
-      const discount = offerPrice ? (price - offerPrice) * quantity : 0;
-      const subTotal = effectivePrice * quantity;
-      const deliveryFee = 60.0; // Always 60.00 as specified
-      const grandTotal = subTotal + deliveryFee;
-
+      const prices = calculateCartItemPrices(existingCartItem.product, quantity);
       data.quantity = quantity;
-      data.subTotal = subTotal;
-      data.deliveryFee = deliveryFee;
-      data.discount = discount;
-      data.grandTotal = grandTotal;
+      Object.assign(data, prices);
     }
 
     if (Object.keys(data).length === 0) {
@@ -171,13 +127,7 @@ const updateCartItem = async (req, res, next) => {
     const updatedCartItem = await prisma.cart.update({
       where: { id: cartItemId },
       data,
-      include: {
-        product: {
-          include: {
-            category: true,
-          },
-        },
-      },
+      include: getCartIncludeOptions(),
     });
 
     return res.status(200).json({
@@ -216,13 +166,7 @@ const removeFromCart = async (req, res, next) => {
 
     const deletedCartItem = await prisma.cart.delete({
       where: { id: cartItemId },
-      include: {
-        product: {
-          include: {
-            category: true,
-          },
-        },
-      },
+      include: getCartIncludeOptions(),
     });
 
     return res.status(200).json({

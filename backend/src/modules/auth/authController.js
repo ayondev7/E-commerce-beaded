@@ -5,6 +5,13 @@ import processAndUploadImages from "../../utils/imageUtils.js";
 import { generateTokens } from "../../utils/tokenUtils.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {
+  verifyAccessToken,
+  verifyRefreshToken,
+  findCustomerById,
+  generateNewAccessToken,
+  createAuthResponse
+} from "./authServices.js";
 
 export const googleSignin = async (req, res, next) => {
   try {
@@ -122,128 +129,60 @@ export const verifyAuth = async (req, res, next) => {
     const authHeader = req.headers.authorization || req.headers.Authorization;
     const refreshToken = req.headers["x-refresh-token"];
 
-    // Check if both tokens are provided
     if (!authHeader || !refreshToken) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Access denied. Tokens missing.",
-        action: "REDIRECT_TO_LOGIN"
-      });
+      return res.status(401).json(createAuthResponse(false, "Access denied. Tokens missing.", "REDIRECT_TO_LOGIN"));
     }
 
-    // Extract access token
     if (!authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ 
-        success: false, 
-        message: "Invalid token format.",
-        action: "REDIRECT_TO_LOGIN"
-      });
+      return res.status(401).json(createAuthResponse(false, "Invalid token format.", "REDIRECT_TO_LOGIN"));
     }
 
     const accessToken = authHeader.split(" ")[1];
 
     try {
-      // Try to verify access token
-      const accessPayload = jwt.verify(accessToken, process.env.JWT_SECRET);
+      const accessPayload = verifyAccessToken(accessToken);
       const customerId = accessPayload?.id;
 
       if (!customerId) {
-        return res.status(401).json({ 
-          success: false, 
-          message: "Invalid access token payload.",
-          action: "REDIRECT_TO_LOGIN"
-        });
+        return res.status(401).json(createAuthResponse(false, "Invalid access token payload.", "REDIRECT_TO_LOGIN"));
       }
 
-      // Verify customer exists in database
-      const customer = await prisma.customer.findUnique({
-        where: { id: customerId },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true
-        }
-      });
+      const customer = await findCustomerById(customerId);
 
       if (!customer) {
-        return res.status(401).json({ 
-          success: false, 
-          message: "Customer not found.",
-          action: "REDIRECT_TO_LOGIN"
-        });
+        return res.status(401).json(createAuthResponse(false, "Customer not found.", "REDIRECT_TO_LOGIN"));
       }
 
-      // Access token is valid and customer exists
-      return res.status(200).json({ 
-        success: true, 
-        message: "Access granted.",
-        action: "ALLOW_ACCESS",
-        customer
-      });
+      return res.status(200).json(createAuthResponse(true, "Access granted.", "ALLOW_ACCESS", { customer }));
 
     } catch (accessTokenError) {
-      // Access token is expired or invalid, check refresh token
       if (accessTokenError.name === "TokenExpiredError") {
         try {
-          // Verify refresh token
-          const refreshPayload = jwt.verify(refreshToken, process.env.JWT_SECRET);
+          const refreshPayload = verifyRefreshToken(refreshToken);
           const customerId = refreshPayload?.id;
 
           if (!customerId) {
-            return res.status(401).json({ 
-              success: false, 
-              message: "Invalid refresh token payload.",
-              action: "REDIRECT_TO_LOGIN"
-            });
+            return res.status(401).json(createAuthResponse(false, "Invalid refresh token payload.", "REDIRECT_TO_LOGIN"));
           }
 
-          // Verify customer exists
-          const customer = await prisma.customer.findUnique({
-            where: { id: customerId },
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true
-            }
-          });
+          const customer = await findCustomerById(customerId);
 
           if (!customer) {
-            return res.status(401).json({ 
-              success: false, 
-              message: "Customer not found.",
-              action: "REDIRECT_TO_LOGIN"
-            });
+            return res.status(401).json(createAuthResponse(false, "Customer not found.", "REDIRECT_TO_LOGIN"));
           }
 
-          // Generate new access token
-          const payload = { id: customer.id, email: customer.email };
-          const { accessToken: newAccessToken } = generateTokens(payload);
+          const newAccessToken = generateNewAccessToken(customer);
 
-          return res.status(200).json({ 
-            success: true, 
-            message: "Access token refreshed.",
-            action: "UPDATE_ACCESS_TOKEN",
-            accessToken: newAccessToken,
-            customer
-          });
+          return res.status(200).json(createAuthResponse(true, "Access token refreshed.", "UPDATE_ACCESS_TOKEN", { 
+            accessToken: newAccessToken, 
+            customer 
+          }));
 
         } catch (refreshTokenError) {
-          // Refresh token is also expired or invalid
-          return res.status(401).json({ 
-            success: false, 
-            message: "Session expired. Please login again.",
-            action: "REDIRECT_TO_LOGIN"
-          });
+          return res.status(401).json(createAuthResponse(false, "Session expired. Please login again.", "REDIRECT_TO_LOGIN"));
         }
       } else {
-        // Access token is invalid (not just expired)
-        return res.status(401).json({ 
-          success: false, 
-          message: "Invalid access token.",
-          action: "REDIRECT_TO_LOGIN"
-        });
+        return res.status(401).json(createAuthResponse(false, "Invalid access token.", "REDIRECT_TO_LOGIN"));
       }
     }
 

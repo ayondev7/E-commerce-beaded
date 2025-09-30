@@ -2,6 +2,13 @@ import { prisma } from "../../config/db.js";
 import { validateCreateProduct } from "./productValidation.js";
 import processAndUploadImages from "../../utils/imageUtils.js";
 import { generateUniqueSlug } from "../../utils/slugUtils.js";
+import {
+  getProductIncludeOptions,
+  enrichProductsWithStatus,
+  enrichSingleProductWithStatus,
+  buildProductWhereCondition,
+  calculatePaginationData
+} from "./productServices.js";
 
 export const addNewProduct = async (req, res, next) => {
 	try {
@@ -52,66 +59,29 @@ export const getProductList = async (req, res, next) => {
 		const { page = "1", limit = "9", categoryId, collectionName } = req.query;
 		const customerId = req.customer?.id;
 
-		const pageNum = Math.max(parseInt(page, 10) || 1, 1);
-		const limitNum = Math.min(Math.max(parseInt(limit, 10) || 9, 1), 100);
-
-		const where = {};
-		if (categoryId) {
-			where.categoryId = categoryId;
-		}
-		if (collectionName) {
-			where.productCollection = collectionName;
-		}
+		const pagination = calculatePaginationData(page, limit, 0);
+		const where = buildProductWhereCondition(categoryId, collectionName);
 
 		const [total, products, totalProductsInDb] = await Promise.all([
 			prisma.product.count({ where }),
 			prisma.product.findMany({
 				where,
-				skip: (pageNum - 1) * limitNum,
-				take: limitNum,
+				skip: pagination.skip,
+				take: pagination.limitNum,
 				orderBy: { createdAt: "desc" },
-				include: { category: true },
+				include: getProductIncludeOptions(),
 			}),
 			prisma.product.count()
 		]);
 
-		let productsWithStatus = products;
-		
-		if (customerId) {
-			const [cartItems, wishlistItems] = await Promise.all([
-				prisma.cart.findMany({
-					where: { customerId },
-					select: { productId: true }
-				}),
-				prisma.wishlist.findMany({
-					where: { customerId },
-					select: { productId: true }
-				})
-			]);
-
-			const cartProductIds = new Set(cartItems.map(item => item.productId));
-			const wishlistProductIds = new Set(wishlistItems.map(item => item.productId));
-
-			productsWithStatus = products.map(p => ({
-				...p,
-				categoryName: p.category.name,
-				isInCart: cartProductIds.has(p.id),
-				isInWishlist: wishlistProductIds.has(p.id)
-			}));
-		} else {
-			productsWithStatus = products.map(p => ({
-				...p,
-				categoryName: p.category.name,
-				isInCart: false,
-				isInWishlist: false
-			}));
-		}
+		const finalPagination = calculatePaginationData(page, limit, total);
+		const productsWithStatus = await enrichProductsWithStatus(products, customerId);
 
 		return res.status(200).json({
-			page: pageNum,
-			limit: limitNum,
+			page: finalPagination.pageNum,
+			limit: finalPagination.limitNum,
 			total,
-			totalPages: Math.max(Math.ceil(total / limitNum), 1),
+			totalPages: finalPagination.totalPages,
 			totalProductsInDb,
 			products: productsWithStatus,
 		});
@@ -129,30 +99,11 @@ export const getProductBySlug = async (req, res, next) => {
 
 		const product = await prisma.product.findFirst({ 
 			where: { productSlug: productSlug },
-			include: { category: true },
+			include: getProductIncludeOptions(),
 		});
 		if (!product) return res.status(404).json({ message: "Product not found" });
 
-		let productWithStatus = {
-			...product,
-			categoryName: product.category.name,
-			isInCart: false,
-			isInWishlist: false
-		};
-
-		if (customerId) {
-			const [cartItem, wishlistItem] = await Promise.all([
-				prisma.cart.findFirst({
-					where: { customerId, productId: product.id }
-				}),
-				prisma.wishlist.findFirst({
-					where: { customerId, productId: product.id }
-				})
-			]);
-
-			productWithStatus.isInCart = !!cartItem;
-			productWithStatus.isInWishlist = !!wishlistItem;
-		}
+		const productWithStatus = await enrichSingleProductWithStatus(product, customerId);
 
 		return res.status(200).json({ product: productWithStatus });
 	} catch (err) {
@@ -248,41 +199,11 @@ export const getBestSellerProducts = async (req, res, next) => {
 		const products = await prisma.product.findMany({
 			take: 50,
 			orderBy: { createdAt: "desc" },
-			include: { category: true },
+			include: getProductIncludeOptions(),
 		});
 		const shuffled = products.sort(() => Math.random() - 0.5).slice(0, 12);
 
-		let productsWithStatus = shuffled;
-
-		if (customerId) {
-			const [cartItems, wishlistItems] = await Promise.all([
-				prisma.cart.findMany({
-					where: { customerId },
-					select: { productId: true }
-				}),
-				prisma.wishlist.findMany({
-					where: { customerId },
-					select: { productId: true }
-				})
-			]);
-
-			const cartProductIds = new Set(cartItems.map(item => item.productId));
-			const wishlistProductIds = new Set(wishlistItems.map(item => item.productId));
-
-			productsWithStatus = shuffled.map(p => ({
-				...p,
-				categoryName: p.category.name,
-				isInCart: cartProductIds.has(p.id),
-				isInWishlist: wishlistProductIds.has(p.id)
-			}));
-		} else {
-			productsWithStatus = shuffled.map(p => ({
-				...p,
-				categoryName: p.category.name,
-				isInCart: false,
-				isInWishlist: false
-			}));
-		}
+		const productsWithStatus = await enrichProductsWithStatus(shuffled, customerId);
 
 		return res.status(200).json({ products: productsWithStatus });
 	} catch (err) {
@@ -297,40 +218,10 @@ export const getLatestCollectionProducts = async (req, res, next) => {
 		const products = await prisma.product.findMany({
 			take: 12,
 			orderBy: { createdAt: "desc" },
-			include: { category: true },
+			include: getProductIncludeOptions(),
 		});
 
-		let productsWithStatus = products;
-
-		if (customerId) {
-			const [cartItems, wishlistItems] = await Promise.all([
-				prisma.cart.findMany({
-					where: { customerId },
-					select: { productId: true }
-				}),
-				prisma.wishlist.findMany({
-					where: { customerId },
-					select: { productId: true }
-				})
-			]);
-
-			const cartProductIds = new Set(cartItems.map(item => item.productId));
-			const wishlistProductIds = new Set(wishlistItems.map(item => item.productId));
-
-			productsWithStatus = products.map(p => ({
-				...p,
-				categoryName: p.category.name,
-				isInCart: cartProductIds.has(p.id),
-				isInWishlist: wishlistProductIds.has(p.id)
-			}));
-		} else {
-			productsWithStatus = products.map(p => ({
-				...p,
-				categoryName: p.category.name,
-				isInCart: false,
-				isInWishlist: false
-			}));
-		}
+		const productsWithStatus = await enrichProductsWithStatus(products, customerId);
 
 		return res.status(200).json({ products: productsWithStatus });
 	} catch (err) {
