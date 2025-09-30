@@ -1,7 +1,8 @@
 import React from "react";
 import { orderStatuses, OrderStatus } from "@/constants/orderStatuses";
 import { LuArrowRight } from "react-icons/lu";
-import { useUserOrders, Order } from "@/hooks/orderHooks";
+import { useUserOrders } from "@/hooks/orderHooks";
+import { Order } from "@/types";
 
 interface OrderItem {
   id: string;

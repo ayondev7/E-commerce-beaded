@@ -11,9 +11,9 @@ import {
   calculateCartTotals, 
   updatePendingChanges, 
   getCurrentQuantity, 
-  getEffectivePrice,
-  type QuantityChange 
+  getEffectivePrice
 } from "@/lib/utils";
+import { type QuantityChange } from "@/types";
 
 function CartPage() {
   const router = useRouter();

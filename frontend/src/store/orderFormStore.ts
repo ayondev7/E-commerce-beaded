@@ -1,31 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-
-export interface DeliveryInfo {
-  selectedAddressId: string;
-  notes: string;
-}
-
-export interface OrderFormData {
-  // Essential data only
-  cartId?: string;
-  orderId?: string;
-  deliveryInfo: DeliveryInfo;
-  currentStep: number;
-}
-
-interface OrderFormStore {
-  orderData: OrderFormData;
-  
-  // Actions
-  setDeliveryInfo: (deliveryInfo: DeliveryInfo) => void;
-  setCartId: (cartId: string) => void;
-  setOrderId: (orderId: string) => void;
-  setCurrentStep: (step: number) => void;
-  
-  // Reset store
-  resetOrderForm: () => void;
-}
+import { DeliveryInfo, OrderFormData, OrderFormStore } from '@/types';
 
 const initialOrderData: OrderFormData = {
   cartId: undefined,

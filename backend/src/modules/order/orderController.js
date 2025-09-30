@@ -131,11 +131,36 @@ const createOrder = async (req, res, next) => {
         address: true,
       },
     });
+    try {
+      await prisma.cart.update({
+        where: { id: cartId },
+        data: { isInOrderList: true },
+      });
+      const refreshedOrder = await prisma.order.findUnique({
+        where: { id: order.id },
+        include: {
+          cart: {
+            include: {
+              product: {
+                include: { category: true },
+              },
+            },
+          },
+          address: true,
+        },
+      });
 
-    return res.status(201).json({
-      message: "Order created successfully",
-      order,
-    });
+      return res.status(201).json({
+        message: "Order created successfully",
+        order: refreshedOrder,
+      });
+    } catch (updateErr) {
+      return res.status(201).json({
+        message: "Order created successfully (but failed to update cart)",
+        order,
+        warning: updateErr.message,
+      });
+    }
   } catch (err) {
     return next(err);
   }

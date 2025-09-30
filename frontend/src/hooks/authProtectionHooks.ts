@@ -3,31 +3,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AUTH_ROUTES } from "@/routes/authRoutes";
-
-type AuthVerificationResponse = {
-  success: boolean;
-  message: string;
-  action: "REDIRECT_TO_LOGIN" | "ALLOW_ACCESS" | "UPDATE_ACCESS_TOKEN";
-  accessToken?: string;
-  customer?: {
-    id: string;
-    name: string;
-    email: string;
-    image: string;
-  };
-};
-
-type AuthState = {
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  error: string | null;
-  customer: {
-    id: string;
-    name: string;
-    email: string;
-    image: string;
-  } | null;
-};
+import { AuthVerificationResponse, AuthState } from "@/types";
 
 export function useAuthProtection() {
   const { data: session, update } = useSession();

@@ -3,45 +3,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import WISHLIST_ROUTES from "@/routes/wishlistRoutes";
 import apiClient from "./apiClient";
-import { Product } from "./productHooks";
+import { 
+  WishlistItem, 
+  WishlistListResponse, 
+  AddToWishlistPayload 
+} from "@/types";
 
-// Types
-export type WishlistItem = {
-  id: string;
-  customerId: string;
-  productId: string;
-  product: {
-    id: string;
-    categoryId: string;
-    productCollection: string;
-    productName: string;
-    productDescription: string;
-    productSlug: string;
-    price: number;
-    offerPrice?: number;
-    isInCart?: boolean;
-    images: string[];
-    category: {
-      id: string;
-      name: string;
-      image: string;
-    };
-    createdAt: string;
-    updatedAt: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type WishlistListResponse = {
-  wishlistItems: WishlistItem[];
-};
-
-export type AddToWishlistPayload = {
-  productId: string;
-};
-
-// Queries
 export const fetchWishlistList = async () => {
   const { data } = await apiClient.get(WISHLIST_ROUTES.list);
   return data as WishlistListResponse;
@@ -55,7 +22,6 @@ export function useWishlistList() {
   });
 }
 
-// Mutations
 export const addToWishlist = async (payload: AddToWishlistPayload) => {
   const { data } = await apiClient.post(WISHLIST_ROUTES.addToWishlist, payload);
   return data;

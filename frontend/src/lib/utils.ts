@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { CartCalculationItem, QuantityChange, CartTotals } from "@/types"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -11,27 +12,6 @@ export function formatDisplayName(name: string | undefined | null, maxWords = 2)
   if (parts.length <= maxWords) return name.trim();
   return parts.slice(0, maxWords).join(" ");
 }
-
-// Cart calculation utilities
-export type CartCalculationItem = {
-  id: string;
-  product: {
-    price: number;
-    offerPrice?: number;
-  };
-  quantity: number;
-};
-
-export type QuantityChange = {
-  cartItemId: string;
-  newQuantity: number;
-};
-
-export type CartTotals = {
-  subTotal: number;
-  totalDiscount: number;
-  grandTotal: number;
-};
 
 /**
  * Calculate the effective price for a single item (offer price if available, otherwise regular price)

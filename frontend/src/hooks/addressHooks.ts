@@ -3,41 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ADDRESS_ROUTES from "@/routes/addressRoutes";
 import apiClient from "./apiClient";
+import {
+  Address,
+  AddressListResponse,
+  CreateAddressPayload,
+  UpdateAddressPayload
+} from "@/types";
 
-// Types
-export type Address = {
-  id: string;
-  addressType: string;
-  addressName: string;
-  division: string;
-  district: string;
-  area: string;
-  zipCode: string;
-  fullAddress: string;
-  isDefault: boolean;
-  customerId: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type AddressListResponse = {
-  addresses: Address[];
-};
-
-export type CreateAddressPayload = {
-  addressType: string;
-  addressName: string;
-  division: string;
-  district: string;
-  area: string;
-  zipCode: string;
-  fullAddress: string;
-  isDefault?: boolean;
-};
-
-export type UpdateAddressPayload = Partial<CreateAddressPayload>;
-
-// Queries
 export const fetchAddressList = async () => {
   const { data } = await apiClient.get(ADDRESS_ROUTES.list);
   return data as AddressListResponse;
@@ -51,7 +23,6 @@ export function useAddressList() {
   });
 }
 
-// Mutations
 export const createAddress = async (payload: CreateAddressPayload) => {
   const { data } = await apiClient.post(ADDRESS_ROUTES.create, payload);
   return data;

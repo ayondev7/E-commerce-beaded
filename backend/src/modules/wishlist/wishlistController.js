@@ -16,8 +16,26 @@ const getUserWishlist = async (req, res, next) => {
 			},
 			orderBy: { createdAt: "desc" }
 		});
+
+		// Get all cart items for this customer to check if products are in cart
+		const cartItems = await prisma.cart.findMany({
+			where: { customerId },
+			select: { productId: true }
+		});
+
+		// Create a Set of product IDs that are in the cart for quick lookup
+		const cartProductIds = new Set(cartItems.map(item => item.productId));
+
+		// Add isInCart field to each wishlist item
+		const wishlistWithCartStatus = wishlistItems.map(item => ({
+			...item,
+			product: {
+				...item.product,
+				isInCart: cartProductIds.has(item.productId)
+			}
+		}));
 		
-		return res.status(200).json({ wishlistItems });
+		return res.status(200).json({ wishlistItems: wishlistWithCartStatus });
 	} catch (err) {
 		return next(err);
 	}

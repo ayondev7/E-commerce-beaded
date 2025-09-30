@@ -4,12 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
 import type { Account, Profile, User, Session } from "next-auth";
 import { AUTH_ROUTES } from "@/routes/authRoutes";
-
-type GoogleProfile = Profile & {
-  name?: string;
-  email?: string;
-  picture?: string;
-};
+import { GoogleProfile } from "@/types";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET,

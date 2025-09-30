@@ -13,6 +13,7 @@ import CustomPagination from "../generalComponents/CustomPagination";
 
 const ProductShowcase = () => {
   const products = Array.from({ length: 20 }, (_, i) => ({
+    productId: `product-${i + 1}`,
     image: "/home/categories/1.png",
     category: "Beaded Jewelry",
     name: `Product ${i + 1}`,

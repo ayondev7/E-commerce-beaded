@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import CategoryCard from "@/components/product/CategoryCard";
-import { useCategoryList, Category } from "@/hooks/categoryHooks";
+import { useCategoryList } from "@/hooks/categoryHooks";
+import { Category } from "@/types";
 import ProductCardSkeleton from "@/components/skeleton/ProductCardSkeleton";
 
 const Categories = () => {

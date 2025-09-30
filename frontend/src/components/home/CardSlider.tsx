@@ -4,7 +4,8 @@ import useEmblaCarousel from "embla-carousel-react";
 import ProductCard from "@/components/product/ProductCard";
 import ReusableButton from "@/components/generalComponents/ReusableButton";
 import ProductCardSkeleton from "@/components/skeleton/ProductCardSkeleton";
-import { useBestSellers, Product as ProductType } from "@/hooks/productHooks";
+import { useBestSellers } from "@/hooks/productHooks";
+import { Product as ProductType } from "@/types";
 
 const CardSlider: FC = () => {
   const { data: bestSellers, isLoading } = useBestSellers();

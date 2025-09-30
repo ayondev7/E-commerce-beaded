@@ -2,28 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AUTH_ROUTES from "@/routes/authRoutes";
 import apiClient from "./apiClient";
-
-export type MeResponse = {
-	id?: string;
-	name?: string | null;
-	gender?: "male" | "female" | null;
-	dateOfBirth?: string | null;
-	phoneNumber?: string | null;
-	email?: string | null;
-	providerId?: string | null;
-	image?: string | null;
-	createdAt?: string;
-	updatedAt?: string;
-};
-
-export type UpdateMeRequest = {
-	name?: string;
-	gender?: "male" | "female" | null;
-	dateOfBirth?: string | null;
-	phoneNumber?: string | null;
-	email?: string;
-	password?: string;
-};
+import { MeResponse, UpdateMeRequest } from "@/types";
 
 export const fetchMe = async (): Promise<MeResponse> => {
 	const { data } = await apiClient.get(AUTH_ROUTES.me);

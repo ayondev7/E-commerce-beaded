@@ -2,19 +2,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import CATEGORY_ROUTES from "@/routes/categoryRoutes";
 import apiClient from "./apiClient";
-
-export type Category = {
-	id: string | number;
-	name: string;
-	description?: string;
-	image?: string;
-	createdAt?: string;
-	updatedAt?: string;
-};
-
-export type CategoryListResponse = {
-	categories: Category[];
-};
+import { Category, CategoryListResponse, CategoryPayload } from "@/types";
 
 export const fetchCategoryList = async () => {
 	const { data } = await apiClient.get(CATEGORY_ROUTES.list);
@@ -42,8 +30,6 @@ export function useCategory(id: string | number | undefined) {
 		staleTime: 60_000,
 	});
 }
-
-type CategoryPayload = FormData | Record<string, any>;
 
 const toFormData = (payload: CategoryPayload) => {
 	if (payload instanceof FormData) return payload;

@@ -3,38 +3,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import PRODUCT_ROUTES from "@/routes/productRoutes";
 import apiClient from "./apiClient";
+import { Product, ProductListResponse, CreateProductInput } from "@/types";
 
-// Types
-export type Product = {
-	id: string;
-	categoryId: string;
-	productCollection: string;
-	productName: string;
-	productDescription: string;
-	productSlug: string;
-	price: number;
-	offerPrice?: number;
-	images: string[];
-	category?: {
-		id: string;
-		name: string;
-		image: string;
-	};
-	createdAt: string;
-	updatedAt: string;
-	// Legacy fields for compatibility
-	name?: string;
-	description?: string;
-};
-
-export type ProductListResponse = {
-	items: Product[];
-	total?: number;
-	page?: number;
-	pageSize?: number;
-} | Product[];
-
-// Queries
 export const fetchProductList = async (params?: Record<string, any>) => {
 	const { data } = await apiClient.get(PRODUCT_ROUTES.list, { params });
 	return data as ProductListResponse;
@@ -77,9 +47,6 @@ export function useLatestCollection() {
 		staleTime: 60_000,
 	});
 }
-
-// Mutations
-type CreateProductInput = FormData | Record<string, any>;
 
 const toFormData = (payload: CreateProductInput) => {
 	if (payload instanceof FormData) return payload;

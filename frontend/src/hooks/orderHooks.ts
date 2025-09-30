@@ -3,81 +3,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ORDER_ROUTES from "@/routes/orderRoutes";
 import apiClient from "./apiClient";
-
-export type OrderCart = {
-  id: string;
-  productId: string;
-  customerId: string;
-  quantity: number;
-  subTotal: number;
-  deliveryFee: number;
-  discount: number;
-  grandTotal: number;
-  product: {
-    id: string;
-    categoryId: string;
-    productCollection: string;
-    productName: string;
-    productDescription: string;
-    productSlug: string;
-    price: number;
-    offerPrice?: number;
-    images: string[];
-    category: {
-      id: string;
-      name: string;
-      image: string;
-    };
-  };
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type OrderAddress = {
-  id: string;
-  customerId: string;
-  addressType: string;
-  addressName: string;
-  division: string;
-  district: string;
-  area: string;
-  zipCode: string;
-  fullAddress: string;
-  isDefault: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type Order = {
-  id: string;
-  customerId: string;
-  cartId: string;
-  addressId: string;
-  notes: string;
-  orderStatus: "pending" | "shipped" | "delivered" | "cancelled";
-  cart: OrderCart;
-  address: OrderAddress;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type OrdersListResponse = {
-  orders: Order[];
-};
-
-export type OrderDetailResponse = {
-  order: Order;
-};
-
-export type CreateOrderPayload = {
-  cartId: string;
-  addressId: string;
-  notes?: string;
-};
-
-export type UpdateOrderStatusPayload = {
-  orderStatus: "cancelled";
-};
+import {
+  OrderCart,
+  OrderAddress,
+  Order,
+  OrdersListResponse,
+  OrderDetailResponse,
+  CreateOrderPayload,
+  UpdateOrderStatusPayload
+} from "@/types";
 
 export const fetchUserOrders = async (): Promise<OrdersListResponse> => {
   const { data } = await apiClient.get(ORDER_ROUTES.getUserOrders);

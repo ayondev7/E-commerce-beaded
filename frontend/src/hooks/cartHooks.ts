@@ -3,46 +3,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import CART_ROUTES from "@/routes/cartRoutes";
 import apiClient from "./apiClient";
-import { Product } from "./productHooks";
+import { 
+  CartItem, 
+  CartListResponse, 
+  AddToCartPayload, 
+  UpdateCartItemPayload, 
+  CartCountResponse 
+} from "@/types";
 
-// Types
-export type CartItem = {
-  id: string;
-  quantity: number;
-  subTotal: number;
-  deliveryFee: number;
-  discount: number;
-  grandTotal: number;
-  customerId: string;
-  productId: string;
-  product: Product & {
-    category: {
-      id: string;
-      name: string;
-    };
-  };
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type CartListResponse = {
-  cartItems: CartItem[];
-};
-
-export type AddToCartPayload = {
-  productId: string;
-  quantity: number;
-};
-
-export type UpdateCartItemPayload = {
-  quantity: number;
-};
-
-export type CartCountResponse = {
-  count: number;
-};
-
-// Queries
 export const fetchCartList = async () => {
   const { data } = await apiClient.get(CART_ROUTES.list);
   return data as CartListResponse;
@@ -69,7 +37,6 @@ export function useCartCount() {
   });
 }
 
-// Mutations
 export const addToCart = async (payload: AddToCartPayload) => {
   const { data } = await apiClient.post(CART_ROUTES.addToCart, payload);
   return data;
