@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { FiLoader } from "react-icons/fi";
 import InputField, { baseInputClass } from "@/components/generalComponents/Form/InputField";
 import SelectField from "@/components/generalComponents/Form/SelectField";
 import TextareaField from "@/components/generalComponents/Form/TextareaField";
@@ -17,9 +18,10 @@ interface AddressFormProps {
   onCancel?: () => void;
   onSave: (data: AddressData) => void;
   isEditing?: boolean; // New prop to determine if we're editing or adding
+  isLoading?: boolean; // New prop for loading state
 }
 
-const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, isEditing = false }) => {
+const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, isEditing = false, isLoading = false }) => {
   const [form, setForm] = React.useState<AddressData>(initial);
 
   const update = (k: keyof AddressData, v: string) => setForm((p) => ({ ...p, [k]: v }));
@@ -31,8 +33,31 @@ const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, is
           {isEditing ? "Edit Delivery Address" : "Add New Delivery Address"}
         </h3>
         <div className="flex gap-x-4">
-          <button className="text-sm uppercase" onClick={() => onSave(form)}>Save</button>
-          <button className="text-sm uppercase" onClick={onCancel}>Cancel</button>
+          <button 
+            type="button"
+            className="text-sm uppercase flex items-center gap-1" 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onSave(form);
+            }}
+            disabled={isLoading}
+          >
+            {isLoading && <FiLoader className="animate-spin size-3" />}
+            {isLoading ? "Saving..." : "Save"}
+          </button>
+          <button 
+            type="button"
+            className="text-sm uppercase" 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onCancel?.();
+            }}
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
         </div>
       </div>
 

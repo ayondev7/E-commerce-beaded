@@ -6,7 +6,7 @@ import { FiLoader } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { useStepper } from "./Stepper";
 import { useMe } from "@/hooks/customerHooks";
-import { useAddressList, useCreateAddress, useUpdateAddress } from "@/hooks/addressHooks";
+import { useAddressList, useUpdateAddress } from "@/hooks/addressHooks";
 import { useOrderFormStore } from "@/store/orderFormStore";
 import SelectField from "@/components/generalComponents/Form/SelectField";
 import InputField, {
@@ -37,14 +37,12 @@ export default function DeliveryInfo() {
   const { next } = useStepper();
   const { data: userInfo, isLoading: userLoading } = useMe();
   const { data: addressData, isLoading: addressLoading } = useAddressList();
-  const createAddressMutation = useCreateAddress();
   const updateAddressMutation = useUpdateAddress();
   
   // Zustand store
   const { setDeliveryInfo, setCurrentStep, orderData } = useOrderFormStore();
   
   const [editingAddress, setEditingAddress] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedAddressDetails, setSelectedAddressDetails] = useState<any>(null);
 
   const addresses = addressData?.addresses || [];
@@ -54,15 +52,13 @@ export default function DeliveryInfo() {
   
   // Load existing data from store if available
   useEffect(() => {
-    if (orderData.deliveryInfo.selectedAddressDetails) {
-      setSelectedAddressDetails(orderData.deliveryInfo.selectedAddressDetails);
-    }
-  }, [orderData.deliveryInfo.selectedAddressDetails]);
+    // No need to load selectedAddressDetails since we're not storing it
+  }, []);
   
   // Show loader until everything is ready
   if (isLoading) {
     return (
-      <section className="px-[150px] flex justify-center items-center min-h-[600px]">
+      <section className="px-[150px] flex justify-center items-center min-h-[700px]">
         <div className="flex flex-col items-center">
           <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
           <p className="text-lg text-[#7D7D7D]">Loading delivery information...</p>
@@ -75,19 +71,8 @@ export default function DeliveryInfo() {
   const handleAddressSelection = (addressName: string, setFieldValue: any) => {
     const selectedAddress = addresses.find(addr => addr.addressName === addressName);
     if (selectedAddress) {
-      setFieldValue('selectedAddressId', selectedAddress.id);
+      setFieldValue('selectedAddressId', addressName); // Store address name instead of ID
       setSelectedAddressDetails(selectedAddress);
-    }
-  };
-
-  const handleCreateAddress = async (addressData: any) => {
-    try {
-      await createAddressMutation.mutateAsync(addressData);
-      setShowAddressForm(false);
-      toast.success("Address added successfully");
-    } catch (error) {
-      console.error("Create address error:", error);
-      toast.error("Failed to add address");
     }
   };
 
@@ -107,24 +92,18 @@ export default function DeliveryInfo() {
   return (
     <Formik
       initialValues={{
-        selectedAddressId: orderData.deliveryInfo.selectedAddressId || "",
+        selectedAddressId: "",
         notes: orderData.deliveryInfo.notes || "",
       }}
       validate={validateForm}
       onSubmit={(values) => {
-        // Create the delivery info object
+        // Find the selected address by name to get the actual ID
+        const selectedAddress = addresses.find(addr => addr.addressName === values.selectedAddressId);
+        
+        // Create the delivery info object with only essential data
         const deliveryInfo = {
-          selectedAddressId: values.selectedAddressId,
+          selectedAddressId: selectedAddress?.id || "",
           notes: values.notes,
-          selectedAddressDetails: selectedAddressDetails ? {
-            id: selectedAddressDetails.id,
-            division: selectedAddressDetails.division,
-            district: selectedAddressDetails.district,
-            zipCode: selectedAddressDetails.zipCode,
-            area: selectedAddressDetails.area,
-            fullAddress: selectedAddressDetails.fullAddress,
-            addressName: selectedAddressDetails.addressName,
-          } : null,
         };
         
         // Store in Zustand
@@ -134,7 +113,6 @@ export default function DeliveryInfo() {
         // Console log the form data for debugging
         console.log("=== STEP 2 COMPLETED ===");
         console.log("Form values submitted:", values);
-        console.log("Selected address details:", selectedAddressDetails);
         console.log("Delivery info stored:", deliveryInfo);
         
         // Proceed to next step
@@ -172,9 +150,10 @@ export default function DeliveryInfo() {
               <div>
                 <h2 className="text-[32px] mb-2">Notes</h2>
                 <Field name="notes">
-                  {({ field }: any) => (
+                  {({ field, form }: any) => (
                     <InputField
-                      {...field}
+                      value={field.value}
+                      onChange={(value) => form.setFieldValue('notes', value)}
                       placeholder="Notes"
                       inputClassName={baseInputClass}
                       className="max-w-[400px]"
@@ -207,39 +186,18 @@ export default function DeliveryInfo() {
                   </div>
                   <ReusableButton2
                     type="button"
-                    onClick={() => setShowAddressForm(true)}
+                    onClick={() => router.push('/address')}
                     className="border border-[#7D7D7D] hover:border-none"
                     bgClassName="bg-[#00B5A5]"
                     textClassName="group-hover:text-white"
-                    disabled={createAddressMutation.isPending}
                   >
-                    {createAddressMutation.isPending ? (
-                      <div className="flex items-center gap-2">
-                        <FiLoader className="animate-spin size-4" />
-                        Adding...
-                      </div>
-                    ) : (
-                      "Add new Address"
-                    )}
+                    Add new Address
                   </ReusableButton2>
                 </div>
               </div>
 
-              {/* Show address form or address details */}
-              {showAddressForm ? (
-                <AddressForm
-                  initial={{
-                    division: "",
-                    district: "",
-                    zip: "",
-                    area: "",
-                    fullAddress: "",
-                  }}
-                  isEditing={false}
-                  onCancel={() => setShowAddressForm(false)}
-                  onSave={(addressData) => handleCreateAddress(addressData)}
-                />
-              ) : selectedAddressDetails ? (
+              {/* Show address details and editing form */}
+              {selectedAddressDetails ? (
                 editingAddress ? (
                   <AddressForm
                     initial={{
@@ -250,6 +208,7 @@ export default function DeliveryInfo() {
                       fullAddress: selectedAddressDetails.fullAddress,
                     }}
                     isEditing={true}
+                    isLoading={updateAddressMutation.isPending}
                     onCancel={() => setEditingAddress(false)}
                     onSave={(addressData) => 
                       handleUpdateAddress(selectedAddressDetails.id, {
@@ -284,16 +243,8 @@ export default function DeliveryInfo() {
                   type="submit"
                   className="bg-[#00b5a6] w-[251px]"
                   textClassName="text-white"
-                  disabled={updateAddressMutation.isPending}
                 >
-                  {updateAddressMutation.isPending ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <FiLoader className="animate-spin size-4" />
-                      Updating...
-                    </div>
-                  ) : (
-                    "Review Order"
-                  )}
+                  Review Order
                 </ReusableButton2>
               </div>
             </div>
