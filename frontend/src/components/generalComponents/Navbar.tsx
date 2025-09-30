@@ -43,41 +43,52 @@ const Navbar = () => {
                 href: string;
               }[];
 
-              return items.map((item) => {
-                // Determine if the current route should be considered active
-                const isActive = () => {
-                  if (item.href === '/') {
-                    // Home should only be active on exact root path
-                    return pathname === '/';
-                  } else if (item.href.includes('/shop')) {
-                    // For shop routes, check if the pathname contains the collection identifier
-                    const collectionPart = item.href.split('/')[1]; // e.g., 'all', 'hot-deals', 'eid-collection'
-                    return pathname.includes(`/${collectionPart}/`) && pathname.includes('/shop');
-                  }
-                  // Fallback to exact match for other routes
-                  return pathname === item.href;
-                };
+              const getActiveItemId = () => {
+                if (pathname === "/") {
+                  return 1;
+                }
 
-                return (
-                  <li key={item.id}>
-                    <Link
-                      href={item.href}
-                      className={`px-5 py-3 cursor-pointer ${
-                        isActive() ? "border border-black" : ""
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              });
+                if (pathname.includes("/hot-deals/") && pathname.includes("/shop")) {
+                  return 3;
+                }
+                if (pathname.includes("/eid-collection/") && pathname.includes("/shop")) {
+                  return 4;
+                }
+                if (pathname.includes("/boishakhi-collection/") && pathname.includes("/shop")) {
+                  return 5;
+                }
+                
+                if (pathname.includes("/all/") && pathname.includes("/shop")) {
+                  return 2;
+                }
+
+                return null;
+              };
+
+              const activeItemId = getActiveItemId();
+
+              return items.map((item) => (
+                <li key={item.id}>
+                  <Link
+                    href={item.href}
+                    className={`px-5 py-3 cursor-pointer ${
+                      activeItemId === item.id ? "border border-black" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ));
             })()}
           </ul>
         </nav>
 
         <div className="flex items-center gap-x-[32px]">
           {userName ? (
-            <Link href="/profile" className="flex items-center gap-2.5 text-[17px]">
+            <Link
+              href="/profile"
+              className="flex items-center gap-2.5 text-[17px]"
+            >
               {userImage ? (
                 <Image
                   src={userImage}
@@ -92,7 +103,10 @@ const Navbar = () => {
               <span className="max-w-[160px] truncate">{userName}</span>
             </Link>
           ) : (
-            <Link href="/sign-in" className="flex items-center gap-2.5 text-[17px]">
+            <Link
+              href="/sign-in"
+              className="flex items-center gap-2.5 text-[17px]"
+            >
               <LuUser size={20} />
               <span>SIGN IN</span>
             </Link>

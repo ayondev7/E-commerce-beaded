@@ -25,6 +25,10 @@ const getUserCart = async (req, res, next) => {
 
 const addToCart = async (req, res, next) => {
 	try {
+		if (!req.customer || !req.customer.id) {
+			return res.status(401).json({ message: "Authentication required" });
+		}
+		
 		const customerId = req.customer.id;
 		const validation = validateAddToCart(req.body);
 		
@@ -34,13 +38,6 @@ const addToCart = async (req, res, next) => {
 		
 		const { productId, quantity, subTotal, deliveryFee, discount, grandTotal } = validation.data;
 		
-		// Check if product exists
-		const product = await prisma.product.findUnique({ where: { id: productId } });
-		if (!product) {
-			return res.status(404).json({ message: "Product not found" });
-		}
-		
-		// Check if item already exists in cart
 		const existingCartItem = await prisma.cart.findFirst({
 			where: { 
 				customerId,
@@ -49,32 +46,14 @@ const addToCart = async (req, res, next) => {
 		});
 		
 		if (existingCartItem) {
-			// Update existing cart item
-			const updatedCartItem = await prisma.cart.update({
-				where: { id: existingCartItem.id },
-				data: {
-					quantity: existingCartItem.quantity + quantity,
-					subTotal,
-					deliveryFee,
-					discount,
-					grandTotal
-				},
-				include: {
-					product: {
-						include: {
-							category: true
-						}
-					}
-				}
-			});
-			
-			return res.status(200).json({ 
-				message: "Cart item updated successfully", 
-				cartItem: updatedCartItem 
-			});
+			return res.status(400).json({ message: "Product already exists in cart" });
 		}
 		
-		// Create new cart item
+		const product = await prisma.product.findUnique({ where: { id: productId } });
+		if (!product) {
+			return res.status(404).json({ message: "Product not found" });
+		}
+		
 		const cartItem = await prisma.cart.create({
 			data: {
 				customerId,
@@ -175,6 +154,10 @@ const updateCartItem = async (req, res, next) => {
 
 const removeFromCart = async (req, res, next) => {
 	try {
+		if (!req.customer || !req.customer.id) {
+			return res.status(401).json({ message: "Authentication required" });
+		}
+		
 		const { cartItemId } = req.params;
 		const customerId = req.customer.id;
 		
@@ -216,6 +199,10 @@ const removeFromCart = async (req, res, next) => {
 
 const clearCart = async (req, res, next) => {
 	try {
+		if (!req.customer || !req.customer.id) {
+			return res.status(401).json({ message: "Authentication required" });
+		}
+		
 		const customerId = req.customer.id;
 		
 		const deletedItems = await prisma.cart.deleteMany({

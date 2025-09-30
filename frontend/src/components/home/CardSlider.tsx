@@ -25,6 +25,8 @@ const CardSlider: FC = () => {
     category: p.categoryName ?? p.category?.name ?? "BRACELET",
     name: p.productName ?? "Product",
     price: Number(p.offerPrice ?? p.price ?? 0),
+    isInCart: p.isInCart ?? false,
+    isInWishlist: p.isInWishlist ?? false,
   }));
 
   const slidesPerPage = 4;
@@ -62,9 +64,18 @@ const CardSlider: FC = () => {
     };
   }, [emblaApi, mappedProducts.length, isLoading]);
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
-  const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+  const scrollPrev = useCallback(
+    () => emblaApi && emblaApi.scrollPrev(),
+    [emblaApi]
+  );
+  const scrollNext = useCallback(
+    () => emblaApi && emblaApi.scrollNext(),
+    [emblaApi]
+  );
+  const scrollTo = useCallback(
+    (index: number) => emblaApi && emblaApi.scrollTo(index),
+    [emblaApi]
+  );
 
   return (
     <div>
@@ -79,10 +90,13 @@ const CardSlider: FC = () => {
             : mappedProducts.map((product) => (
                 <div key={product.id} className="flex-[0_0_25%] px-2.5">
                   <ProductCard
+                    productId={product.id}
                     image={product.image}
                     category={product.category}
                     name={product.name}
                     price={product.price}
+                    isInCart={product.isInCart}
+                    isInWishlist={product.isInWishlist}
                   />
                 </div>
               ))}

@@ -3,12 +3,18 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { TbCurrencyTaka } from "react-icons/tb";
 import { LuHeart, LuShoppingBag } from "react-icons/lu";
+import { useAddToCart } from "@/hooks/cartHooks";
+import { useAddToWishlist } from "@/hooks/wishlistHooks";
+import toast from "react-hot-toast";
 
 interface ProductCardProps {
+  productId: string;
   image: string;
   category: string;
   name: string;
   price: number;
+  isInCart?: boolean;
+  isInWishlist?: boolean;
   imageClassName?: string;
   titleClassName?: string;
   categoryClassName?: string;
@@ -16,15 +22,109 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
+  productId,
   image,
   category,
   name,
   price,
+  isInCart = false,
+  isInWishlist = false,
   imageClassName,
   titleClassName,
   categoryClassName,
   priceClassName,
 }) => {
+  const addToCartMutation = useAddToCart();
+  const addToWishlistMutation = useAddToWishlist();
+
+  const handleAddToCart = () => {
+    if (isInCart) {
+      toast.error("Product is already in your cart!");
+      return;
+    }
+
+    const cartPayload = {
+      productId,
+      quantity: 1,
+      subTotal: price,
+      deliveryFee: 0,
+      discount: 0,
+      grandTotal: price,
+    };
+    addToCartMutation.mutate(cartPayload, {
+      onSuccess: () => {
+        toast.success("Added to cart!");
+      },
+      onError: (error: any) => {
+        console.log("Cart error:", error);
+        
+        if (error?.response) {
+          const status = error.response.status;
+          const message = error.response.data?.message;
+          
+          if (status === 401) {
+            toast.error("Please sign in to add items to your cart");
+          } else if (status === 400 && message === "Product already exists in cart") {
+            toast.error("This product is already in your cart");
+          } else if (status === 404) {
+            toast.error("This product is no longer available");
+          } else if (message && typeof message === 'string') {
+            toast.error(message);
+          } else {
+            toast.error("Failed to add to cart. Please try again");
+          }
+        } else if (error?.request) {
+          toast.error("Network error. Please check your connection and try again");
+        } else if (error?.message) {
+          toast.error(`Error: ${error.message}`);
+        } else {
+          toast.error("Failed to add to cart. Please try again");
+        }
+      }
+    });
+  };
+
+  const handleAddToWishlist = () => {
+    if (isInWishlist) {
+      toast.error("Product is already in your wishlist!");
+      return;
+    }
+
+    const wishlistPayload = {
+      productId,
+    };
+    addToWishlistMutation.mutate(wishlistPayload, {
+      onSuccess: () => {
+        toast.success("Added to wishlist!");
+      },
+      onError: (error: any) => {
+        console.log("Wishlist error:", error);
+        
+        if (error?.response) {
+          const status = error.response.status;
+          const message = error.response.data?.message;
+          
+          if (status === 401) {
+            toast.error("Please sign in to add items to your wishlist");
+          } else if (status === 400 && message === "Product already exists in wishlist") {
+            toast.error("This product is already in your wishlist");
+          } else if (status === 404) {
+            toast.error("This product is no longer available");
+          } else if (message && typeof message === 'string') {
+            toast.error(message);
+          } else {
+            toast.error("Failed to add to wishlist. Please try again");
+          }
+        } else if (error?.request) {
+          toast.error("Network error. Please check your connection and try again");
+        } else if (error?.message) {
+          toast.error(`Error: ${error.message}`);
+        } else {
+          toast.error("Failed to add to wishlist. Please try again");
+        }
+      }
+    });
+  };
   return (
     <div className="max-w-[390px]">
       <div className="relative overflow-hidden group">
@@ -37,8 +137,28 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
         <div className="bg-white/35 absolute w-full bottom-0 h-[100px] transform translate-y-[120%] transition-transform duration-300 ease-out group-hover:translate-y-0">
           <div className="flex justify-center h-full items-center gap-x-3 text-[#7D7D7D]">
-            <button className="bg-white p-3 rounded-full"><LuHeart className="size-[24px]" /></button>
-            <button className="bg-white p-3 rounded-full"><LuShoppingBag className="size-[24px]" /></button>
+            <button 
+              onClick={handleAddToWishlist}
+              disabled={addToWishlistMutation.isPending}
+              className={`p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors ${
+                isInWishlist 
+                  ? "bg-[#00B5A5] text-white" 
+                  : "bg-white"
+              }`}
+            >
+              <LuHeart className={`size-[24px] ${isInWishlist ? "fill-current" : ""}`} />
+            </button>
+            <button 
+              onClick={handleAddToCart}
+              disabled={addToCartMutation.isPending}
+              className={`p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors ${
+                isInCart 
+                  ? "bg-[#00B5A5] text-white" 
+                  : "bg-white"
+              }`}
+            >
+              <LuShoppingBag className="size-[24px]" />
+            </button>
           </div>
         </div>
       </div>
