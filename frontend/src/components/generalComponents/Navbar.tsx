@@ -7,18 +7,24 @@ import navItems from "../../config/navConfig";
 import { LuUser, LuShoppingBag, LuLogOut } from "react-icons/lu";
 import { signOut, useSession } from "next-auth/react";
 import { useMe } from "@/hooks/customerHooks";
+import { useCartCount } from "@/hooks/cartHooks";
 import { formatDisplayName } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: session } = useSession();
   const { data: me } = useMe();
+  const { data: cartData } = useCartCount();
   const userName = me?.name ?? session?.user?.name ?? "";
   const userImage = me?.image ?? session?.user?.image ?? "";
+  const cartCount = cartData?.count ?? 0;
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
+    queryClient.clear();
     router.push("/sign-in");
   };
   return (
@@ -117,7 +123,7 @@ const Navbar = () => {
 
           <Link href="/cart" className="flex items-center gap-2.5 text-base">
             <LuShoppingBag size={20} />
-            <span>CART: 0</span>
+            <span>CART: {cartCount}</span>
           </Link>
 
           {userName && (

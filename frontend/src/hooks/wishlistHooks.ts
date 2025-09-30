@@ -19,6 +19,7 @@ export type WishlistItem = {
     productSlug: string;
     price: number;
     offerPrice?: number;
+    isInCart?: boolean;
     images: string[];
     category: {
       id: string;

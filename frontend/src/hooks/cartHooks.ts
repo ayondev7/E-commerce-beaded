@@ -38,6 +38,10 @@ export type UpdateCartItemPayload = {
   quantity: number;
 };
 
+export type CartCountResponse = {
+  count: number;
+};
+
 // Queries
 export const fetchCartList = async () => {
   const { data } = await apiClient.get(CART_ROUTES.list);
@@ -48,6 +52,19 @@ export function useCartList() {
   return useQuery({
     queryKey: ["cart", "list"],
     queryFn: fetchCartList,
+    staleTime: 60_000,
+  });
+}
+
+export const fetchCartCount = async () => {
+  const { data } = await apiClient.get(CART_ROUTES.count);
+  return data as CartCountResponse;
+};
+
+export function useCartCount() {
+  return useQuery({
+    queryKey: ["cart", "count"],
+    queryFn: fetchCartCount,
     staleTime: 60_000,
   });
 }
@@ -65,7 +82,9 @@ export function useAddToCart() {
     mutationFn: addToCart,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["cart", "count"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["wishlist", "list"] });
     },
   });
 }
@@ -83,7 +102,9 @@ export function useUpdateCartItem() {
       updateCartItem(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["cart", "count"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["wishlist", "list"] });
     },
   });
 }
@@ -100,7 +121,9 @@ export function useRemoveFromCart() {
     mutationFn: removeFromCart,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["cart", "count"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["wishlist", "list"] });
     },
   });
 }
@@ -117,7 +140,9 @@ export function useClearCart() {
     mutationFn: clearCart,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["cart", "count"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["wishlist", "list"] });
     },
   });
 }

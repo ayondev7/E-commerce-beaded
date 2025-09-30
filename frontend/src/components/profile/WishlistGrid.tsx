@@ -51,6 +51,7 @@ const WishlistGrid: React.FC = () => {
               price={Number(item.product.price)}
               showRemoveWishlist={true}
               wishlistItemId={item.id}
+              isInCart={item.product?.isInCart}
             />
           </div>
         ))}

@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useOrderById } from "@/hooks/orderHooks";
+import { FiLoader } from "react-icons/fi";
 
 export type OrderLine = {
   id: string | number;
@@ -36,22 +37,23 @@ const currency = (n: number) =>
     maximumFractionDigits: 2,
   })}`;
 
-const ModalOverlay = ({
-  onClose,
-}: {
-  onClose: () => void;
-}) => (
+const ModalOverlay = ({ onClose }: { onClose: () => void }) => (
   <div
     onMouseDown={onClose}
     className="absolute inset-0 backdrop-blur-[10px] bg-[rgba(0,0,0,0.5)]"
   />
 );
 
-const ModalHeader = ({ id, date, status }: Pick<OrderDetails, "id" | "date" | "status">) => (
+const ModalHeader = ({
+  id,
+  date,
+  status,
+}: Pick<OrderDetails, "id" | "date" | "status">) => (
   <div className="flex items-center justify-between">
     <div>
       <div className="text-sm font-semibold tracking-[-1%] text-[#9C9C9C] uppercase">
-        Order ID: <span className="text-[#1E1E1E]">#{id.slice(-8).toUpperCase()}</span>
+        Order ID:{" "}
+        <span className="text-[#1E1E1E]">#{id.slice(-8).toUpperCase()}</span>
       </div>
       <div className="text-sm text-[#7D7D7D] mt-1">{date}</div>
     </div>
@@ -72,9 +74,7 @@ const OrderItemRow = ({ item }: { item: OrderLine }) => (
         className="w-20 h-20 object-cover"
       />
       <div>
-        <div className="text-[#1E1E1E] font-medium leading-6">
-          {item.name}
-        </div>
+        <div className="text-[#1E1E1E] font-medium leading-6">{item.name}</div>
       </div>
     </div>
     <div className="flex items-center gap-20">
@@ -99,12 +99,8 @@ const OrderItemsList = ({ items }: { items: OrderLine[] }) => (
 const AddressSection = ({ address }: { address: string }) => (
   <div className="pt-12">
     <div>
-      <h4 className="text-2xl font-semibold mb-2">
-        Delivery Address
-      </h4>
-      <p className="text-[#545454] font-medium text-lg">
-        {address}
-      </p>
+      <h4 className="text-2xl font-semibold mb-2">Delivery Address</h4>
+      <p className="text-[#545454] font-medium text-lg">{address}</p>
     </div>
   </div>
 );
@@ -199,13 +195,16 @@ export default function ViewDetailsModal({
         )}
       >
         <ModalOverlay onClose={onClose} />
-        <div className="relative z-10 w-full p-[60px] xl:max-w-[1100px] 2xl:max-w-[1200px] bg-white overflow-hidden max-h-[90vh] flex items-center justify-center">
-          <div>Loading order details...</div>
+        <div className="relative z-10 w-full p-[60px] bg-white xl:max-w-[1100px] 2xl:max-w-[1200px] overflow-hidden max-h-[90vh] flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
+            <p className="text-lg">Loading your cart...</p>
+          </div>
         </div>
       </div>
     );
   }
-
+  ;
   if (error || !orderData?.order) {
     return (
       <div
@@ -227,7 +226,7 @@ export default function ViewDetailsModal({
 
   const order = orderData.order;
   const cart = order.cart;
-  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -240,7 +239,7 @@ export default function ViewDetailsModal({
   const mapOrderStatus = (status: string) => {
     const statusMap: Record<string, string> = {
       pending: "Pending",
-      shipped: "Shipped", 
+      shipped: "Shipped",
       delivered: "Completed",
       cancelled: "Canceled",
     };
@@ -285,7 +284,11 @@ export default function ViewDetailsModal({
     >
       <ModalOverlay onClose={onClose} />
       <div className="relative z-10 w-full p-[60px] xl:max-w-[1100px] 2xl:max-w-[1200px] bg-white overflow-hidden max-h-[90vh]">
-        <ModalHeader id={details.id} date={details.date} status={details.status} />
+        <ModalHeader
+          id={details.id}
+          date={details.date}
+          status={details.status}
+        />
         <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] h-full">
           <div className="py-6">
             <OrderItemsList items={details.items} />
