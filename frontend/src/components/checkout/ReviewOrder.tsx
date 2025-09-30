@@ -181,7 +181,7 @@ export default function ReviewOrder() {
                   <span className="text-base leading-[24px] font-semibold tracking-[-1%] text-[#7D7D7D] uppercase">
                     Discount
                   </span>
-                  <span className="text-base font-medium text-green-600">
+                  <span className="text-base font-medium">
                     -TK. {totalDiscount.toFixed(2)}
                   </span>
                 </div>
@@ -222,8 +222,7 @@ export default function ReviewOrder() {
               >
                 {createOrderMutation.isPending ? (
                   <div className="flex items-center justify-center gap-2">
-                    <FiLoader className="animate-spin size-4" />
-                    Creating Order...
+                    <FiLoader className="animate-spin size-5" />
                   </div>
                 ) : (
                   "Confirm Order"

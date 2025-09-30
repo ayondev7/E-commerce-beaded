@@ -9,8 +9,8 @@ const Confirmation = () => {
   const { orderData, resetOrderForm } = useOrderFormStore();
 
   const handleViewOrder = () => {
-    resetOrderForm(); // Clear the order form data
-    router.push('/orders');
+    router.push("/orders");
+    resetOrderForm();
   };
 
   return (
@@ -25,10 +25,10 @@ const Confirmation = () => {
       </h2>
       <h3 className="text-xl leading-[24px] font-semibold mb-[66px]">
         <span className="tracking-[-1%] text-[#333333]">Order Code:</span>
-        <span className="text-[#4F4F4F]"> #{orderData.orderId || '123456'}</span>
+        <span className="text-[#4F4F4F]"> #{orderData.orderId || ""}</span>
       </h3>
-      <ReusableButton2 
-        className="bg-[#00b5a6]" 
+      <ReusableButton2
+        className="bg-[#00b5a6]"
         textClassName="text-white"
         onClick={handleViewOrder}
       >
