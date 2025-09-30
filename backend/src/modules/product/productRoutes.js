@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/get-list", optionalAuthMiddleware, productController.getProductList);
 
-router.get("/get-product/:productId", optionalAuthMiddleware, productController.getProductById);
+router.get("/get-product/:productSlug", optionalAuthMiddleware, productController.getProductById);
 
 router.get("/get-best-seller-products", optionalAuthMiddleware, productController.getBestSellerProducts);
 

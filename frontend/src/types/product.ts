@@ -13,10 +13,17 @@ export type Product = {
 		name: string;
 		image: string;
 	};
+	categoryName?: string;
+	isInCart?: boolean;
+	isInWishlist?: boolean;
 	createdAt: string;
 	updatedAt: string;
 	name?: string;
 	description?: string;
+};
+
+export type ProductResponse = {
+	product: Product;
 };
 
 export type ProductListResponse = {

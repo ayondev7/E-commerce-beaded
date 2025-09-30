@@ -4,7 +4,7 @@ const BASE = `${API_URL}/products`;
 
 export const PRODUCT_ROUTES = {
 	list: `${BASE}/get-list`,
-	detail: (id: string | number) => `${BASE}/get-product/${id}`,
+	detail: (slug: string) => `${BASE}/get-product/${slug}`,
 	bestSellers: `${BASE}/get-best-seller-products`,
 	latestCollection: `${BASE}/get-latest-collection-produts`,
 	create: `${BASE}/add-new-product`,

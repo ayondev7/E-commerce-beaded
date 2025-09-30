@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { TbCurrencyTaka } from "react-icons/tb";
 import { LuHeart, LuShoppingBag, LuHeartOff } from "react-icons/lu";
@@ -9,6 +10,7 @@ import toast from "react-hot-toast";
 
 interface ProductCardProps {
   productId: string;
+  productSlug: string;
   image: string;
   category: string;
   name: string;
@@ -25,6 +27,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({
   productId,
+  productSlug,
   image,
   category,
   name,
@@ -38,9 +41,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
   categoryClassName,
   priceClassName,
 }) => {
+  const router = useRouter();
   const addToCartMutation = useAddToCart();
   const addToWishlistMutation = useAddToWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlist();
+
+  const handleImageClick = () => {
+    router.push(`/products/${productSlug}`);
+  };
 
   const handleAddToCart = () => {
     if (isInCart) {

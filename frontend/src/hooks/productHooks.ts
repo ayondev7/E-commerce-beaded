@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import PRODUCT_ROUTES from "@/routes/productRoutes";
 import apiClient from "./apiClient";
-import { Product, ProductListResponse, CreateProductInput } from "@/types";
+import { Product, ProductListResponse, CreateProductInput, ProductResponse } from "@/types";
 
 export const fetchProductList = async (params?: Record<string, any>) => {
 	const { data } = await apiClient.get(PRODUCT_ROUTES.list, { params });
@@ -18,16 +18,16 @@ export function useProductList(params?: Record<string, any>) {
 	});
 }
 
-export const fetchProduct = async (id: string | number) => {
-	const { data } = await apiClient.get(PRODUCT_ROUTES.detail(id));
-	return data as Product;
+export const fetchProduct = async (slug: string) => {
+	const { data } = await apiClient.get(PRODUCT_ROUTES.detail(slug));
+	return data as ProductResponse;
 };
 
-export function useProduct(id: string | number | undefined) {
+export function useProduct(slug: string | undefined) {
 	return useQuery({
-		queryKey: ["products", "detail", id],
-		queryFn: () => fetchProduct(id as string | number),
-		enabled: !!id,
+		queryKey: ["products", "detail", slug],
+		queryFn: () => fetchProduct(slug as string),
+		enabled: !!slug,
 		staleTime: 60_000,
 	});
 }

@@ -120,13 +120,13 @@ export const getProductList = async (req, res, next) => {
 
 export const getProductById = async (req, res, next) => {
 	try {
-		const { productId } = req.params;
+		const { productSlug } = req.params;
 		const customerId = req.customer?.id;
 		
-		if (!productId) return res.status(400).json({ message: "Product ID is required" });
+		if (!productSlug) return res.status(400).json({ message: "Product slug is required" });
 
 		const product = await prisma.product.findUnique({ 
-			where: { id: productId },
+			where: { productSlug: productSlug },
 			include: { category: true },
 		});
 		if (!product) return res.status(404).json({ message: "Product not found" });
@@ -141,10 +141,10 @@ export const getProductById = async (req, res, next) => {
 		if (customerId) {
 			const [cartItem, wishlistItem] = await Promise.all([
 				prisma.cart.findFirst({
-					where: { customerId, productId }
+					where: { customerId, productId: product.id }
 				}),
 				prisma.wishlist.findFirst({
-					where: { customerId, productId }
+					where: { customerId, productId: product.id }
 				})
 			]);
 
