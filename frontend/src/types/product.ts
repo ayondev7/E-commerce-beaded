@@ -27,10 +27,11 @@ export type ProductResponse = {
 };
 
 export type ProductListResponse = {
-	items: Product[];
-	total?: number;
-	page?: number;
-	pageSize?: number;
-} | Product[];
+	products: Product[];
+	page: number;
+	limit: number;
+	total: number;
+	totalPages: number;
+};
 
 export type CreateProductInput = FormData | Record<string, any>;

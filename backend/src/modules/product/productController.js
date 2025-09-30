@@ -63,7 +63,7 @@ export const getProductList = async (req, res, next) => {
 			where.productCollection = collectionName;
 		}
 
-		const [total, products] = await Promise.all([
+		const [total, products, totalProductsInDb] = await Promise.all([
 			prisma.product.count({ where }),
 			prisma.product.findMany({
 				where,
@@ -72,6 +72,7 @@ export const getProductList = async (req, res, next) => {
 				orderBy: { createdAt: "desc" },
 				include: { category: true },
 			}),
+			prisma.product.count()
 		]);
 
 		let productsWithStatus = products;

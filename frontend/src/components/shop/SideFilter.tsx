@@ -1,15 +1,32 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { LuSearch, LuFilter } from 'react-icons/lu'
+import { useCategoryList } from '@/hooks/categoryHooks'
+import { useFilterStore } from '@/store/filterStore'
 
-const SideFilter = () => {
+interface SideFilterProps {
+  initialCollection: string;
+  initialCategory: string;
+}
+
+const SideFilter = ({ initialCollection, initialCategory }: SideFilterProps) => {
   const [activeTab, setActiveTab] = useState<'collections' | 'categories'>('collections')
-  const [selectedCollection, setSelectedCollection] = useState('boishakhi')
-  const [searchQuery, setSearchQuery] = useState('')
+  
+  const {
+    selectedCollection,
+    selectedCategory,
+    searchQuery,
+    setCollection,
+    setCategory,
+    setSearchQuery,
+    resetFilters
+  } = useFilterStore();
+
+  const { data: categoriesData } = useCategoryList();
 
   const collections = [
     { id: 'all', label: 'ALL ITEMS' },
@@ -17,6 +34,10 @@ const SideFilter = () => {
     { id: 'eid', label: 'EID COLLECTION' },
     { id: 'boishakhi', label: 'BOISHAKHI COLLECTION' }
   ]
+
+  useEffect(() => {
+    resetFilters(initialCollection, initialCategory);
+  }, [initialCollection, initialCategory, resetFilters]);
 
   return (
     <div>
@@ -70,7 +91,7 @@ const SideFilter = () => {
       {activeTab === 'collections' && (
         <RadioGroup
           value={selectedCollection}
-          onValueChange={setSelectedCollection}
+          onValueChange={setCollection}
           className="space-y-5"
         >
           {collections.map((collection) => (
@@ -93,9 +114,42 @@ const SideFilter = () => {
       )}
 
       {activeTab === 'categories' && (
-        <div className="text-sm text-gray-500">
-          Categories content will go here
-        </div>
+        <RadioGroup
+          value={selectedCategory}
+          onValueChange={setCategory}
+          className="space-y-5"
+        >
+          <div className="flex items-center space-x-4">
+            <RadioGroupItem
+              value="all"
+              id="all-categories"
+              className="w-5 h-5 border-2 border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
+              dotClassName="radio-dot-accent"
+            />
+            <Label
+              htmlFor="all-categories"
+              className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
+            >
+              ALL CATEGORIES
+            </Label>
+          </div>
+          {categoriesData?.categories?.map((category) => (
+            <div key={category.id} className="flex items-center space-x-4">
+              <RadioGroupItem
+                value={category.name.toLowerCase().replace(/\s+/g, '-')}
+                id={`category-${category.id}`}
+                className="w-5 h-5 border-2 border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
+                dotClassName="radio-dot-accent"
+              />
+              <Label
+                htmlFor={`category-${category.id}`}
+                className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
+              >
+                {category.name.toUpperCase()}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
       )}
     </div>
   )
