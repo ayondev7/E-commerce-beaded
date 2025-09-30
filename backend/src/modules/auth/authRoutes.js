@@ -12,6 +12,7 @@ router.post("/credential/signin", authController.credentialSignin);
 
 router.post("/verify", authController.verifyAuth);
 
-router.get("/me", autMiddleware, authController.getMyInfo);
+router.get("/get-my-info", autMiddleware, authController.getMyInfo);
+router.patch("/update-my-info", autMiddleware, authController.updateMyInfo);
 
 export default router;

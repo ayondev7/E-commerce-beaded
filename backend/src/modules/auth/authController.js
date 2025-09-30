@@ -286,12 +286,73 @@ export const getMyInfo = async (req, res, next) => {
   }
 };
 
+export const updateMyInfo = async (req, res, next) => {
+  try {
+    const customer = req.customer;
+    if (!customer) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { name, gender, dateOfBirth, phoneNumber, email, password } = req.body;
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (gender !== undefined) updateData.gender = gender;
+    if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth ? new Date(dateOfBirth) : null;
+    if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+
+    if (email !== undefined) {
+      if (email !== customer.email) {
+        const existingCustomer = await prisma.customer.findUnique({ 
+          where: { email } 
+        });
+        if (existingCustomer) {
+          return res.status(409).json({ message: "Email is already taken" });
+        }
+      }
+      updateData.email = email;
+    }
+
+    if (password !== undefined) {
+      const hashed = await hashPassword(password);
+      updateData.password = hashed;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No valid fields to update" });
+    }
+
+    const updatedCustomer = await prisma.customer.update({
+      where: { id: customer.id },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        gender: true,
+        dateOfBirth: true,
+        phoneNumber: true,
+        email: true,
+        providerId: true,
+        image: true,
+        createdAt: true,
+        updatedAt: true,
+        password: false
+      }
+    });
+
+    return res.json(updatedCustomer);
+  } catch (err) {
+    return next(err);
+  }
+};
+
 const authController = {
   googleSignin,
   credentialSignup,
   credentialSignin,
   verifyAuth,
   getMyInfo,
+  updateMyInfo,
 };
 export default authController;
 
