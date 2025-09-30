@@ -2,16 +2,17 @@ import { Router } from "express";
 import productController from "./productController.js";
 import upload from "../../config/multer.js";
 import autMiddleware from "../../middleware/authMiddleware.js";
+import optionalAuthMiddleware from "../../middleware/optionalAuthMiddleware.js";
 
 const router = Router();
 
-router.get("/get-list", productController.getProductList);
+router.get("/get-list", optionalAuthMiddleware, productController.getProductList);
 
-router.get("/get-product/:productId", productController.getProductById);
+router.get("/get-product/:productId", optionalAuthMiddleware, productController.getProductById);
 
-router.get("/get-best-seller-products", productController.getBestSellerProducts);
+router.get("/get-best-seller-products", optionalAuthMiddleware, productController.getBestSellerProducts);
 
-router.get("/get-latest-collection-products", productController.getLatestCollectionProducts);
+router.get("/get-latest-collection-products", optionalAuthMiddleware, productController.getLatestCollectionProducts);
 
 router.post(
   "/add-new-product",upload.array("images", 3),productController.addNewProduct);

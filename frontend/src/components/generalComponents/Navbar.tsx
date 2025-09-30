@@ -123,7 +123,7 @@ const Navbar = () => {
           {userName && (
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2.5 text-[17px]"
+              className="flex items-center cursor-pointer gap-2.5 text-[17px]"
               aria-label="Sign out"
             >
               <LuLogOut size={20} />
