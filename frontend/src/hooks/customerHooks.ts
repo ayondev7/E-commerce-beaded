@@ -6,8 +6,14 @@ import apiClient from "./apiClient";
 export type MeResponse = {
 	id?: string;
 	name?: string | null;
+	gender?: "male" | "female" | null;
+	dateOfBirth?: string | null;
+	phoneNumber?: string | null;
 	email?: string | null;
+	providerId?: string | null;
 	image?: string | null;
+	createdAt?: string;
+	updatedAt?: string;
 };
 
 export const fetchMe = async (): Promise<MeResponse> => {

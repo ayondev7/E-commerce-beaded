@@ -259,7 +259,28 @@ export const getMyInfo = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    return res.json({ name: customer.name, image: customer.image });
+    const customerData = await prisma.customer.findUnique({
+      where: { id: customer.id },
+      select: {
+        id: true,
+        name: true,
+        gender: true,
+        dateOfBirth: true,
+        phoneNumber: true,
+        email: true,
+        providerId: true,
+        image: true,
+        createdAt: true,
+        updatedAt: true,
+        password: false
+      }
+    });
+
+    if (!customerData) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    return res.json(customerData);
   } catch (err) {
     return next(err);
   }
