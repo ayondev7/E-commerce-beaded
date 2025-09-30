@@ -52,12 +52,10 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({ children }) => {
     );
   }
 
-  const displayName = customerData?.name || "User";
-
   return (
     <div className="pb-16 flex justify-center w-full overflow-y-auto">
       <div className="w-[1000px] overflow-x-hidden">
-        <ProfileHeader name={displayName} />
+        <ProfileHeader />
         <Tabs
           value={currentTab}
           onChange={handleTabChange}

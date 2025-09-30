@@ -32,12 +32,11 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({
     type?: string;
     options?: readonly string[];
   }[] = [
-    { label: "First Name", name: "firstName", type: "text", inputType: "html" },
-    { label: "Last Name", name: "lastName", type: "text", inputType: "html" },
+    { label: "Name", name: "name", type: "text", inputType: "html" },
     { label: "Email", name: "email", type: "email", inputType: "html" },
-    { label: "Phone No.", name: "phone", type: "text", inputType: "html" },
+    { label: "Phone No.", name: "phoneNumber", type: "text", inputType: "html" },
     { label: "Gender", name: "gender", inputType: "select", options: genders },
-    { label: "Date of Birth", name: "dob", inputType: "date" },
+    { label: "Date of Birth", name: "dateOfBirth", inputType: "date" },
   ];
 
   return (
@@ -63,7 +62,7 @@ const ProfileInfoForm: React.FC<ProfileInfoFormProps> = ({
       </div>
 
       <div className="pt-6 px-8">
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {fields.map((f) => {
             if (f.inputType === "select" && f.options) {
               return (

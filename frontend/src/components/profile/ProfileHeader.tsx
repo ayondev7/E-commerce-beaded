@@ -1,18 +1,37 @@
 import Image from "next/image"
 import React from "react"
+import { useMe } from "@/hooks/customerHooks"
 
-interface ProfileHeaderProps {
-  name: string
-}
+const ProfileHeader: React.FC = () => {
+  const { data: customerData } = useMe();
+  
+  const displayName = customerData?.name || "User";
+  const userImage = customerData?.image;
 
-const ProfileHeader: React.FC<ProfileHeaderProps> = ({ name }) => {
   return (
     <div className="flex flex-col items-center mt-[100px] mb-[90px]">
       <div className="rounded-full">
-          <Image src='/home/categories/1.png' alt={name} width={400} height={400} className="object-cover size-[245px] rounded-full" />
+        {userImage ? (
+          <Image 
+            src={userImage} 
+            alt={displayName} 
+            width={800} 
+            height={800} 
+            className="object-cover size-[245px] rounded-full" 
+          />
+        ) : (
+          <Image 
+            src='/home/categories/1.png' 
+            alt={displayName} 
+            width={800} 
+            height={800} 
+            className="object-cover size-[245px] rounded-full" 
+          />
+        )}
       </div>
-      <h1 className="text-[40px] font-medium mt-6">{name}</h1>
+      <h1 className="text-[40px] font-medium mt-6">{displayName}</h1>
     </div>
-  )}
+  )
+}
 
 export default ProfileHeader

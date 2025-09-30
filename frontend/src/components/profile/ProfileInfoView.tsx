@@ -2,12 +2,11 @@ import React from "react";
 import { FiEdit } from "react-icons/fi";
 
 export interface ProfileData {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
-  phone: string;
-  gender: "Male" | "Female" | "Other" | "";
-  dob?: string;
+  phoneNumber: string;
+  gender: "male" | "female" | "";
+  dateOfBirth?: string;
 }
 
 interface ProfileInfoViewProps {
@@ -36,13 +35,12 @@ const ProfileInfoView: React.FC<ProfileInfoViewProps> = ({ data, onEdit }) => {
         </button>
       </div>
       <div className="pt-5 px-8">
-        <div className="grid grid-cols-3 gap-x-[21px] gap-y-10">
-          <InfoRow label="First name" value={data.firstName} />
+        <div className="grid grid-cols-2 gap-x-[21px] gap-y-10">
+          <InfoRow label="Name" value={data.name} />
           <InfoRow label="Email" value={data.email} />
+          <InfoRow label="Phone no." value={data.phoneNumber} />
           <InfoRow label="Gender" value={data.gender} />
-          <InfoRow label="Last name" value={data.lastName} />
-          <InfoRow label="Phone no." value={data.phone} />
-          <InfoRow label="Date of Birth" value={data.dob} />
+          <InfoRow label="Date of Birth" value={data.dateOfBirth} />
         </div>
       </div>
     </div>
