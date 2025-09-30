@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { useOrderById } from "@/hooks/orderHooks";
 
 export type OrderLine = {
   id: string | number;
@@ -25,7 +26,7 @@ export type OrderDetails = {
 type Props = {
   open: boolean;
   onClose: () => void;
-  details: OrderDetails | null;
+  orderId: string | null;
   className?: string;
 };
 
@@ -35,7 +36,6 @@ const currency = (n: number) =>
     maximumFractionDigits: 2,
   })}`;
 
-// ---------- Subcomponents ----------
 const ModalOverlay = ({
   onClose,
 }: {
@@ -51,7 +51,7 @@ const ModalHeader = ({ id, date, status }: Pick<OrderDetails, "id" | "date" | "s
   <div className="flex items-center justify-between">
     <div>
       <div className="text-sm font-semibold tracking-[-1%] text-[#9C9C9C] uppercase">
-        Order ID: <span className="text-[#1E1E1E]">{id}</span>
+        Order ID: <span className="text-[#1E1E1E]">#{id.slice(-8).toUpperCase()}</span>
       </div>
       <div className="text-sm text-[#7D7D7D] mt-1">{date}</div>
     </div>
@@ -152,13 +152,13 @@ const SummarySection = ({
   </aside>
 );
 
-// ---------- Main Component ----------
 export default function ViewDetailsModal({
   open,
   onClose,
-  details,
+  orderId,
   className,
 }: Props) {
+  const { data: orderData, isLoading, error } = useOrderById(orderId || "");
 
   useEffect(() => {
     if (!open) return;
@@ -185,13 +185,93 @@ export default function ViewDetailsModal({
     };
   }, [open]);
 
-  if (!open || !details) return null;
+  if (!open || !orderId) return null;
 
-  const subTotal = details.items.reduce(
-    (sum, it) => sum + it.price * it.qty,
-    0
-  );
-  const grandTotal = subTotal + details.deliveryFee - details.discount;
+  if (isLoading) {
+    return (
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="order-dialog-title"
+        className={cn(
+          "fixed inset-0 z-50 flex items-start md:items-center justify-center p-0 md:p-8",
+          className
+        )}
+      >
+        <ModalOverlay onClose={onClose} />
+        <div className="relative z-10 w-full p-[60px] xl:max-w-[1100px] 2xl:max-w-[1200px] bg-white overflow-hidden max-h-[90vh] flex items-center justify-center">
+          <div>Loading order details...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !orderData?.order) {
+    return (
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="order-dialog-title"
+        className={cn(
+          "fixed inset-0 z-50 flex items-start md:items-center justify-center p-0 md:p-8",
+          className
+        )}
+      >
+        <ModalOverlay onClose={onClose} />
+        <div className="relative z-10 w-full p-[60px] xl:max-w-[1100px] 2xl:max-w-[1200px] bg-white overflow-hidden max-h-[90vh] flex items-center justify-center">
+          <div className="text-red-500">Error loading order details</div>
+        </div>
+      </div>
+    );
+  }
+
+  const order = orderData.order;
+  const cart = order.cart;
+  
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const mapOrderStatus = (status: string) => {
+    const statusMap: Record<string, string> = {
+      pending: "Pending",
+      shipped: "Shipped", 
+      delivered: "Completed",
+      cancelled: "Canceled",
+    };
+    return statusMap[status] || "Pending";
+  };
+
+  const orderItem: OrderLine = {
+    id: cart.id,
+    name: cart.product.productName || "",
+    price: Number(cart.product.price),
+    qty: cart.quantity,
+    image: cart.product.images?.[0] || "",
+  };
+
+  const subTotal = Number(cart.subTotal);
+  const deliveryFee = Number(cart.deliveryFee);
+  const discount = Number(cart.discount);
+  const grandTotal = Number(cart.grandTotal);
+
+  const addressText = `${order.address.fullAddress}, ${order.address.area}, ${order.address.district}, ${order.address.division} - ${order.address.zipCode}`;
+
+  const details: OrderDetails = {
+    id: order.id,
+    date: formatDate(order.createdAt),
+    status: mapOrderStatus(order.orderStatus),
+    items: [orderItem],
+    deliveryFee,
+    discount,
+    address: addressText,
+    notes: order.notes,
+  };
 
   return (
     <div
