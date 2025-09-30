@@ -47,8 +47,8 @@ const Hero = () => {
           of styles, all created with the highest quality materials.
         </h2>
         <button
-          className="uppercase text-[17px] font-medium px-[56px] py-[18px] border-2 border-white "
-          onClick={() => router.push('/all/shop')}
+          className="uppercase cursor-pointer text-[17px] font-medium px-[56px] py-[18px] border-2 border-white "
+          onClick={() => router.push('/all/all/shop')}
         >
           SHOP NOW
         </button>

@@ -7,6 +7,7 @@ import navItems from "../../config/navConfig";
 import { LuUser, LuShoppingBag, LuLogOut } from "react-icons/lu";
 import { signOut, useSession } from "next-auth/react";
 import { useMe } from "@/hooks/customerHooks";
+import { formatDisplayName } from "@/lib/utils";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -100,7 +101,9 @@ const Navbar = () => {
               ) : (
                 <LuUser size={20} />
               )}
-              <span className="max-w-[160px] truncate">{userName}</span>
+              <span className="max-w-[160px] truncate" title={userName}>
+                {formatDisplayName(userName, 2)}
+              </span>
             </Link>
           ) : (
             <Link
@@ -112,10 +115,10 @@ const Navbar = () => {
             </Link>
           )}
 
-          <button className="flex items-center gap-2.5 text-base">
+          <Link href="/cart" className="flex items-center gap-2.5 text-base">
             <LuShoppingBag size={20} />
             <span>CART: 0</span>
-          </button>
+          </Link>
 
           {userName && (
             <button
