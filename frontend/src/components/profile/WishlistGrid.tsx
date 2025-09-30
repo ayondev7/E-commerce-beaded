@@ -1,5 +1,6 @@
 import React from "react"
 import ProductCard from "@/components/product/ProductCard"
+import ProductCardSkeleton from "@/components/skeleton/ProductCardSkeleton"
 import { useWishlistList } from "@/hooks/wishlistHooks"
 
 const WishlistGrid: React.FC = () => {
@@ -7,8 +8,12 @@ const WishlistGrid: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="text-lg">Loading wishlist...</div>
+      <div className="grid grid-cols-1 gap-x-5 gap-y-20 sm:grid-cols-2 lg:grid-cols-3 overflow-hidden">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={index} className="flex flex-col items-center">
+            <ProductCardSkeleton />
+          </div>
+        ))}
       </div>
     );
   }
@@ -43,7 +48,9 @@ const WishlistGrid: React.FC = () => {
               image={item.product.images?.[0] || ""} 
               category={item.product.category.name} 
               name={item.product.productName || ""} 
-              price={Number(item.product.price)} 
+              price={Number(item.product.price)}
+              showRemoveWishlist={true}
+              wishlistItemId={item.id}
             />
           </div>
         ))}

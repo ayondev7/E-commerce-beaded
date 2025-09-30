@@ -11,7 +11,6 @@ export type Product = {
 	price: number;
 	description?: string;
 	images?: string[];
-	// ...extend as your backend returns
 };
 
 export type ProductListResponse = {

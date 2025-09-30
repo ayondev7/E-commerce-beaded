@@ -67,6 +67,7 @@ export function useAddToWishlist() {
     mutationFn: addToWishlist,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 }
@@ -83,6 +84,7 @@ export function useRemoveFromWishlist() {
     mutationFn: removeFromWishlist,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 }
@@ -99,6 +101,7 @@ export function useClearWishlist() {
     mutationFn: clearWishlist,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["wishlist", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 }

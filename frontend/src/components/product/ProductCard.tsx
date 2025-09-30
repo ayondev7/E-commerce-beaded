@@ -2,9 +2,9 @@ import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { TbCurrencyTaka } from "react-icons/tb";
-import { LuHeart, LuShoppingBag } from "react-icons/lu";
+import { LuHeart, LuShoppingBag, LuHeartOff } from "react-icons/lu";
 import { useAddToCart } from "@/hooks/cartHooks";
-import { useAddToWishlist } from "@/hooks/wishlistHooks";
+import { useAddToWishlist, useRemoveFromWishlist } from "@/hooks/wishlistHooks";
 import toast from "react-hot-toast";
 
 interface ProductCardProps {
@@ -15,6 +15,8 @@ interface ProductCardProps {
   price: number;
   isInCart?: boolean;
   isInWishlist?: boolean;
+  showRemoveWishlist?: boolean;
+  wishlistItemId?: string;
   imageClassName?: string;
   titleClassName?: string;
   categoryClassName?: string;
@@ -29,6 +31,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   price,
   isInCart = false,
   isInWishlist = false,
+  showRemoveWishlist = false,
+  wishlistItemId,
   imageClassName,
   titleClassName,
   categoryClassName,
@@ -36,6 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const addToCartMutation = useAddToCart();
   const addToWishlistMutation = useAddToWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlist();
 
   const handleAddToCart = () => {
     if (isInCart) {
@@ -125,6 +130,43 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
     });
   };
+
+  const handleRemoveFromWishlist = () => {
+    if (!wishlistItemId) {
+      toast.error("Unable to remove from wishlist");
+      return;
+    }
+
+    removeFromWishlistMutation.mutate(wishlistItemId, {
+      onSuccess: () => {
+        toast.success("Removed from wishlist!");
+      },
+      onError: (error: any) => {
+        console.log("Remove wishlist error:", error);
+        
+        if (error?.response) {
+          const status = error.response.status;
+          const message = error.response.data?.message;
+          
+          if (status === 401) {
+            toast.error("Please sign in to manage your wishlist");
+          } else if (status === 404) {
+            toast.error("Item not found in wishlist");
+          } else if (message && typeof message === 'string') {
+            toast.error(message);
+          } else {
+            toast.error("Failed to remove from wishlist. Please try again");
+          }
+        } else if (error?.request) {
+          toast.error("Network error. Please check your connection and try again");
+        } else if (error?.message) {
+          toast.error(`Error: ${error.message}`);
+        } else {
+          toast.error("Failed to remove from wishlist. Please try again");
+        }
+      }
+    });
+  };
   return (
     <div className="max-w-[390px]">
       <div className="relative overflow-hidden group">
@@ -137,17 +179,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
         <div className="bg-white/35 absolute w-full bottom-0 h-[100px] transform translate-y-[120%] transition-transform duration-300 ease-out group-hover:translate-y-0">
           <div className="flex justify-center h-full items-center gap-x-3 text-[#7D7D7D]">
-            <button 
-              onClick={handleAddToWishlist}
-              disabled={addToWishlistMutation.isPending}
-              className={`p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors ${
-                isInWishlist 
-                  ? "bg-[#00B5A5] text-white" 
-                  : "bg-white"
-              }`}
-            >
-              <LuHeart className={`size-[24px] ${isInWishlist ? "fill-current" : ""}`} />
-            </button>
+            {showRemoveWishlist ? (
+              <button 
+                onClick={handleRemoveFromWishlist}
+                disabled={removeFromWishlistMutation.isPending}
+                className="bg-[#00B5A5] p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors"
+              >
+                <LuHeartOff className="size-[24px] text-white" />
+              </button>
+            ) : (
+              <button 
+                onClick={handleAddToWishlist}
+                disabled={addToWishlistMutation.isPending}
+                className={`p-3 rounded-full cursor-pointer disabled:opacity-50 transition-colors ${
+                  isInWishlist 
+                    ? "bg-[#00B5A5] text-white" 
+                    : "bg-white"
+                }`}
+              >
+                <LuHeart className={`size-[24px] ${isInWishlist ? "text-white" : ""}`} />
+              </button>
+            )}
             <button 
               onClick={handleAddToCart}
               disabled={addToCartMutation.isPending}
@@ -157,7 +209,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   : "bg-white"
               }`}
             >
-              <LuShoppingBag className="size-[24px]" />
+              <LuShoppingBag className={`size-[24px] ${isInCart ? "text-white" : ""}`} />
             </button>
           </div>
         </div>
