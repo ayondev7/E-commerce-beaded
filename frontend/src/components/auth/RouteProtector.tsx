@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FiLoader } from "react-icons/fi";
-import { useAuthProtection } from "@/hooks/authProtectionHooks";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface RouteProtectorProps {
   children: React.ReactNode;
@@ -19,24 +20,29 @@ const LoadingSpinner = () => (
 );
 
 export default function RouteProtector({ children, fallback }: RouteProtectorProps) {
-  const { isLoading, isAuthenticated, error, redirectToLogin } = useAuthProtection();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Auto-redirect timer when not authenticated (must be at top level)
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      // Redirect immediately instead of showing error
-      redirectToLogin();
+    // Only check after session loading is complete
+    if (status === "loading") return;
+    
+    if (status === "unauthenticated" || !session) {
+      setIsRedirecting(true);
+      router.push("/sign-in");
+      return;
     }
-  }, [isAuthenticated, isLoading, redirectToLogin]);
+  }, [session, status, router]);
 
-  // If still loading authentication check, show loading spinner
-  if (isLoading) {
+  // Show loading while NextAuth is determining session status
+  if (status === "loading") {
     return fallback || <LoadingSpinner />;
   }
 
-  // If not authenticated, just return null (redirect will happen via useEffect)
-  if (!isAuthenticated) {
-    return null;
+  // Show loading while redirecting
+  if (isRedirecting || status === "unauthenticated" || !session) {
+    return fallback || <LoadingSpinner />;
   }
 
   // If authenticated, render the protected content

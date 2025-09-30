@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import Stepper, { Step } from "@/components/checkout/Stepper";
 import DeliveryInfo from "@/components/checkout/DeliveryInfo";

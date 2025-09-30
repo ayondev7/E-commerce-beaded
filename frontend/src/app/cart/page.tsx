@@ -159,10 +159,8 @@ function CartPage() {
   const subTotal = items.reduce((acc, it) => acc + it.price * it.qty, 0);
 
   return (
-    // Make the page take full viewport height so we can control scrolling inside
     <div className="h-[100vh] w-screen pl-20">
       <div className="flex justify-between h-full">
-        {/* Left: scrollable list - occupy ~65% width and scroll vertically when content overflows */}
         <div className="w-[67%] h-full pt-[56px] pb-[200px]">
           <CartTable
             items={items}
@@ -172,7 +170,6 @@ function CartPage() {
           />
         </div>
 
-        {/* Right: summary - keep visible by using sticky positioning */}
         <div className="w-[25%]">
           <div className="sticky">
             <CartSummary subTotal={subTotal} />
