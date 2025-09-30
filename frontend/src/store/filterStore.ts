@@ -18,18 +18,14 @@ export const useFilterStore = create<FilterState>((set, get) => ({
   searchQuery: '',
   currentPage: 1,
   setCollection: (collection) => {
-    console.log('Setting collection:', collection);
     set({ selectedCollection: collection, currentPage: 1 });
   },
   setCategory: (category) => {
-    console.log('Setting category:', category);
     set({ selectedCategory: category, currentPage: 1 });
   },
   setSearchQuery: (query) => set({ searchQuery: query }),
   setCurrentPage: (page) => set({ currentPage: page }),
   resetFilters: (initialCollection, initialCategory) => {
-    console.log('Resetting filters with:', { initialCollection, initialCategory });
-    
     // Convert URL slugs to readable names (what backend expects)
     let normalizedCollection = initialCollection;
     if (initialCollection === 'boishakhi-collection') {
@@ -55,18 +51,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
       currentPage: 1
     };
     
-    console.log('Setting new state:', newState);
-    
     // Force the update by using the callback form
     set(() => newState);
-    
-    // Double check the state was set
-    setTimeout(() => {
-      const currentState = get();
-      console.log('State after reset:', {
-        selectedCollection: currentState.selectedCollection,
-        selectedCategory: currentState.selectedCategory
-      });
-    }, 0);
   }
 }));

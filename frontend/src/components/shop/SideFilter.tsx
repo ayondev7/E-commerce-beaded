@@ -41,31 +41,6 @@ const SideFilter = ({
   ];
 
   useEffect(() => {
-    const readableCollection = slugToReadableName(initialCollection);
-    const readableCategory = slugToReadableName(initialCategory);
-    
-    console.log('SideFilter Debug:', {
-      initialCollection,
-      initialCategory,
-      readableCollection,
-      readableCategory,
-      currentSelected: { selectedCollection, selectedCategory }
-    });
-    
-    // Debug categories data
-    if (categoriesData?.categories) {
-      console.log('Available categories:', categoriesData.categories.map(cat => ({
-        name: cat.name,
-        slug: cat.name.toLowerCase().replace(/\s+/g, "-")
-      })));
-    }
-    
-    // Debug collections mapping
-    console.log('Available collections:', collections.map(col => ({
-      id: col.id,
-      label: col.label
-    })));
-    
     resetFilters(initialCollection, initialCategory);
   }, [initialCollection, initialCategory, resetFilters]);
 
@@ -127,13 +102,6 @@ const SideFilter = ({
           {collections.map((collection) => {
             const isSelected = selectedCollection === collection.id;
             
-            console.log('Collection mapping:', {
-              collectionId: collection.id,
-              collectionLabel: collection.label,
-              selectedCollection,
-              isSelected
-            });
-            
             return (
               <div key={collection.id} className="flex items-center space-x-4">
                 <RadioGroupItem
@@ -147,7 +115,6 @@ const SideFilter = ({
                   className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
                 >
                   {collection.label}
-                  {isSelected && " ✓"}
                 </Label>
               </div>
             );
@@ -178,22 +145,6 @@ const SideFilter = ({
           {categoriesData?.categories?.map((category) => {
             const isSelected = selectedCategory === category.name;
             
-            console.log('RadioGroup value:', selectedCategory);
-            console.log('Category mapping:', {
-              categoryName: category.name,
-              selectedCategory,
-              isSelected,
-              exactMatch: selectedCategory === category.name,
-              types: {
-                selectedCategoryType: typeof selectedCategory,
-                categoryNameType: typeof category.name
-              },
-              lengths: {
-                selectedCategoryLength: selectedCategory?.length,
-                categoryNameLength: category.name?.length
-              }
-            });
-            
             return (
               <div key={category.id} className="flex items-center space-x-4">
                 <RadioGroupItem
@@ -207,7 +158,6 @@ const SideFilter = ({
                   className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
                 >
                   {category.name.toUpperCase()}
-                  {isSelected && " ✓"}
                 </Label>
               </div>
             );

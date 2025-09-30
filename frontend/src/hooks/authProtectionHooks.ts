@@ -53,11 +53,15 @@ export function useAuthProtection() {
           return true;
 
         case "UPDATE_ACCESS_TOKEN":
-          // Update session with new access token
           if (data.accessToken) {
-            await update({
-              ...session,
+            const { signIn } = await import("next-auth/react");
+            
+            await signIn("credentials", {
+              mode: "tokenLogin",
               accessToken: data.accessToken,
+              refreshToken: session.refreshToken,
+              user: JSON.stringify(data.customer),
+              redirect: false,
             });
           }
           setAuthState({

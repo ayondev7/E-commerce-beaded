@@ -26,7 +26,6 @@ export const useOrderFormStore = create<OrderFormStore>()(
               deliveryInfo,
             },
           };
-          console.log('🚚 Delivery Info Updated:', deliveryInfo);
           return newState;
         });
       },
@@ -40,7 +39,6 @@ export const useOrderFormStore = create<OrderFormStore>()(
               cartId,
             },
           };
-          console.log('🛒 Cart ID Updated:', cartId);
           return newState;
         });
       },
@@ -54,7 +52,6 @@ export const useOrderFormStore = create<OrderFormStore>()(
               orderId,
             },
           };
-          console.log('📦 Order ID Updated:', orderId);
           return newState;
         });
       },
@@ -68,14 +65,12 @@ export const useOrderFormStore = create<OrderFormStore>()(
               currentStep: step,
             },
           };
-          console.log(`📍 Step Changed to: ${step}`);
           return newState;
         });
       },
       
       resetOrderForm: () => {
         set({ orderData: initialOrderData });
-        console.log('🔄 Order Form Reset');
       },
     }),
     {
