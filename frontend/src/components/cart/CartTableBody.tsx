@@ -16,12 +16,13 @@ type Props = {
   className?: string;
   onQtyChange?: (id: CartItem["id"], qty: number) => void;
   onRemove?: (id: CartItem["id"]) => void;
+  reviewMode?: boolean; // When true, hides quantity controls and remove buttons
 };
 
 const currency = (n: number) =>
   `TK. ${n.toLocaleString("en-BD", { minimumFractionDigits: 0 })}`;
 
-export default function CartTableBody({ items, className, onQtyChange, onRemove }: Props) {
+export default function CartTableBody({ items, className, onQtyChange, onRemove, reviewMode = false }: Props) {
   return (
     <div className={className}>
       {/* Scrollable body: only this region will scroll when items overflow. Parent can control overall height. */}
@@ -46,28 +47,36 @@ export default function CartTableBody({ items, className, onQtyChange, onRemove 
                 </div>
               </div>
 
-              {/* Qty control */}
+              {/* Qty control or display */}
               <div className="md:justify-self-center">
-                <div className="flex w-[185px] items-center justify-between rounded-full border border-zinc-300 p-4">
-                  <button
-                    aria-label="Decrease quantity"
-                    className="text-[#7D7D7D] cursor-pointer"
-                    onClick={() => onQtyChange?.(item.id, Math.max(1, item.qty - 1))}
-                    disabled={item.qty <= 1}
-                  >
-                    <LuMinus className="size-5" />
-                  </button>
-                  <span className="text-sm leading-[24px] font-medium tracking-[-1%]">
-                    {String(item.qty).padStart(2, "0")}
-                  </span>
-                  <button
-                    aria-label="Increase quantity"
-                    className="text-[#7D7D7D] cursor-pointer"
-                    onClick={() => onQtyChange?.(item.id, item.qty + 1)}
-                  >
-                    <LuPlus className="size-5" />
-                  </button>
-                </div>
+                {reviewMode ? (
+                  // Review mode: just show quantity as text
+                  <div className="text-center">
+                    <span className="text-lg font-medium">Qty: {String(item.qty).padStart(2, "0")}</span>
+                  </div>
+                ) : (
+                  // Normal mode: quantity controls
+                  <div className="flex w-[185px] items-center justify-between rounded-full border border-zinc-300 p-4">
+                    <button
+                      aria-label="Decrease quantity"
+                      className="text-[#7D7D7D] cursor-pointer"
+                      onClick={() => onQtyChange?.(item.id, Math.max(1, item.qty - 1))}
+                      disabled={item.qty <= 1}
+                    >
+                      <LuMinus className="size-5" />
+                    </button>
+                    <span className="text-sm leading-[24px] font-medium tracking-[-1%]">
+                      {String(item.qty).padStart(2, "0")}
+                    </span>
+                    <button
+                      aria-label="Increase quantity"
+                      className="text-[#7D7D7D] cursor-pointer"
+                      onClick={() => onQtyChange?.(item.id, item.qty + 1)}
+                    >
+                      <LuPlus className="size-5" />
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Price */}
@@ -75,16 +84,18 @@ export default function CartTableBody({ items, className, onQtyChange, onRemove 
                 {currency(item.price)}
               </div>
 
-              {/* Remove */}
-              <div className="hidden md:flex justify-end">
-                <button
-                  aria-label="Remove item"
-                  onClick={() => onRemove?.(item.id)}
-                  className="text-[#E55151] cursor-pointer"
-                >
-                  <LuTrash2 className="text-[#E55151] size-6" />
-                </button>
-              </div>
+              {/* Remove button (hidden in review mode) */}
+              {!reviewMode && (
+                <div className="hidden md:flex justify-end">
+                  <button
+                    aria-label="Remove item"
+                    onClick={() => onRemove?.(item.id)}
+                    className="text-[#E55151] cursor-pointer"
+                  >
+                    <LuTrash2 className="text-[#E55151] size-6" />
+                  </button>
+                </div>
+              )}
             </li>
           ))}
         </ul>

@@ -9,6 +9,7 @@ export interface DeliveryInfo {
 export interface OrderFormData {
   // Essential data only
   cartId?: string;
+  orderId?: string;
   deliveryInfo: DeliveryInfo;
   currentStep: number;
 }
@@ -19,6 +20,7 @@ interface OrderFormStore {
   // Actions
   setDeliveryInfo: (deliveryInfo: DeliveryInfo) => void;
   setCartId: (cartId: string) => void;
+  setOrderId: (orderId: string) => void;
   setCurrentStep: (step: number) => void;
   
   // Reset store
@@ -27,6 +29,7 @@ interface OrderFormStore {
 
 const initialOrderData: OrderFormData = {
   cartId: undefined,
+  orderId: undefined,
   deliveryInfo: {
     selectedAddressId: '',
     notes: '',
@@ -62,7 +65,21 @@ export const useOrderFormStore = create<OrderFormStore>()(
               cartId,
             },
           };
-          console.log('� Cart ID Updated:', cartId);
+          console.log('🛒 Cart ID Updated:', cartId);
+          return newState;
+        });
+      },
+      
+      setOrderId: (orderId: string) => {
+        set((state) => {
+          const newState = {
+            ...state,
+            orderData: {
+              ...state.orderData,
+              orderId,
+            },
+          };
+          console.log('📦 Order ID Updated:', orderId);
           return newState;
         });
       },

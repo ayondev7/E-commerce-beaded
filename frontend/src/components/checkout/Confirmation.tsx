@@ -1,8 +1,18 @@
 import React from "react";
+import { useRouter } from "next/navigation";
 import { GoCheckCircle } from "react-icons/go";
 import ReusableButton2 from "../generalComponents/ReusableButton2";
+import { useOrderFormStore } from "@/store/orderFormStore";
 
 const Confirmation = () => {
+  const router = useRouter();
+  const { orderData, resetOrderForm } = useOrderFormStore();
+
+  const handleViewOrder = () => {
+    resetOrderForm(); // Clear the order form data
+    router.push('/orders');
+  };
+
   return (
     <div className="flex flex-col items-center w-full">
       <GoCheckCircle className="size-[91px] text-[#67C18C] mb-[34px]" />
@@ -15,9 +25,13 @@ const Confirmation = () => {
       </h2>
       <h3 className="text-xl leading-[24px] font-semibold mb-[66px]">
         <span className="tracking-[-1%] text-[#333333]">Order Code:</span>
-        <span className="text-[#4F4F4F]"> #123456</span>
+        <span className="text-[#4F4F4F]"> #{orderData.orderId || '123456'}</span>
       </h3>
-      <ReusableButton2 className="bg-[#00b5a6]" textClassName="text-white">
+      <ReusableButton2 
+        className="bg-[#00b5a6]" 
+        textClassName="text-white"
+        onClick={handleViewOrder}
+      >
         VIEW YOUR Order
       </ReusableButton2>
     </div>
