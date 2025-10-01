@@ -130,9 +130,9 @@ function CartPage() {
   }
 
   return (
-    <div className="h-[100vh] w-screen pl-20">
+    <div className="h-[100vh] w-screen xl:pl-10 2xl:pl-20">
       <div className="flex justify-between h-full">
-        <div className="w-[67%] h-full pt-[56px] pb-[200px]">
+        <div className="xl:w-[72%] 2xl:w-[67%] h-full pt-[56px] pb-[200px]">
           <CartTable
             items={items}
             onQtyChange={handleQtyChange}

@@ -80,7 +80,7 @@ export default function CartSummary({
           disabled={isProceedLoading}
           className="border-white border hover:border-none w-full"
           bgClassName="bg-white"
-          textClassName="text-white group-hover:text-[#1e1e1e] text-sm leading-[20px] tracking-[8%] font-semibold"
+          textClassName="text-white text-nowrap group-hover:text-[#1e1e1e] text-sm leading-[20px] tracking-[8%] font-semibold"
         >
           {isProceedLoading ? (
             <div className="flex items-center justify-center gap-2">
