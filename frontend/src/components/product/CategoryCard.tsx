@@ -27,14 +27,14 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ image, title }) => {
         alt={title}
         width={600}
         height={600}
-        className="xl:h-[450px] xl:w-[300px] 2xl:h-[490px] 2xl:w-[350px] 3xl:h-[535px] 3xl:w-[390px] object-cover"
+        className="xl:h-[450px] xl:w-[285px] 2xl:h-[490px] 2xl:w-[336px] 3xl:h-[535px] 3xl:w-[390px] object-cover"
       />
-      <div className="absolute xl:h-[450px] xl:w-[300px] 2xl:h-[490px] 2xl:w-[350px] 3xl:h-[535px] 3xl:w-[390px] w-full inset-0 bg-black/40">
+      <div className="absolute xl:h-[450px] xl:w-[285px] 2xl:h-[490px] 2xl:w-[336px] 3xl:h-[535px] 3xl:w-[390px] w-full inset-0 bg-black/40">
         <h3 className="absolute group-hover:translate-y-[-100px] xl:bottom-[40px] 2xl:bottom-[50px] 3xl:bottom-[54px] left-1/2 transform -translate-x-1/2 text-2xl font-medium uppercase text-white transition-transform duration-400 ease-out">
           {title}
         </h3>
         <button
-          className="absolute text-nowrap cursor-pointer xl:w-[200px] 2xl:w-[245px] xl:bottom-[50px] 2xl:bottom-[60px] 3xl:bottom-[75px] left-1/2 transform -translate-x-1/2 uppercase bg-white text-lg font-medium flex justify-center items-center py-[18px] transition-transform duration-500 ease-out delay-100 translate-y-[150px] group-hover:translate-y-0"
+          className="absolute text-nowrap cursor-pointer xl:w-[220px] 2xl:w-[240px] xl:bottom-[50px] 2xl:bottom-[60px] 3xl:bottom-[75px] left-1/2 transform -translate-x-1/2 uppercase bg-white text-lg font-medium flex justify-center items-center py-[18px] transition-transform duration-500 ease-out delay-100 translate-y-[150px] group-hover:translate-y-0"
           onClick={handleNavigate}
         >
           Shop collection

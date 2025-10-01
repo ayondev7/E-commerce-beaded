@@ -47,7 +47,7 @@ const Testimonial = () => {
         )
       })}
 
-      <div className="absolute bottom-[120px] flex gap-x-10 left-[150px] z-70">
+      <div className="absolute xl:bottom-[140px] xl:left-[40px] 2xl:bottom-[140px] 3xl:bottom-[120px] flex gap-x-10 2xl:left-[60px] 3xl:left-[150px] z-70">
         <ReusableButton
           direction="left"
           onClick={handleLeft}

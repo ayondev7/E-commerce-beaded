@@ -47,7 +47,7 @@ const Hero = () => {
       </div>
 
       <div className="text-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center text-center px-4">
-        <h1 className="uppercase text-[64px] font-medium text-xl">
+        <h1 className="uppercase text-nowrap text-[64px] font-medium text-xl">
           Arts & Crafts Store
         </h1>
         <h2 className="mt-4 mb-[64px] max-w-[1000px]">
@@ -63,7 +63,7 @@ const Hero = () => {
         </button>
       </div>
 
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-between w-[calc(100vw-326px)]">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-between 3xl:w-[calc(100vw-600px)] 2xl:w-[calc(100vw-350px)] xl:w-[calc(100vw-280px)]">
         <ReusableButton direction="left" onClick={scrollPrev} />
         <ReusableButton direction="right" onClick={scrollNext} />
       </div>

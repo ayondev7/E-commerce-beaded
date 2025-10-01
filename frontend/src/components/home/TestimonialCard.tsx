@@ -26,7 +26,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   return (
     <div
       style={{ zIndex, backgroundColor: bgColor, transitionDuration: `${duration}ms` }}
-      className={`absolute inset-0 grid grid-cols-[60%_38%] gap-x-[2%] py-10 px-[150px] transform ease-out ${translateClass}`}
+      className={`absolute inset-0 grid grid-cols-[60%_38%] gap-x-[2%] py-10 xl:px-10 2xl:px-[60px] 3xl:px-[150px] transform ease-out ${translateClass}`}
     >
       <div className="pt-10">
         <Image
@@ -36,7 +36,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           height={100}
           className="size-[60px] object-cover"
         />
-        <p className="text-2xl font-medium leading-[37px] text-white max-w-[90%] mb-6 mt-2.5">
+        <p className="3xl:text-2xl 2xl:text-xl xl:text-lg font-medium leading-[37px] text-white max-w-[90%] mb-6 mt-2.5">
           {text}
         </p>
         <h1 className="text-xl text-white flex items-center gap-x-[14px]">
@@ -50,7 +50,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         height={1080}
         loading={inView ? "eager" : "lazy"}
         priority={inView}
-        className="w-full h-[588px] object-cover"
+        className="w-full xl:h-[450px] 2xl:h-[500px] 3xl:h-[588px] object-cover"
       />
     </div>
   );
