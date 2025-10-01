@@ -51,8 +51,6 @@ export default function ReviewOrder() {
   // Store cart ID in Zustand store when cart data is available
   useEffect(() => {
     if (cartData?.cartItems && cartData.cartItems.length > 0) {
-      // For now, we'll use the first cart item's ID as the cart identifier
-      // This might need adjustment based on your backend cart structure
       setCartId(cartData.cartItems[0].id);
     }
   }, [cartData, setCartId]);
@@ -110,12 +108,6 @@ export default function ReviewOrder() {
       <section className="px-[150px] gap-y-12 flex flex-col items-center">
         <div className="flex flex-col items-center">
           <p className="text-lg text-red-500 mb-4">Failed to load cart items</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-[#00B5A5] text-white rounded hover:bg-[#00A095] transition-colors"
-          >
-            Retry
-          </button>
         </div>
       </section>
     );
@@ -127,19 +119,13 @@ export default function ReviewOrder() {
       <section className="px-[150px] gap-y-12 flex flex-col items-center">
         <div className="flex flex-col items-center">
           <p className="text-lg text-gray-500 mb-4">Your cart is empty</p>
-          <button 
-            onClick={() => window.location.href = '/all/all/shop'} 
-            className="px-4 py-2 bg-[#00B5A5] text-white rounded hover:bg-[#00A095] transition-colors"
-          >
-            Continue Shopping
-          </button>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="px-[150px] gap-y-12 flex flex-col items-center">
+    <section className="3xl:px-[150px] 2xl:px-[60px] xl:px-10 gap-y-12 flex flex-col items-center">
       {/* Product Items (full width) */}
       <CartTableBody 
         className="w-[1000px]" 

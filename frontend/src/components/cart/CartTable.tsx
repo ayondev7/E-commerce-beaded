@@ -63,7 +63,7 @@ export default function CartTable({
       </div>
 
       {/* Body (extracted) */}
-      <CartTableBody items={items} onQtyChange={onQtyChange} onRemove={onRemove} />
+      <CartTableBody className="2xl:max-h-[75vh] 3xl:max-h-[80vh] overflow-x-hidden overflow-y-auto hide-scrollbar" items={items} onQtyChange={onQtyChange} onRemove={onRemove} />
     </section>
   );
 }

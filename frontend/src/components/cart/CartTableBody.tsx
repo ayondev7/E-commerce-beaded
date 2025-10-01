@@ -24,14 +24,13 @@ const currency = (n: number) =>
 
 export default function CartTableBody({ items, className, onQtyChange, onRemove, reviewMode = false }: Props) {
   return (
-    <div className={className}>
-      {/* Scrollable body: only this region will scroll when items overflow. Parent can control overall height. */}
-      <div className="divide-y 2xl:max-h-[75vh] 3xl:max-h-[80vh] overflow-x-hidden overflow-y-auto hide-scrollbar">
+    <div>
+      <div className={`divide-y ${className || ''}`}>
         <ul>
           {items.map((item) => (
             <li
               key={item.id}
-              className="grid grid-cols-[1fr] 2xl:grid-cols-[2fr_1fr_0.65fr_0.2fr] items-center gap-x-10 py-9"
+              className="grid grid-cols-[1fr] xl:grid-cols-[2fr_1fr_0.65fr_0.2fr] items-center gap-x-10 py-9"
             >
               {/* Item info */}
               <div className="flex items-center gap-x-[30px]">

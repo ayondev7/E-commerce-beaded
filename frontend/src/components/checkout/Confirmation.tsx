@@ -25,7 +25,7 @@ const Confirmation = () => {
       </h2>
       <h3 className="text-xl leading-[24px] font-semibold mb-[66px]">
         <span className="tracking-[-1%] text-[#333333]">Order Code:</span>
-        <span className="text-[#4F4F4F]"> #{orderData.orderId || ""}</span>
+        <span className="text-[#4F4F4F]"> #{orderData.orderId?.slice(-8).toUpperCase() || ""}</span>
       </h3>
       <ReusableButton2
         className="bg-[#00b5a6]"

@@ -139,50 +139,35 @@ function StepContentWrapper({
   children: ReactNode;
   className?: string;
 }) {
-  const [parentHeight, setParentHeight] = useState<number>(0);
-
   return (
-    <motion.div
-      style={{ position: "relative", overflow: "hidden" }}
-      animate={{ height: isCompleted ? 0 : parentHeight }}
-      transition={{ type: "spring", duration: 0.4 }}
-      className={className}
-    >
-      <AnimatePresence initial={false} mode="sync" custom={direction}>
+    <div className={className}>
+      <AnimatePresence initial={false} mode="wait" custom={direction}>
         {!isCompleted && (
-          <SlideTransition key={currentStep} direction={direction} onHeightReady={(h) => setParentHeight(h)}>
+          <SlideTransition key={currentStep} direction={direction}>
             {children}
           </SlideTransition>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }
 
 function SlideTransition({
   children,
   direction,
-  onHeightReady,
 }: {
   children: ReactNode;
   direction: number;
-  onHeightReady: (h: number) => void;
 }) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useLayoutEffect(() => {
-    if (ref.current) onHeightReady(ref.current.offsetHeight);
-  }, [children, onHeightReady]);
-
   return (
     <motion.div
-      ref={ref}
       custom={direction}
       variants={stepVariants}
       initial="enter"
       animate="center"
       exit="exit"
       transition={{ duration: 0.4 }}
-      style={{ position: "absolute", left: 0, right: 0, top: 0 }}
+      style={{ width: "100%" }}
     >
       {children}
     </motion.div>
@@ -196,7 +181,7 @@ const stepVariants: Variants = {
 };
 
 export function Step({ children }: { children: ReactNode }) {
-  return <div className=" py-20">{children}</div>;
+  return <div className="py-20">{children}</div>;
 }
 
 function StepIndicator({
