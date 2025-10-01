@@ -1,14 +1,15 @@
 import { prisma } from "../../config/db.js";
 
-export const findCartWithProduct = async (cartId, customerId) => {
+export const findCartWithItems = async (customerId) => {
   return await prisma.cart.findFirst({
-    where: {
-      id: cartId,
-      customerId,
-    },
+    where: { customerId },
     include: {
-      product: true,
-    },
+      items: {
+        include: {
+          product: true
+        }
+      }
+    }
   });
 };
 
@@ -23,7 +24,7 @@ export const findAddressForCustomer = async (addressId, customerId) => {
 
 export const getOrderIncludeOptions = () => {
   return {
-    cart: {
+    items: {
       include: {
         product: {
           include: {
@@ -43,6 +44,44 @@ export const findOrderByIdAndCustomer = async (orderId, customerId) => {
       customerId,
     },
     include: getOrderIncludeOptions(),
+  });
+};
+
+export const createOrderFromCart = async (customerId, addressId, notes, cartItems) => {
+  return await prisma.$transaction(async (tx) => {
+    const order = await tx.order.create({
+      data: {
+        customerId,
+        addressId,
+        notes: notes || "",
+        orderStatus: "pending",
+      }
+    });
+
+    const orderItems = await Promise.all(
+      cartItems.map(async (cartItem) => {
+        return await tx.orderItem.create({
+          data: {
+            orderId: order.id,
+            productId: cartItem.productId,
+            quantity: cartItem.quantity
+          }
+        });
+      })
+    );
+
+    await tx.cartItem.deleteMany({
+      where: {
+        id: {
+          in: cartItems.map(item => item.id)
+        }
+      }
+    });
+
+    return await tx.order.findUnique({
+      where: { id: order.id },
+      include: getOrderIncludeOptions()
+    });
   });
 };
 

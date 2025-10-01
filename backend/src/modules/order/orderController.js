@@ -4,10 +4,11 @@ import {
   validateUpdateOrderStatus,
 } from "./orderValidation.js";
 import {
-  findCartWithProduct,
+  findCartWithItems,
   findAddressForCustomer,
   getOrderIncludeOptions,
   findOrderByIdAndCustomer,
+  createOrderFromCart,
   validateOrderStatusUpdate,
   validateOrderCancellation
 } from "./orderServices.js";
@@ -60,12 +61,12 @@ const createOrder = async (req, res, next) => {
         .json({ message: "Invalid input", errors: validation.errors });
     }
 
-    const { cartId, addressId, notes } = validation.data;
+    const { addressId, notes } = validation.data;
 
-    const cart = await findCartWithProduct(cartId, customerId);
+    const cart = await findCartWithItems(customerId);
 
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
+    if (!cart || !cart.items || cart.items.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
     }
 
     const address = await findAddressForCustomer(addressId, customerId);
@@ -74,38 +75,12 @@ const createOrder = async (req, res, next) => {
       return res.status(404).json({ message: "Address not found" });
     }
 
-    // Create the order
-    const order = await prisma.order.create({
-      data: {
-        customerId,
-        cartId,
-        addressId,
-        notes: notes || "",
-        orderStatus: "pending",
-      },
-      include: getOrderIncludeOptions(),
-    });
-    try {
-      await prisma.cart.update({
-        where: { id: cartId },
-        data: { isInOrderList: true },
-      });
-      const refreshedOrder = await prisma.order.findUnique({
-        where: { id: order.id },
-        include: getOrderIncludeOptions(),
-      });
+    const order = await createOrderFromCart(customerId, addressId, notes, cart.items);
 
-      return res.status(201).json({
-        message: "Order created successfully",
-        order: refreshedOrder,
-      });
-    } catch (updateErr) {
-      return res.status(201).json({
-        message: "Order created successfully (but failed to update cart)",
-        order,
-        warning: updateErr.message,
-      });
-    }
+    return res.status(201).json({
+      message: "Order created successfully",
+      order,
+    });
   } catch (err) {
     return next(err);
   }

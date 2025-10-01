@@ -18,7 +18,8 @@ model Product {
   price            Decimal  @db.Decimal(10,2)
   offerPrice       Decimal? @db.Decimal(10,2)
   images           String[]
-  carts            Cart[]
+  cartItems        CartItem[]
+  orderItems       OrderItem[]
   wishlists        Wishlist[]
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -52,20 +53,23 @@ model Category {
 }
 
 model Cart {
-  id          String   @id @default(uuid()) @db.Uuid
-  productId   String   @db.Uuid
-  customerId  String   @db.Uuid
-  quantity    Int      @default(1)
-  subTotal    Decimal  @db.Decimal(10,2)
-  deliveryFee Decimal  @db.Decimal(10,2)
-  discount    Decimal  @db.Decimal(10,2)
-  grandTotal  Decimal  @db.Decimal(10,2)
-  isInOrderList Boolean?
-  product     Product  @relation(fields: [productId], references: [id])
-  customer    Customer @relation(fields: [customerId], references: [id])
-  orders      Order[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String     @id @default(uuid()) @db.Uuid
+  customerId String     @db.Uuid
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  items      CartItem[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  cartId    String   @db.Uuid
+  productId String   @db.Uuid
+  quantity  Int      @default(1)
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Address {
@@ -86,17 +90,27 @@ model Address {
 }
 
 model Order {
-  id          String   @id @default(uuid()) @db.Uuid
-  customerId  String   @db.Uuid
-  cartId      String   @db.Uuid
-  addressId   String   @db.Uuid
+  id          String      @id @default(uuid()) @db.Uuid
+  customerId  String      @db.Uuid
+  addressId   String      @db.Uuid
   notes       String
-  orderStatus String   @default("pending")
-  customer    Customer @relation(fields: [customerId], references: [id])
-  cart        Cart     @relation(fields: [cartId], references: [id])
-  address     Address  @relation(fields: [addressId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  orderStatus String      @default("pending")
+  customer    Customer    @relation(fields: [customerId], references: [id])
+  address     Address     @relation(fields: [addressId], references: [id])
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  orderId   String   @db.Uuid
+  productId String   @db.Uuid
+  quantity  Int      @default(1)
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Gender {

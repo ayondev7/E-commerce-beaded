@@ -18,24 +18,43 @@ export const calculateCartItemPrices = (product, quantity) => {
 };
 
 export const findCartItemByCustomerAndId = async (cartItemId, customerId) => {
-  return await prisma.cart.findFirst({
+  return await prisma.cartItem.findFirst({
     where: {
       id: cartItemId,
-      customerId,
+      cart: {
+        customerId
+      }
     },
     include: {
       product: true,
+      cart: true
     },
   });
 };
 
 export const findExistingCartItem = async (customerId, productId) => {
-  return await prisma.cart.findFirst({
+  return await prisma.cartItem.findFirst({
     where: {
-      customerId,
       productId,
+      cart: {
+        customerId
+      }
     },
   });
+};
+
+export const findOrCreateCart = async (customerId) => {
+  let cart = await prisma.cart.findFirst({
+    where: { customerId }
+  });
+
+  if (!cart) {
+    cart = await prisma.cart.create({
+      data: { customerId }
+    });
+  }
+
+  return cart;
 };
 
 export const getCartIncludeOptions = () => {

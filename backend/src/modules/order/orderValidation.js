@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const createOrderSchema = z.object({
-	cartId: z.string({ required_error: "Cart ID is required" }).uuid("Invalid cart ID format"),
 	addressId: z.string({ required_error: "Address ID is required" }).uuid("Invalid address ID format"),
 	notes: z.string().trim().default(""),
 });

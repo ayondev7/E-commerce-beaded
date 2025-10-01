@@ -4,6 +4,7 @@ import {
   calculateCartItemPrices,
   findCartItemByCustomerAndId,
   findExistingCartItem,
+  findOrCreateCart,
   getCartIncludeOptions
 } from "./cartServices.js";
 
@@ -11,19 +12,21 @@ const getUserCart = async (req, res, next) => {
   try {
     const customerId = req.customer.id;
 
-    const cartItems = await prisma.cart.findMany({
-      where: {
-        customerId,
-        OR: [
-          { isInOrderList: false },
-          { isInOrderList: null },
-        ],
-      },
-      include: getCartIncludeOptions(),
-      orderBy: { createdAt: "desc" },
+    const cart = await prisma.cart.findFirst({
+      where: { customerId },
+      include: {
+        items: {
+          include: getCartIncludeOptions(),
+          orderBy: { createdAt: "desc" }
+        }
+      }
     });
 
-    return res.status(200).json({ cartItems });
+    if (!cart) {
+      return res.status(200).json({ cartItems: [] });
+    }
+
+    return res.status(200).json({ cartItems: cart.items });
   } catch (err) {
     return next(err);
   }
@@ -61,14 +64,13 @@ const addToCart = async (req, res, next) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const prices = calculateCartItemPrices(product, quantity);
+    const cart = await findOrCreateCart(customerId);
 
-    const cartItem = await prisma.cart.create({
+    const cartItem = await prisma.cartItem.create({
       data: {
-        customerId,
+        cartId: cart.id,
         productId,
-        quantity,
-        ...prices
+        quantity
       },
       include: getCartIncludeOptions(),
     });
@@ -98,7 +100,6 @@ const updateCartItem = async (req, res, next) => {
         .json({ message: "Invalid input", errors: validation.errors });
     }
 
-    // Check if cart item exists and belongs to the customer
     const existingCartItem = await findCartItemByCustomerAndId(cartItemId, customerId);
 
     if (!existingCartItem) {
@@ -106,27 +107,16 @@ const updateCartItem = async (req, res, next) => {
     }
 
     const { quantity } = validation.data;
-    const data = {};
 
-    // If quantity is being updated, recalculate all dependent values
-    if (
-      typeof quantity !== "undefined" &&
-      quantity !== existingCartItem.quantity
-    ) {
-      const prices = calculateCartItemPrices(existingCartItem.product, quantity);
-      data.quantity = quantity;
-      Object.assign(data, prices);
-    }
-
-    if (Object.keys(data).length === 0) {
+    if (quantity === existingCartItem.quantity) {
       return res
         .status(400)
         .json({ message: "No valid fields provided to update" });
     }
 
-    const updatedCartItem = await prisma.cart.update({
+    const updatedCartItem = await prisma.cartItem.update({
       where: { id: cartItemId },
-      data,
+      data: { quantity },
       include: getCartIncludeOptions(),
     });
 
@@ -152,19 +142,13 @@ const removeFromCart = async (req, res, next) => {
       return res.status(400).json({ message: "Cart item ID is required" });
     }
 
-    // Check if cart item exists and belongs to the customer
-    const existingCartItem = await prisma.cart.findFirst({
-      where: {
-        id: cartItemId,
-        customerId,
-      },
-    });
+    const existingCartItem = await findCartItemByCustomerAndId(cartItemId, customerId);
 
     if (!existingCartItem) {
       return res.status(404).json({ message: "Cart item not found" });
     }
 
-    const deletedCartItem = await prisma.cart.delete({
+    const deletedCartItem = await prisma.cartItem.delete({
       where: { id: cartItemId },
       include: getCartIncludeOptions(),
     });
@@ -186,8 +170,19 @@ const clearCart = async (req, res, next) => {
 
     const customerId = req.customer.id;
 
-    const deletedItems = await prisma.cart.deleteMany({
-      where: { customerId },
+    const cart = await prisma.cart.findFirst({
+      where: { customerId }
+    });
+
+    if (!cart) {
+      return res.status(200).json({
+        message: "Cart is already empty",
+        deletedCount: 0,
+      });
+    }
+
+    const deletedItems = await prisma.cartItem.deleteMany({
+      where: { cartId: cart.id },
     });
 
     return res.status(200).json({
@@ -207,14 +202,16 @@ const getCartCount = async (req, res, next) => {
 
     const customerId = req.customer.id;
 
-    const count = await prisma.cart.count({
-      where: {
-        customerId,
-        OR: [
-          { isInOrderList: false },
-          { isInOrderList: null },
-        ],
-      },
+    const cart = await prisma.cart.findFirst({
+      where: { customerId }
+    });
+
+    if (!cart) {
+      return res.status(200).json({ count: 0 });
+    }
+
+    const count = await prisma.cartItem.count({
+      where: { cartId: cart.id }
     });
 
     return res.status(200).json({ count });
