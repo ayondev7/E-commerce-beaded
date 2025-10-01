@@ -20,7 +20,7 @@ import ReusableButton2 from "../generalComponents/ReusableButton2";
 
 // Simple validation function since Yup might not be available
 const validateForm = (values: FormValues) => {
-  const errors: any = {};
+  const errors: Record<string, string> = {};
   if (!values.selectedAddressId) {
     errors.selectedAddressId = "Please select a delivery address";
   }
@@ -43,7 +43,7 @@ export default function DeliveryInfo() {
   const { setDeliveryInfo, setCurrentStep, orderData } = useOrderFormStore();
   
   const [editingAddress, setEditingAddress] = useState(false);
-  const [selectedAddressDetails, setSelectedAddressDetails] = useState<any>(null);
+  const [selectedAddressDetails, setSelectedAddressDetails] = useState<Record<string, unknown> | null>(null);
 
   const addresses = addressData?.addresses || [];
   
@@ -68,15 +68,15 @@ export default function DeliveryInfo() {
   }
   
   // Update selected address details when selection changes
-  const handleAddressSelection = (addressName: string, setFieldValue: any) => {
+  const handleAddressSelection = (addressName: string, setFieldValue: (field: string, value: unknown) => void) => {
     const selectedAddress = addresses.find(addr => addr.addressName === addressName);
     if (selectedAddress) {
       setFieldValue('selectedAddressId', addressName); // Store address name instead of ID
-      setSelectedAddressDetails(selectedAddress);
+      setSelectedAddressDetails(selectedAddress as Record<string, unknown>);
     }
   };
 
-  const handleUpdateAddress = async (addressId: string, addressData: any) => {
+  const handleUpdateAddress = async (addressId: string, addressData: Record<string, unknown>) => {
     try {
       await updateAddressMutation.mutateAsync({ id: addressId, payload: addressData });
       setEditingAddress(false);
@@ -150,7 +150,7 @@ export default function DeliveryInfo() {
               <div>
                 <h2 className="text-[32px] mb-2">Notes</h2>
                 <Field name="notes">
-                  {({ field, form }: any) => (
+                  {({ field, form }: { field: { value: string }; form: { setFieldValue: (field: string, value: unknown) => void } }) => (
                     <InputField
                       value={field.value}
                       onChange={(value) => form.setFieldValue('notes', value)}
@@ -201,17 +201,17 @@ export default function DeliveryInfo() {
                 editingAddress ? (
                   <AddressForm
                     initial={{
-                      division: selectedAddressDetails.division,
-                      district: selectedAddressDetails.district,
-                      zip: selectedAddressDetails.zipCode,
-                      area: selectedAddressDetails.area,
-                      fullAddress: selectedAddressDetails.fullAddress,
+                      division: (selectedAddressDetails as import("@/types").Address).division,
+                      district: (selectedAddressDetails as import("@/types").Address).district,
+                      zip: (selectedAddressDetails as import("@/types").Address).zipCode,
+                      area: (selectedAddressDetails as import("@/types").Address).area,
+                      fullAddress: (selectedAddressDetails as import("@/types").Address).fullAddress,
                     }}
                     isEditing={true}
                     isLoading={updateAddressMutation.isPending}
                     onCancel={() => setEditingAddress(false)}
                     onSave={(addressData) => 
-                      handleUpdateAddress(selectedAddressDetails.id, {
+                      handleUpdateAddress((selectedAddressDetails as import("@/types").Address).id, {
                         ...addressData,
                         zipCode: addressData.zip,
                       })
@@ -220,11 +220,11 @@ export default function DeliveryInfo() {
                 ) : (
                   <AddressView 
                     data={{
-                      division: selectedAddressDetails.division,
-                      district: selectedAddressDetails.district,
-                      zip: selectedAddressDetails.zipCode,
-                      area: selectedAddressDetails.area,
-                      fullAddress: selectedAddressDetails.fullAddress,
+                      division: (selectedAddressDetails as import("@/types").Address).division,
+                      district: (selectedAddressDetails as import("@/types").Address).district,
+                      zip: (selectedAddressDetails as import("@/types").Address).zipCode,
+                      area: (selectedAddressDetails as import("@/types").Address).area,
+                      fullAddress: (selectedAddressDetails as import("@/types").Address).fullAddress,
                     }} 
                     onEdit={() => setEditingAddress(true)} 
                   />

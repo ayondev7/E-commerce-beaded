@@ -68,12 +68,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onSuccess: () => {
         toast.success("Added to cart!");
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         console.log("Cart error:", error);
+        const err = error as { response?: { status?: number; data?: { message?: string } }; request?: unknown; message?: string };
 
-        if (error?.response) {
-          const status = error.response.status;
-          const message = error.response.data?.message;
+        if (err.response) {
+          const status = err.response.status;
+          const message = err.response.data?.message;
 
           if (status === 401) {
             toast.error("Please sign in to add items to your cart");
@@ -89,12 +90,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           } else {
             toast.error("Failed to add to cart. Please try again");
           }
-        } else if (error?.request) {
+        } else if (err.request) {
           toast.error(
             "Network error. Please check your connection and try again"
           );
-        } else if (error?.message) {
-          toast.error(`Error: ${error.message}`);
+        } else if (err.message) {
+          toast.error(`Error: ${err.message}`);
         } else {
           toast.error("Failed to add to cart. Please try again");
         }
@@ -115,12 +116,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onSuccess: () => {
         toast.success("Added to wishlist!");
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         console.log("Wishlist error:", error);
+        const err = error as { response?: { status?: number; data?: { message?: string } }; request?: unknown; message?: string };
 
-        if (error?.response) {
-          const status = error.response.status;
-          const message = error.response.data?.message;
+        if (err.response) {
+          const status = err.response.status;
+          const message = err.response.data?.message;
 
           if (status === 401) {
             toast.error("Please sign in to add items to your wishlist");
@@ -136,12 +138,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           } else {
             toast.error("Failed to add to wishlist. Please try again");
           }
-        } else if (error?.request) {
+        } else if (err.request) {
           toast.error(
             "Network error. Please check your connection and try again"
           );
-        } else if (error?.message) {
-          toast.error(`Error: ${error.message}`);
+        } else if (err.message) {
+          toast.error(`Error: ${err.message}`);
         } else {
           toast.error("Failed to add to wishlist. Please try again");
         }
@@ -159,12 +161,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       onSuccess: () => {
         toast.success("Removed from wishlist!");
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         console.log("Remove wishlist error:", error);
+        const err = error as { response?: { status?: number; data?: { message?: string } }; request?: unknown; message?: string };
 
-        if (error?.response) {
-          const status = error.response.status;
-          const message = error.response.data?.message;
+        if (err.response) {
+          const status = err.response.status;
+          const message = err.response.data?.message;
 
           if (status === 401) {
             toast.error("Please sign in to manage your wishlist");
@@ -175,12 +178,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
           } else {
             toast.error("Failed to remove from wishlist. Please try again");
           }
-        } else if (error?.request) {
+        } else if (err.request) {
           toast.error(
             "Network error. Please check your connection and try again"
           );
-        } else if (error?.message) {
-          toast.error(`Error: ${error.message}`);
+        } else if (err.message) {
+          toast.error(`Error: ${err.message}`);
         } else {
           toast.error("Failed to remove from wishlist. Please try again");
         }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import CartTable, { CartItem } from "@/components/cart/CartTable";
 import CartSummary from "@/components/cart/CartSummary";
@@ -56,7 +56,7 @@ function CartPage() {
         // Also remove any pending changes for this item
         setPendingChanges(prev => prev.filter(change => change.cartItemId !== String(id)));
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         console.error("Remove cart item error:", error);
         toast.error("Failed to remove item from cart");
       }

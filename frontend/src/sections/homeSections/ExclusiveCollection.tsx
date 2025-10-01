@@ -5,19 +5,29 @@ import { useExclusiveCollection } from "@/hooks/productHooks";
 
 const ExclusiveCollection = () => {
   const { data: exclusiveData, isLoading } = useExclusiveCollection();
-  const ed = exclusiveData as any;
+  const ed = exclusiveData as unknown;
 
-  const products = (Array.isArray(ed) ? ed : Array.isArray(ed?.products) ? ed.products : [])
-    .map((p: any, idx: number) => ({
-      id: p.id ?? idx,
-      productSlug: p.productSlug ?? "",
-      image: Array.isArray(p.images) && p.images.length ? p.images[0] : "/home/categories/1.png",
-      category: p.categoryName ?? p.category?.name ?? "BRACELET",
-      name: p.productName ?? "Product",
-      price: Number(p.offerPrice ?? p.price ?? 0),
-      isInCart: p.isInCart ?? false,
-      isInWishlist: p.isInWishlist ?? false,
-    }));
+  const rawProducts = Array.isArray(ed)
+    ? (ed as unknown[])
+    : (typeof ed === 'object' && ed !== null && Array.isArray((ed as { products?: unknown }).products))
+    ? (ed as { products?: unknown }).products as unknown[]
+    : [];
+
+  const products = (rawProducts as Array<Record<string, unknown>>)
+    .map((p, idx) => {
+      const categoryObj = p.category as Record<string, unknown> | undefined;
+      const images = Array.isArray(p.images) ? (p.images as string[]) : [];
+      return {
+        id: (p.id as string) ?? idx,
+        productSlug: (p.productSlug as string) ?? "",
+        image: images.length ? images[0] : "/home/categories/1.png",
+        category: (p.categoryName as string) ?? (categoryObj?.name as string) ?? "BRACELET",
+        name: (p.productName as string) ?? "Product",
+        price: Number((p.offerPrice as number) ?? (p.price as number) ?? 0),
+        isInCart: (p.isInCart as boolean) ?? false,
+        isInWishlist: (p.isInWishlist as boolean) ?? false,
+      };
+    });
 
   return (
     <div className="2xl:py-[100px] 2xl:px-[150px]">

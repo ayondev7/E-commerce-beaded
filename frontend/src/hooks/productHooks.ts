@@ -5,12 +5,13 @@ import PRODUCT_ROUTES from "@/routes/productRoutes";
 import apiClient from "./apiClient";
 import { Product, ProductListResponse, CreateProductInput, ProductResponse } from "@/types";
 
-export const fetchProductList = async (params?: Record<string, any>) => {
+
+export const fetchProductList = async (params?: Record<string, unknown>) => {
 	const { data } = await apiClient.get(PRODUCT_ROUTES.list, { params });
 	return data as ProductListResponse;
 };
 
-export function useProductList(params?: Record<string, any>) {
+export function useProductList(params?: Record<string, unknown>) {
 	return useQuery({
 		queryKey: ["products", "list", params ?? {}],
 		queryFn: () => fetchProductList(params),
@@ -61,9 +62,13 @@ const toFormData = (payload: CreateProductInput) => {
 	const fd = new FormData();
 	Object.entries(payload).forEach(([k, v]) => {
 		if (Array.isArray(v)) {
-			v.forEach((item) => fd.append(k, item as any));
+			v.forEach((item) => {
+				if (item instanceof Blob) fd.append(k, item);
+				else fd.append(k, String(item));
+			});
 		} else if (v !== undefined && v !== null) {
-			fd.append(k, v as any);
+			if (v instanceof Blob) fd.append(k, v);
+			else fd.append(k, String(v));
 		}
 	});
 	return fd;

@@ -38,11 +38,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (mode === "tokenLogin") {
           try {
             // credentials.user may be passed as an object or a JSON string. Handle both.
-            let uRaw: any = credentials?.user ?? {};
+            let uRaw: unknown = credentials?.user ?? {};
             if (typeof uRaw === "string") {
               try {
                 uRaw = JSON.parse(uRaw);
-              } catch (e) {
+              } catch (_e) {
                 // fallthrough to error below
                 throw new Error("Invalid tokenLogin user payload (malformed JSON)");
               }
@@ -69,9 +69,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               refreshToken: string;
               backendUser: { id: string; email: string; name: string | null; image: string | null };
             };
-          } catch (e) {
+          } catch {
             // Keep the original error shape for NextAuth
-            throw e instanceof Error ? e : new Error("Invalid tokenLogin user payload");
+            throw new Error("Invalid tokenLogin user payload");
           }
         }
 

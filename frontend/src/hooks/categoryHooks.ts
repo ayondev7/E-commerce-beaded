@@ -35,7 +35,10 @@ const toFormData = (payload: CategoryPayload) => {
 	if (payload instanceof FormData) return payload;
 	const fd = new FormData();
 	Object.entries(payload).forEach(([k, v]) => {
-		if (v !== undefined && v !== null) fd.append(k, v as any);
+		if (v !== undefined && v !== null) {
+			if (v instanceof Blob) fd.append(k, v);
+			else fd.append(k, String(v));
+		}
 	});
 	return fd;
 };

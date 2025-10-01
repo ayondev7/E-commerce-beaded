@@ -44,32 +44,40 @@ const Page = ({ params }: ProductPageProps) => {
       onSuccess: () => {
         toast.success("Added to cart!");
       },
-      onError: (error: any) => {
-        console.log("Cart error:", error);
-        
-        if (error?.response) {
-          const status = error.response.status;
-          const message = error.response.data?.message;
-          
-          if (status === 401) {
-            toast.error("Please sign in to add items to your cart");
-          } else if (status === 400 && message === "Product already exists in cart") {
-            toast.error("This product is already in your cart");
-          } else if (status === 404) {
-            toast.error("This product is no longer available");
-          } else if (message && typeof message === 'string') {
-            toast.error(message);
+        onError: (error: unknown) => {
+          console.log("Cart error:", error);
+
+          type ApiError = {
+            response?: { status?: number; data?: { message?: string } };
+            request?: unknown;
+            message?: string;
+          };
+
+          const err = error as ApiError;
+
+          if (err.response) {
+            const status = err.response.status;
+            const message = err.response.data?.message;
+
+            if (status === 401) {
+              toast.error("Please sign in to add items to your cart");
+            } else if (status === 400 && message === "Product already exists in cart") {
+              toast.error("This product is already in your cart");
+            } else if (status === 404) {
+              toast.error("This product is no longer available");
+            } else if (message && typeof message === 'string') {
+              toast.error(message);
+            } else {
+              toast.error("Failed to add to cart. Please try again");
+            }
+          } else if (err.request) {
+            toast.error("Network error. Please check your connection and try again");
+          } else if (err.message) {
+            toast.error(`Error: ${err.message}`);
           } else {
             toast.error("Failed to add to cart. Please try again");
           }
-        } else if (error?.request) {
-          toast.error("Network error. Please check your connection and try again");
-        } else if (error?.message) {
-          toast.error(`Error: ${error.message}`);
-        } else {
-          toast.error("Failed to add to cart. Please try again");
         }
-      }
     });
   };
 
@@ -91,32 +99,40 @@ const Page = ({ params }: ProductPageProps) => {
       onSuccess: () => {
         toast.success("Added to wishlist!");
       },
-      onError: (error: any) => {
-        console.log("Wishlist error:", error);
-        
-        if (error?.response) {
-          const status = error.response.status;
-          const message = error.response.data?.message;
-          
-          if (status === 401) {
-            toast.error("Please sign in to add items to your wishlist");
-          } else if (status === 400 && message === "Product already exists in wishlist") {
-            toast.error("This product is already in your wishlist");
-          } else if (status === 404) {
-            toast.error("This product is no longer available");
-          } else if (message && typeof message === 'string') {
-            toast.error(message);
+        onError: (error: unknown) => {
+          console.log("Wishlist error:", error);
+
+          type ApiError = {
+            response?: { status?: number; data?: { message?: string } };
+            request?: unknown;
+            message?: string;
+          };
+
+          const err = error as ApiError;
+
+          if (err.response) {
+            const status = err.response.status;
+            const message = err.response.data?.message;
+
+            if (status === 401) {
+              toast.error("Please sign in to add items to your wishlist");
+            } else if (status === 400 && message === "Product already exists in wishlist") {
+              toast.error("This product is already in your wishlist");
+            } else if (status === 404) {
+              toast.error("This product is no longer available");
+            } else if (message && typeof message === 'string') {
+              toast.error(message);
+            } else {
+              toast.error("Failed to add to wishlist. Please try again");
+            }
+          } else if (err.request) {
+            toast.error("Network error. Please check your connection and try again");
+          } else if (err.message) {
+            toast.error(`Error: ${err.message}`);
           } else {
             toast.error("Failed to add to wishlist. Please try again");
           }
-        } else if (error?.request) {
-          toast.error("Network error. Please check your connection and try again");
-        } else if (error?.message) {
-          toast.error(`Error: ${error.message}`);
-        } else {
-          toast.error("Failed to add to wishlist. Please try again");
         }
-      }
     });
   };
 

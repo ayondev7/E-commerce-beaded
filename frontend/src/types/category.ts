@@ -11,4 +11,4 @@ export type CategoryListResponse = {
 	categories: Category[];
 };
 
-export type CategoryPayload = FormData | Record<string, any>;
+export type CategoryPayload = FormData | Record<string, unknown>;

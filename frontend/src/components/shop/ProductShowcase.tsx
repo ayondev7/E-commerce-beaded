@@ -47,7 +47,7 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
   }, [categoriesData, selectedCategory]);
 
   const queryParams = useMemo(() => {
-    const params: Record<string, any> = {
+    const params: Record<string, unknown> = {
       page: currentPage,
       limit: 6
     };
@@ -79,26 +79,28 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
     
     // Apply search filter
     if (searchQuery.trim()) {
-      products = products.filter((product: any) =>
-        product.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.categoryName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      products = products.filter((product: Record<string, unknown>) => {
+        const name = (product.productName as string) ?? "";
+        const cat = (product.categoryName as string) ?? "";
+        return name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          cat.toLowerCase().includes(searchQuery.toLowerCase());
+      });
     }
     
     // Apply sorting
-    const sortedProducts = [...products].sort((a: any, b: any) => {
+    const sortedProducts = [...products].sort((a: Record<string, unknown>, b: Record<string, unknown>) => {
       switch (sortBy) {
         case "Price High to Low":
-          return b.price - a.price;
+          return (Number(b.price as number) || 0) - (Number(a.price as number) || 0);
         case "Price Low to High":
-          return a.price - b.price;
+          return (Number(a.price as number) || 0) - (Number(b.price as number) || 0);
         case "By Name A to Z":
-          return a.productName.localeCompare(b.productName);
+          return String(a.productName as string || "").localeCompare(String(b.productName as string || ""));
         case "By Name Z to A":
-          return b.productName.localeCompare(a.productName);
+          return String(b.productName as string || "").localeCompare(String(a.productName as string || ""));
         case "Most Recent":
         default:
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return new Date(String(b.createdAt as string)).getTime() - new Date(String(a.createdAt as string)).getTime();
       }
     });
     

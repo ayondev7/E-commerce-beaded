@@ -27,7 +27,7 @@ const SigninForm: React.FC = () => {
         if (!re.test(values.email.trim())) errors.email = "Invalid email";
       }
       if (!values.password) errors.password = "Password is required";
-      return errors as any;
+      return errors as Record<string, string>;
     },
     onSubmit: async (values) => {
       setSubmitting(true);
@@ -62,7 +62,7 @@ const SigninForm: React.FC = () => {
           try {
             const parsed = JSON.parse(text);
             if (parsed && parsed.message) text = parsed.message;
-          } catch (e) {
+          } catch {
             // keep original text
           }
           toast.error(`Signin failed: ${text}`);
@@ -70,7 +70,12 @@ const SigninForm: React.FC = () => {
         }
 
         const data = await res.json();
-        const { accessToken, refreshToken, user: backendUser, customer } = data as any;
+        const { accessToken, refreshToken, user: backendUser, customer } = data as {
+          accessToken?: string;
+          refreshToken?: string;
+          user?: unknown;
+          customer?: unknown;
+        };
         const returnedUser = backendUser || customer;
         if (!accessToken || !refreshToken || !returnedUser) {
           toast.error("Signin succeeded but backend did not return tokens. Please try again.");
@@ -91,12 +96,12 @@ const SigninForm: React.FC = () => {
           return;
         }
 
-        if ((tokenLoginRes as any).error) {
-          let message = (tokenLoginRes as any).error as string;
+        if ((tokenLoginRes as unknown as { error?: string }).error) {
+          let message = (tokenLoginRes as unknown as { error?: string }).error as string;
           try {
             const parsed = JSON.parse(message);
             if (parsed && parsed.message) message = parsed.message;
-          } catch (e) {
+          } catch {
             // ignore
           }
           toast.error(message || "Failed to create session after signin.");

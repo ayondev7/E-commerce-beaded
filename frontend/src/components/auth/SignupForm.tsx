@@ -65,7 +65,7 @@ const SignupForm: React.FC = () => {
           errors.imageFile = "Image must be 3MB or smaller";
       }
 
-      return errors as any;
+      return errors as Record<string, string>;
     },
     onSubmit: async (values) => {
       setSubmitting(true);
@@ -119,7 +119,12 @@ const SignupForm: React.FC = () => {
           refreshToken,
           user: backendUser,
           customer,
-        } = data as any;
+        } = data as {
+          accessToken?: string;
+          refreshToken?: string;
+          user?: unknown;
+          customer?: unknown;
+        };
         const returnedUser = backendUser || customer;
         if (!accessToken || !refreshToken || !returnedUser) {
           toast.error(
@@ -141,12 +146,12 @@ const SignupForm: React.FC = () => {
           return;
         }
 
-        if (tokenLoginRes.error) {
-          let message = tokenLoginRes.error;
+        if ((tokenLoginRes as unknown as { error?: string }).error) {
+          let message = (tokenLoginRes as unknown as { error?: string }).error as string;
           try {
-            const parsed = JSON.parse(tokenLoginRes.error);
+            const parsed = JSON.parse(message);
             if (parsed && parsed.message) message = parsed.message;
-          } catch (e) {
+          } catch {
             // ignore
           }
           toast.error(message || "Failed to create session after signup.");
@@ -173,7 +178,7 @@ const SignupForm: React.FC = () => {
   });
 
   // Local helpers to wire custom components to formik
-  const setField = (field: string, value: any) =>
+  const setField = (field: string, value: string | File | null) =>
     formik.setFieldValue(field, value);
   const setTouched = (field: string) =>
     formik.setFieldTouched(field, true, false);

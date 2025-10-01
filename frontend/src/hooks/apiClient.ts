@@ -13,12 +13,14 @@ export const apiClient = axios.create({
 });
 
 let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (value?: any) => void;
-  reject: (error?: any) => void;
-}> = [];
+type FailedQueueItem = {
+  resolve: (value?: string | null) => void;
+  reject: (error?: unknown) => void;
+};
 
-const processQueue = (error: any, token: string | null = null) => {
+let failedQueue: FailedQueueItem[] = [];
+
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach(prom => {
     if (error) {
       prom.reject(error);
@@ -26,7 +28,7 @@ const processQueue = (error: any, token: string | null = null) => {
       prom.resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -34,13 +36,13 @@ apiClient.interceptors.request.use(async (config) => {
   try {
     const session = await getSession();
     const token = session?.accessToken;
-    
+
     if (token) {
       config.headers = config.headers || {};
       (config.headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
     }
   } catch (_) {
-    
+    // ignore session retrieval errors in request interceptor
   }
   return config;
 });

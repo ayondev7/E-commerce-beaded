@@ -35,4 +35,4 @@ export type ProductListResponse = {
 	totalProductsInDb: number;
 };
 
-export type CreateProductInput = FormData | Record<string, any>;
+export type CreateProductInput = FormData | Record<string, unknown>;

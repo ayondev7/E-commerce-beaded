@@ -91,9 +91,10 @@ export default function ReviewOrder() {
       
       toast.success("Order created successfully!");
       next(); // Move to confirmation step
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Create order error:", error);
-      toast.error(error?.response?.data?.message || "Failed to create order. Please try again.");
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to create order. Please try again.");
     }
   };
 
