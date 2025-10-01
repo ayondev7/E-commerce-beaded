@@ -13,10 +13,19 @@ const Hero = () => {
     "/home/heroSlider/1.png",
     "/home/heroSlider/2.jpg",
     "/home/heroSlider/3.jpg",
+    "/home/heroSlider/4.jpg",
+    "/home/heroSlider/5.jpg",
+    "/home/heroSlider/6.png",
   ];
 
-  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollPrev = useCallback(
+    () => emblaApi && emblaApi.scrollPrev(),
+    [emblaApi]
+  );
+  const scrollNext = useCallback(
+    () => emblaApi && emblaApi.scrollNext(),
+    [emblaApi]
+  );
 
   return (
     <div className="relative">
@@ -48,7 +57,7 @@ const Hero = () => {
         </h2>
         <button
           className="uppercase cursor-pointer text-[17px] font-medium px-[56px] py-[18px] border-2 border-white "
-          onClick={() => router.push('/all/all/shop')}
+          onClick={() => router.push("/all/all/shop")}
         >
           SHOP NOW
         </button>

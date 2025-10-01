@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import CART_ROUTES from "@/routes/cartRoutes";
 import apiClient from "./apiClient";
 import { 
@@ -17,10 +18,14 @@ export const fetchCartList = async () => {
 };
 
 export function useCartList() {
+  const { data: session } = useSession();
+  
   return useQuery({
     queryKey: ["cart", "list"],
     queryFn: fetchCartList,
     staleTime: 60_000,
+    // Only run the query if user is authenticated
+    enabled: !!session?.accessToken,
   });
 }
 
@@ -30,10 +35,14 @@ export const fetchCartCount = async () => {
 };
 
 export function useCartCount() {
+  const { data: session } = useSession();
+  
   return useQuery({
     queryKey: ["cart", "count"],
     queryFn: fetchCartCount,
     staleTime: 60_000,
+    // Only run the query if user is authenticated
+    enabled: !!session?.accessToken,
   });
 }
 

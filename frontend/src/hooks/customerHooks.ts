@@ -1,5 +1,6 @@
 "use client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import AUTH_ROUTES from "@/routes/authRoutes";
 import apiClient from "./apiClient";
 import { MeResponse, UpdateMeRequest } from "@/types";
@@ -15,11 +16,15 @@ export const updateMe = async (updateData: UpdateMeRequest): Promise<MeResponse>
 };
 
 export function useMe() {
+	const { data: session } = useSession();
+	
 	return useQuery({
 		queryKey: ["auth", "me"],
 		queryFn: fetchMe,
 		staleTime: 1000 * 60 * 30,
 		retry: 1,
+		// Only run the query if user is authenticated
+		enabled: !!session?.accessToken,
 	});
 }
 
