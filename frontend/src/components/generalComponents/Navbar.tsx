@@ -28,8 +28,8 @@ const Navbar = () => {
     router.push("/sign-in");
   };
   return (
-    <div className="flex flex-col pt-[26px] border-b border-[#b0b0b0]">
-      <div className="w-full flex justify-center">
+    <div className="flex flex-col border-b border-[#b0b0b0]">
+      <div className="xl:px-10 2xl:px-[60px] 3xl:px-[149px] xl:py-[36px] flex justify-between items-center">
         <Link href="/">
           <Image
             src="/logo.png"
@@ -39,10 +39,8 @@ const Navbar = () => {
             height={600}
           />
         </Link>
-      </div>
-      <div className="2xl:px-[149px] 2xl:py-[36px] flex justify-between items-center">
         <nav>
-          <ul className="flex gap-x-[24px] text-[17px]">
+          <ul className="flex xl:gap-x-[14px] 2xl:gap-x-[24px] text-[17px]">
             {(() => {
               const items = navItems as {
                 id: number;
@@ -55,16 +53,25 @@ const Navbar = () => {
                   return 1;
                 }
 
-                if (pathname.includes("/hot-deals/") && pathname.includes("/shop")) {
+                if (
+                  pathname.includes("/hot-deals/") &&
+                  pathname.includes("/shop")
+                ) {
                   return 3;
                 }
-                if (pathname.includes("/eid-collection/") && pathname.includes("/shop")) {
+                if (
+                  pathname.includes("/eid-collection/") &&
+                  pathname.includes("/shop")
+                ) {
                   return 4;
                 }
-                if (pathname.includes("/boishakhi-collection/") && pathname.includes("/shop")) {
+                if (
+                  pathname.includes("/boishakhi-collection/") &&
+                  pathname.includes("/shop")
+                ) {
                   return 5;
                 }
-                
+
                 if (pathname.includes("/all/") && pathname.includes("/shop")) {
                   return 2;
                 }
@@ -90,7 +97,7 @@ const Navbar = () => {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-x-[32px]">
+        <div className="flex items-center xl:gap-x-[18px] 2xl:gap-x-[32px]">
           {userName ? (
             <Link
               href="/profile"

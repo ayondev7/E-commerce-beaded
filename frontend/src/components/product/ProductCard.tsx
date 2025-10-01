@@ -191,7 +191,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     });
   };
   return (
-    <div className="max-w-[390px]">
+    <div className="2xl:max-w-[340px] 3xl:max-w-[390px]">
       <div className="relative overflow-hidden group">
         <Image
           onClick={handleImageClick}
@@ -200,7 +200,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           width={500}
           height={500}
           className={cn(
-            "object-cover 2xl:w-[390px] 2xl:h-[495px] cursor-pointer",
+            "object-cover xl:w-[300px] xl:h-[380px] 2xl:w-[340px] 2xl:h-[420px] 3xl:w-[390px] 3xl:h-[495px] cursor-pointer",
             imageClassName
           )}
         />
@@ -245,17 +245,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <h1 className={cn("text-sm text-[#6D6D6D]", categoryClassName)}>
           {category}
         </h1>
-        <h2 className={cn("mt-[12px] text-xl", titleClassName)}>{name}</h2>
+        <h2 className={cn("mt-[12px] xl:text-lg 2xl:text-xl", titleClassName)}>{name}</h2>
         <div
           className={cn(
             "mt-1.5 text-2xl font-medium text-[#00B5A5] flex items-center justify-center",
             priceClassName
           )}
         >
-          <span>
-            <TbCurrencyTaka className="text-[26px]" />
-          </span>
-          <span>{price}</span>
+          <span>TK. {price}</span>
         </div>
       </div>
     </div>

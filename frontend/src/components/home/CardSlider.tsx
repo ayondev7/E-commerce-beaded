@@ -99,7 +99,7 @@ const CardSlider: FC<CardSliderProps> = ({ products = [], isLoading = false }) =
         </div>
       </div>
 
-      <div className="w-full flex items-center justify-between 2xl:px-[18%]">
+      <div className="w-full flex items-center justify-between xl:px-[26%] 2xl:px-[24%] 3xl:px-[24%]">
         <ReusableButton
           iconClassName="text-[#1E1E1E]"
           buttonClassName="border-[#1E1E1E]"
