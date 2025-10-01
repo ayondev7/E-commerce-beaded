@@ -14,6 +14,8 @@ router.get("/get-best-seller-products", optionalAuthMiddleware, productControlle
 
 router.get("/get-latest-collection-products", optionalAuthMiddleware, productController.getLatestCollectionProducts);
 
+router.get("/get-exclusive-collection-products", optionalAuthMiddleware, productController.getExclusiveCollectionProducts);
+
 router.post(
   "/add-new-product",upload.array("images", 3),productController.addNewProduct);
 

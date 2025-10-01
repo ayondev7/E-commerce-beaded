@@ -229,6 +229,24 @@ export const getLatestCollectionProducts = async (req, res, next) => {
 	}
 };
 
+export const getExclusiveCollectionProducts = async (req, res, next) => {
+	try {
+		const customerId = req.customer?.id;
+
+		const products = await prisma.product.findMany({
+			take: 12,
+			orderBy: { createdAt: "desc" },
+			include: getProductIncludeOptions(),
+		});
+
+		const productsWithStatus = await enrichProductsWithStatus(products, customerId);
+
+		return res.status(200).json({ products: productsWithStatus });
+	} catch (err) {
+		return next(err);
+	}
+};
+
 const productController = {
 	addNewProduct,
 	getProductList,
@@ -237,6 +255,7 @@ const productController = {
 	deleteProduct,
 	getBestSellerProducts,
 	getLatestCollectionProducts,
+	getExclusiveCollectionProducts,
 };
 
 export default productController;
