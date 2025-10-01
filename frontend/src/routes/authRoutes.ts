@@ -10,6 +10,9 @@ export const AUTH_ROUTES = {
 	google: {
 		signin: `${BASE}/google/signin`,
 	},
+	guest: {
+		signin: `${BASE}/guest/signin`,
+	},
 	verify: `${BASE}/verify`,
 	me: `${BASE}/get-my-info`,
 	updateMe: `${BASE}/update-my-info`,

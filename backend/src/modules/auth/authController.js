@@ -124,6 +124,39 @@ export const credentialSignin = async (req, res, next) => {
   }
 };
 
+export const guestSignin = async (req, res, next) => {
+  try {
+    const guestEmail = process.env.GUEST_EMAIL;
+    const guestPassword = process.env.GUEST_PASSWORD;
+
+    if (!guestEmail || !guestPassword) {
+      return res.status(500).json({ message: "Guest credentials not configured" });
+    }
+
+    const customer = await prisma.customer.findUnique({ where: { email: guestEmail } });
+    if (!customer || !customer.password) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const isMatch = await bcrypt.compare(guestPassword, customer.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const payload = { id: customer.id, email: customer.email };
+    const { accessToken, refreshToken } = generateTokens(payload);
+
+    return res.json({ accessToken, refreshToken, customer: {
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      image: customer.image,
+    }});
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const verifyAuth = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -290,6 +323,7 @@ const authController = {
   credentialSignup,
   credentialSignin,
   verifyAuth,
+  guestSignin,
   getMyInfo,
   updateMyInfo,
 };

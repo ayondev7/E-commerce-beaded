@@ -9,6 +9,7 @@ router.post("/google/signin", authController.googleSignin);
 
 router.post("/credential/signup", upload.single("image"), authController.credentialSignup);
 router.post("/credential/signin", authController.credentialSignin);
+router.post("/guest/signin", authController.guestSignin);
 
 router.post("/verify", authController.verifyAuth);
 

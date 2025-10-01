@@ -1,4 +1,5 @@
 import React from "react";
+import { formatToDDMMYYYY } from "@/utils/dateUtils";
 import { FiEdit } from "react-icons/fi";
 
 export interface ProfileData {
@@ -40,7 +41,7 @@ const ProfileInfoView: React.FC<ProfileInfoViewProps> = ({ data, onEdit }) => {
           <InfoRow label="Email" value={data.email} />
           <InfoRow label="Phone no." value={data.phoneNumber} />
           <InfoRow label="Gender" value={data.gender} />
-          <InfoRow label="Date of Birth" value={data.dateOfBirth} />
+          <InfoRow label="Date of Birth" value={formatToDDMMYYYY(data.dateOfBirth)} />
         </div>
       </div>
     </div>
