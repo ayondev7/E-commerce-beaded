@@ -71,7 +71,12 @@ const SigninForm: React.FC = () => {
         }
 
         const data = await res.json();
-        const { accessToken, refreshToken, user: backendUser, customer } = data as {
+        const {
+          accessToken,
+          refreshToken,
+          user: backendUser,
+          customer,
+        } = data as {
           accessToken?: string;
           refreshToken?: string;
           user?: unknown;
@@ -79,7 +84,9 @@ const SigninForm: React.FC = () => {
         };
         const returnedUser = backendUser || customer;
         if (!accessToken || !refreshToken || !returnedUser) {
-          toast.error("Signin succeeded but backend did not return tokens. Please try again.");
+          toast.error(
+            "Signin succeeded but backend did not return tokens. Please try again."
+          );
           return;
         }
 
@@ -93,12 +100,15 @@ const SigninForm: React.FC = () => {
         });
 
         if (!tokenLoginRes) {
-          toast.error("Failed to create session after signin. Please try signing in again.");
+          toast.error(
+            "Failed to create session after signin. Please try signing in again."
+          );
           return;
         }
 
         if ((tokenLoginRes as unknown as { error?: string }).error) {
-          let message = (tokenLoginRes as unknown as { error?: string }).error as string;
+          let message = (tokenLoginRes as unknown as { error?: string })
+            .error as string;
           try {
             const parsed = JSON.parse(message);
             if (parsed && parsed.message) message = parsed.message;
@@ -114,7 +124,9 @@ const SigninForm: React.FC = () => {
           toast.success("Signed in successfully");
           setTimeout(() => router.push("/"), 300);
         } else {
-          toast.error("Signin completed but session not created. Please try signing in.");
+          toast.error(
+            "Signin completed but session not created. Please try signing in."
+          );
         }
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : "Signin error";
@@ -161,7 +173,12 @@ const SigninForm: React.FC = () => {
       }
 
       const data = await res.json();
-      const { accessToken, refreshToken, user: backendUser, customer } = data as {
+      const {
+        accessToken,
+        refreshToken,
+        user: backendUser,
+        customer,
+      } = data as {
         accessToken?: string;
         refreshToken?: string;
         user?: unknown;
@@ -169,7 +186,9 @@ const SigninForm: React.FC = () => {
       };
       const returnedUser = backendUser || customer;
       if (!accessToken || !refreshToken || !returnedUser) {
-        toast.error("Guest signin succeeded but backend did not return tokens. Please try again.");
+        toast.error(
+          "Guest signin succeeded but backend did not return tokens. Please try again."
+        );
         return;
       }
 
@@ -182,12 +201,15 @@ const SigninForm: React.FC = () => {
       });
 
       if (!tokenLoginRes) {
-        toast.error("Failed to create session after guest signin. Please try signing in again.");
+        toast.error(
+          "Failed to create session after guest signin. Please try signing in again."
+        );
         return;
       }
 
       if ((tokenLoginRes as unknown as { error?: string }).error) {
-        let message = (tokenLoginRes as unknown as { error?: string }).error as string;
+        let message = (tokenLoginRes as unknown as { error?: string })
+          .error as string;
         try {
           const parsed = JSON.parse(message);
           if (parsed && parsed.message) message = parsed.message;
@@ -203,10 +225,13 @@ const SigninForm: React.FC = () => {
         toast.success("Signed in as guest successfully");
         setTimeout(() => router.push("/"), 300);
       } else {
-        toast.error("Guest signin completed but session not created. Please try signing in.");
+        toast.error(
+          "Guest signin completed but session not created. Please try signing in."
+        );
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Guest signin error";
+      const message =
+        error instanceof Error ? error.message : "Guest signin error";
       console.error("Guest signin error", error);
       toast.error(message);
     } finally {
@@ -217,7 +242,9 @@ const SigninForm: React.FC = () => {
   return (
     <div className="mx-auto w-full max-w-[520px]">
       <h1 className="text-center text-4xl tracking-wide mb-8">SIGN IN</h1>
-      <p className="text-center text-sm text-[#7D7D7D] uppercase mb-2">Connect with</p>
+      <p className="text-center text-sm text-[#7D7D7D] uppercase mb-2">
+        Connect with
+      </p>
       <GoogleButton className="border-[#B7B7B7]" label="Sign in with Google" />
       <Divider />
       <form onSubmit={formik.handleSubmit} className="space-y-5">
@@ -256,10 +283,29 @@ const SigninForm: React.FC = () => {
             type="submit"
             disabled={submitting}
           >
-            {submitting ? <FiLoader className="animate-spin size-5" /> : "Sign in"}
+            {submitting ? (
+              <FiLoader className="animate-spin size-5" />
+            ) : (
+              "Sign in"
+            )}
           </ReusableButton2>
         </div>
       </form>
+      <div className="flex justify-center mb-6">
+        <ReusableButton2
+          className="border border-[#B7B7B7] text-black hover:border-[#00b5a6] w-full flex items-center justify-center gap-2"
+          bgClassName="bg-[#00b5a6]"
+          textClassName="group-hover:text-white"
+          onClick={handleGuestSignin}
+          disabled={guestSubmitting}
+        >
+          {guestSubmitting ? (
+            <FiLoader className="animate-spin size-5" />
+          ) : (
+            "Sign in as a Guest"
+          )}
+        </ReusableButton2>
+      </div>
       <div className="text-center mt-4">
         <Link href="#" className="text-sm tracking-wider uppercase">
           Forgot password?
@@ -267,7 +313,7 @@ const SigninForm: React.FC = () => {
       </div>
       <Divider showOr={false} />
       <p className="text-center text-[#7D7D7D]">
-        Don&apos;t have an account? {" "}
+        Don&apos;t have an account?{" "}
         <Link href="/sign-up" className="text-[#00b5a6] font-semibold">
           Sign up
         </Link>

@@ -142,21 +142,23 @@ export default function DeliveryInfo() {
               <div>
                 <div className="mb-2 text-sm">Your Address</div>
                 <div className="flex gap-3 items-center justify-between">
-                  <div className="relative w-[300px]">
-                    <SelectField
-                      value={values.selectedAddressId}
-                      onChange={(value) => handleAddressSelection(value, setFieldValue)}
-                      options={addresses.map(addr => addr.addressName)}
-                      placeholder="Select address"
-                      triggerClassName={baseInputClass}
-                      className="w-full"
-                    />
-                    {errors.selectedAddressId && touched.selectedAddressId && (
-                      <span className="absolute -bottom-5 left-0 text-red-500 text-sm">
-                        {errors.selectedAddressId}
-                      </span>
-                    )}
-                  </div>
+                  {addresses.length > 0 && (
+                    <div className="relative w-[300px]">
+                      <SelectField
+                        value={values.selectedAddressId}
+                        onChange={(value) => handleAddressSelection(value, setFieldValue)}
+                        options={addresses.map(addr => addr.addressName)}
+                        placeholder="Select address"
+                        triggerClassName={baseInputClass}
+                        className="w-full"
+                      />
+                      {errors.selectedAddressId && touched.selectedAddressId && (
+                        <span className="absolute -bottom-5 left-0 text-red-500 text-sm">
+                          {errors.selectedAddressId}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   <ReusableButton2
                     type="button"
                     onClick={() => router.push('/address')}
