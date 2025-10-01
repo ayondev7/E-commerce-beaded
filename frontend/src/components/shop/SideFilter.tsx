@@ -53,124 +53,126 @@ const SideFilter = ({
         <LuFilter className="w-6 h-6 text-gray-700" />
       </div>
 
-     <div className="border border-[#B7B7B7] p-10">
-       {/* Search Input */}
-      <div className="mb-10">
-        <div className="relative">
-          <LuSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="SEARCH"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={cn(
-              "pl-12 h-14 md:text-lg font-normal shadow-none placeholder:text-gray-400 placeholder:font-normal border border-gray-300 bg-white rounded-none",
-              "focus:!border-gray-900 focus-visible:!border-gray-900 focus:outline-none focus:shadow-none focus:ring-0 focus-visible:ring-0"
-            )}
-          />
-        </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="mb-8">
-        <div className="flex border-b justify-between border-gray-300">
-          <button
-            onClick={() => setActiveTab("collections")}
-            className={`pb-4 px-3 text-base font-medium cursor-pointer border-b-2 transition-colors tracking-wide ${
-              activeTab === "collections"
-                ? "border-gray-900 text-gray-900"
-                : "border-transparent text-gray-400 hover:text-gray-600"
-            }`}
-          >
-            COLLECTIONS
-          </button>
-          <button
-            onClick={() => setActiveTab("categories")}
-            className={`pb-4 px-3 text-base cursor-pointer font-medium border-b-2 transition-colors tracking-wide ${
-              activeTab === "categories"
-                ? "border-gray-900 text-gray-900"
-                : "border-transparent text-gray-400 hover:text-gray-600"
-            }`}
-          >
-            CATEGORIES
-          </button>
-        </div>
-      </div>
-
-      {/* Filter Options */}
-      {activeTab === "collections" && (
-        <RadioGroup
-          value={selectedCollection}
-          onValueChange={setCollection}
-          className="space-y-5"
-        >
-          {collections.map((collection) => {
-            const isSelected = selectedCollection === collection.id;
-            
-            return (
-              <div key={collection.id} className="flex items-center space-x-4">
-                <RadioGroupItem
-                  value={collection.id}
-                  id={collection.id}
-                  className="w-5 h-5 border-2 cursor-pointer border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
-                  dotClassName="radio-dot-accent bg-[#00B5A5] size-[10px]"
-                />
-                <Label
-                  htmlFor={collection.id}
-                  className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
-                >
-                  {collection.label}
-                </Label>
-              </div>
-            );
-          })}
-        </RadioGroup>
-      )}
-
-      {activeTab === "categories" && (
-        <RadioGroup
-          value={selectedCategory}
-          onValueChange={setCategory}
-          className="space-y-5"
-        >
-          <div className="flex items-center space-x-4">
-            <RadioGroupItem
-              value="all"
-              id="all-categories"
-               className="w-5 h-5 border-2 cursor-pointer border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
-                  dotClassName="radio-dot-accent bg-[#00B5A5] size-[10px]"
+      <div className="border border-[#B7B7B7] p-10">
+        {/* Search Input */}
+        <div className="mb-10">
+          <div className="relative">
+            <LuSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="SEARCH"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={cn(
+                "pl-12 h-14 md:text-lg font-normal shadow-none placeholder:text-gray-400 placeholder:font-normal border border-gray-300 bg-white rounded-none",
+                "focus:!border-gray-900 focus-visible:!border-gray-900 focus:outline-none focus:shadow-none focus:ring-0 focus-visible:ring-0"
+              )}
             />
-            <Label
-              htmlFor="all-categories"
-              className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
-            >
-              ALL CATEGORIES
-            </Label>
           </div>
-          {categoriesData?.categories?.map((category) => {
-            const isSelected = selectedCategory === category.name;
-            
-            return (
-              <div key={category.id} className="flex items-center space-x-4">
-                <RadioGroupItem
-                  value={category.name}
-                  id={`category-${category.id}`}
-                  className="w-5 h-5 border-2 border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
-                  dotClassName="radio-dot-accent"
-                />
-                <Label
-                  htmlFor={`category-${category.id}`}
-                  className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
-                >
-                  {category.name.toUpperCase()}
-                </Label>
-              </div>
-            );
-          })}
-        </RadioGroup>
-      )}
-     </div>
+        </div>
 
+        {/* Tab Navigation */}
+        <div className="mb-8">
+          <div className="flex border-b justify-between border-gray-300">
+            <button
+              onClick={() => setActiveTab("collections")}
+              className={`pb-4 px-3 text-base font-medium cursor-pointer border-b-2 transition-colors tracking-wide ${
+                activeTab === "collections"
+                  ? "border-gray-900 text-gray-900"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              COLLECTIONS
+            </button>
+            <button
+              onClick={() => setActiveTab("categories")}
+              className={`pb-4 px-3 text-base cursor-pointer font-medium border-b-2 transition-colors tracking-wide ${
+                activeTab === "categories"
+                  ? "border-gray-900 text-gray-900"
+                  : "border-transparent text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              CATEGORIES
+            </button>
+          </div>
+        </div>
+
+        {/* Filter Options */}
+        {activeTab === "collections" && (
+          <RadioGroup
+            value={selectedCollection}
+            onValueChange={setCollection}
+            className="space-y-5"
+          >
+            {collections.map((collection) => {
+              const isSelected = selectedCollection === collection.id;
+
+              return (
+                <div
+                  key={collection.id}
+                  className="flex items-center space-x-4"
+                >
+                  <RadioGroupItem
+                    value={collection.id}
+                    id={collection.id}
+                    className="w-5 h-5 border-2 cursor-pointer border-gray-400 text-[#04B4A7] focus:ring-[#04B4A7] data-[state=checked]:border-[#04B4A7] data-[state=checked]:bg-white data-[state=checked]:text-[#04B4A7]"
+                    dotClassName="radio-dot-accent bg-[#04B4A7] size-[10px]"
+                  />
+                  <Label
+                    htmlFor={collection.id}
+                    className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
+                  >
+                    {collection.label}
+                  </Label>
+                </div>
+              );
+            })}
+          </RadioGroup>
+        )}
+
+        {activeTab === "categories" && (
+          <RadioGroup
+            value={selectedCategory}
+            onValueChange={setCategory}
+            className="space-y-5"
+          >
+            <div className="flex items-center space-x-4">
+              <RadioGroupItem
+                value="all"
+                id="all-categories"
+                className="w-5 h-5 border-2 cursor-pointer border-gray-400 text-[#04B4A7] focus:ring-[#04B4A7] data-[state=checked]:border-[#04B4A7] data-[state=checked]:bg-white data-[state=checked]:text-[#04B4A7]"
+                dotClassName="radio-dot-accent bg-[#04B4A7] size-[10px]"
+              />
+              <Label
+                htmlFor="all-categories"
+                className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
+              >
+                ALL CATEGORIES
+              </Label>
+            </div>
+            {categoriesData?.categories?.map((category) => {
+              const isSelected = selectedCategory === category.name;
+
+              return (
+                <div key={category.id} className="flex items-center space-x-4">
+                  <RadioGroupItem
+                      value={category.name}
+                      id={`category-${category.id}`}
+                      className="w-5 h-5 border-2 cursor-pointer border-gray-400 text-[#04B4A7] focus:ring-[#04B4A7] data-[state=checked]:border-[#04B4A7] data-[state=checked]:bg-white data-[state=checked]:text-[#04B4A7]"
+                      dotClassName="radio-dot-accent bg-[#04B4A7] size-[10px]"
+                    />
+                  <Label
+                    htmlFor={`category-${category.id}`}
+                    className="text-sm font-medium text-gray-800 cursor-pointer tracking-wide"
+                  >
+                    {category.name.toUpperCase()}
+                  </Label>
+                </div>
+              );
+            })}
+          </RadioGroup>
+        )}
+      </div>
     </div>
   );
 };
