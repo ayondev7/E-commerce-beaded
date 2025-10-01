@@ -56,10 +56,13 @@ const Hero = () => {
           of styles, all created with the highest quality materials.
         </h2>
         <button
-          className="uppercase cursor-pointer text-[17px] font-medium px-[56px] py-[18px] border-2 border-white "
           onClick={() => router.push("/all/all/shop")}
+          className="relative group uppercase hover:border-none cursor-pointer text-[17px] font-medium px-[56px] py-[18px] border-2 border-white overflow-hidden"
         >
-          SHOP NOW
+          <span className="absolute inset-0 bg-white transform scale-x-0 origin-left transition-transform duration-500 ease-out pointer-events-none group-hover:scale-x-100 z-0" />
+          <span className="relative z-10 text-white transition-colors duration-300 ease-out group-hover:text-[#1e1e1e]">
+            SHOP NOW
+          </span>
         </button>
       </div>
 
