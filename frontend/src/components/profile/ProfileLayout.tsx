@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import ProfileHeader from "@/components/profile/ProfileHeader";
 import { Tabs } from "@/components/profile/Tabs";
 import { useMe } from "@/hooks/customerHooks";
+import LoaderComponent from "@/components/generalComponents/LoaderComponent";
 
 interface ProfileLayoutProps {
   children: React.ReactNode;
@@ -43,13 +44,7 @@ const ProfileLayout: React.FC<ProfileLayoutProps> = ({ children }) => {
 
   // Show loading state if customer data is not available
   if (isLoading) {
-    return (
-      <div className="pb-16 flex justify-center w-full overflow-y-auto">
-        <div className="w-[1000px] overflow-x-hidden">
-          <div className="flex justify-center py-8">Loading...</div>
-        </div>
-      </div>
-    );
+    return <LoaderComponent />;
   }
 
   return (

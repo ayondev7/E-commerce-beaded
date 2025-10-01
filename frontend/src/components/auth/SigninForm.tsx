@@ -121,7 +121,7 @@ const SigninForm: React.FC = () => {
 
         const session = await getSession();
         if (session && (session.accessToken || session.user?.id)) {
-          toast.success("Signed in successfully");
+          toast.success("Welcome back!");
           setTimeout(() => router.push("/"), 300);
         } else {
           toast.error(
@@ -222,7 +222,7 @@ const SigninForm: React.FC = () => {
 
       const session = await getSession();
       if (session && (session.accessToken || session.user?.id)) {
-        toast.success("Signed in as guest successfully");
+        toast.success("Welcome back!");
         setTimeout(() => router.push("/"), 300);
       } else {
         toast.error(
@@ -293,9 +293,9 @@ const SigninForm: React.FC = () => {
       </form>
       <div className="flex justify-center mb-6">
         <ReusableButton2
-          className="border border-[#B7B7B7] text-black hover:border-[#00b5a6] w-full flex items-center justify-center gap-2"
-          bgClassName="bg-[#00b5a6]"
-          textClassName="group-hover:text-white"
+          className="border border-[#00b5a6] bg-[#00b5a6] text-white hover:border-[#B7B7B7] w-full flex items-center justify-center gap-2"
+          bgClassName="bg-white"
+          textClassName="group-hover:text-black text-white"
           onClick={handleGuestSignin}
           disabled={guestSubmitting}
         >

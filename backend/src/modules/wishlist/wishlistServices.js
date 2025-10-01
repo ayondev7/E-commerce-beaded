@@ -13,10 +13,16 @@ export const getWishlistIncludeOptions = () => {
 export const enrichWishlistWithCartStatus = async (wishlistItems, customerId) => {
   const cartItems = await prisma.cart.findMany({
     where: { customerId },
-    select: { productId: true }
+    select: {
+      items: {
+        select: {
+          productId: true
+        }
+      }
+    }
   });
 
-  const cartProductIds = new Set(cartItems.map(item => item.productId));
+  const cartProductIds = new Set(cartItems.flatMap(cart => cart.items.map(item => item.productId)));
 
   return wishlistItems.map(item => ({
     ...item,
