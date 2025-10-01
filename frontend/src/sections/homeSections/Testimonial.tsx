@@ -33,7 +33,7 @@ const Testimonial = () => {
     <div className="relative h-[665px] overflow-hidden">
       
       {testimonials.map((c, idx) => {
-        const inView = idx < visibleCount; // if index less than visibleCount, it's in view (0-based)
+        const inView = idx < visibleCount; 
         return (
           <TestimonialCard
             key={idx}

@@ -4,32 +4,25 @@ import useEmblaCarousel from "embla-carousel-react";
 import ProductCard from "@/components/product/ProductCard";
 import ReusableButton from "@/components/generalComponents/ReusableButton";
 import ProductCardSkeleton from "@/components/skeleton/ProductCardSkeleton";
-import { useBestSellers } from "@/hooks/productHooks";
 import { Product as ProductType } from "@/types";
 
-const CardSlider: FC = () => {
-  const { data: bestSellers, isLoading } = useBestSellers();
-  const bs = bestSellers as any;
+type ProductView = {
+  id: number | string;
+  productSlug?: string;
+  image: string;
+  category: string;
+  name: string;
+  price: number;
+  isInCart?: boolean;
+  isInWishlist?: boolean;
+};
 
-  const productsArray: ProductType[] = Array.isArray(bs)
-    ? (bs as ProductType[])
-    : Array.isArray(bs?.products)
-    ? (bs.products as ProductType[])
-    : [];
+interface CardSliderProps {
+  products?: ProductView[];
+  isLoading?: boolean;
+}
 
-  const mappedProducts = productsArray.map((p: any, idx: number) => ({
-    id: p.id ?? idx,
-    productSlug: p.productSlug ?? ``,
-    image:
-      Array.isArray(p.images) && p.images.length
-        ? p.images[0]
-        : "/home/categories/1.png",
-    category: p.categoryName ?? p.category?.name ?? "BRACELET",
-    name: p.productName ?? "Product",
-    price: Number(p.offerPrice ?? p.price ?? 0),
-    isInCart: p.isInCart ?? false,
-    isInWishlist: p.isInWishlist ?? false,
-  }));
+const CardSlider: FC<CardSliderProps> = ({ products = [], isLoading = false }) => {
 
   const slidesPerPage = 4;
 
@@ -48,7 +41,7 @@ const CardSlider: FC = () => {
 
     const update = () => {
       const pageCount = Math.ceil(
-        (isLoading ? slidesPerPage * 2 : mappedProducts.length) / slidesPerPage
+        (isLoading ? slidesPerPage * 2 : products.length) / slidesPerPage
       );
       setTotalPages(pageCount);
       setCurrentPage(emblaApi.selectedScrollSnap());
@@ -64,7 +57,7 @@ const CardSlider: FC = () => {
       emblaApi.off("select", update);
       emblaApi.off("reInit", update);
     };
-  }, [emblaApi, mappedProducts.length, isLoading]);
+  }, [emblaApi, products.length, isLoading]);
 
   const scrollPrev = useCallback(
     () => emblaApi && emblaApi.scrollPrev(),
@@ -89,16 +82,16 @@ const CardSlider: FC = () => {
                   <ProductCardSkeleton />
                 </div>
               ))
-            : mappedProducts.map((product) => (
+            : products.map((product) => (
                 <div key={product.id} className="flex-[0_0_25%] px-2.5">
                   <ProductCard
-                    productId={product.id}
+                    productId={String(product.id)}
                     image={product.image}
                     category={product.category}
                     name={product.name}
                     price={product.price}
                     isInCart={product.isInCart}
-                    productSlug={product.productSlug}
+                    productSlug={product.productSlug ?? ""}
                     isInWishlist={product.isInWishlist}
                   />
                 </div>

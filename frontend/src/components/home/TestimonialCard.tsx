@@ -19,11 +19,9 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   inView,
   bgColor = "#509B70",
 }) => {
-  // using translate-x to move cards; when inView is false they are off to the right
   const translateClass = inView ? "translate-x-0" : "translate-x-[120%]";
 
-  // choose duration based on whether card is coming into view or leaving
-  const duration = inView ? 700 : 900; // ms
+  const duration = inView ? 700 : 900;
 
   return (
     <div
@@ -50,6 +48,8 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         alt="testimonial"
         width={1920}
         height={1080}
+        loading={inView ? "eager" : "lazy"}
+        priority={inView}
         className="w-full h-[588px] object-cover"
       />
     </div>

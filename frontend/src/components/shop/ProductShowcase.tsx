@@ -65,6 +65,13 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
 
   const { data: productsData, isLoading } = useProductList(queryParams);
 
+  const collectionDisplayName = useMemo(() => {
+    const collection = selectedCollection !== "all" ? selectedCollection : initialCollection;
+    if (!collection) return "Shop";
+    const readable = slugToReadableName(collection);
+    return readable || "Shop";
+  }, [selectedCollection, initialCollection]);
+
   const filteredProducts = useMemo(() => {
     if (!productsData?.products) return [];
     
@@ -104,7 +111,7 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
 
   return (
     <div>
-      <h1 className="uppercase text-[48px]">Shop</h1>
+  <h1 className="uppercase text-[48px]">{(collectionDisplayName && collectionDisplayName.toLowerCase() !== 'all') ? collectionDisplayName : 'Shop'}</h1>
       <div className="flex items-center justify-between mb-[30px]">
         <span className="text-[#6D6D6D] text-lg tracking-[-1%] uppercase">
           Showing {filteredProducts.length} out of {productsData?.totalProductsInDb || 0} results

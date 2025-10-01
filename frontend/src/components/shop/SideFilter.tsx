@@ -137,8 +137,8 @@ const SideFilter = ({
             <RadioGroupItem
               value="all"
               id="all-categories"
-              className="w-5 h-5 border-2 border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
-              dotClassName="radio-dot-accent"
+               className="w-5 h-5 border-2 cursor-pointer border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
+                  dotClassName="radio-dot-accent bg-[#00B5A5] size-[10px]"
             />
             <Label
               htmlFor="all-categories"

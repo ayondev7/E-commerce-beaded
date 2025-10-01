@@ -1,13 +1,13 @@
 "use client";
 import CardSlider from "@/components/home/CardSlider";
 import React from "react";
-import { useBestSellers } from "@/hooks/productHooks";
+import { useExclusiveCollection } from "@/hooks/productHooks";
 
-const BestSeller = () => {
-  const { data: bestSellers, isLoading } = useBestSellers();
-  const bs = bestSellers as any;
+const ExclusiveCollection = () => {
+  const { data: exclusiveData, isLoading } = useExclusiveCollection();
+  const ed = exclusiveData as any;
 
-  const products = (Array.isArray(bs) ? bs : Array.isArray(bs?.products) ? bs.products : [])
+  const products = (Array.isArray(ed) ? ed : Array.isArray(ed?.products) ? ed.products : [])
     .map((p: any, idx: number) => ({
       id: p.id ?? idx,
       productSlug: p.productSlug ?? "",
@@ -21,10 +21,10 @@ const BestSeller = () => {
 
   return (
     <div className="2xl:py-[100px] 2xl:px-[150px]">
-      <h1 className="uppercase text-[40px] text-center">OUR BEST SELLERS</h1>
+      <h1 className="uppercase text-[40px] text-center">Exclusive Collections</h1>
       <CardSlider products={products} isLoading={isLoading} />
     </div>
   );
 };
 
-export default BestSeller;
+export default ExclusiveCollection;

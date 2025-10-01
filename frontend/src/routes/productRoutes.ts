@@ -7,6 +7,7 @@ export const PRODUCT_ROUTES = {
 	detail: (slug: string) => `${BASE}/get-product/${slug}`,
 	bestSellers: `${BASE}/get-best-seller-products`,
 	latestCollection: `${BASE}/get-latest-collection-produts`,
+	exclusiveCollection: `${BASE}/get-exclusive-collection-products`,
 	create: `${BASE}/add-new-product`,
 	update: (id: string | number) => `${BASE}/patch-product/${id}`,
 	delete: (id: string | number) => `${BASE}/delete-product/${id}`,

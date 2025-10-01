@@ -15,7 +15,7 @@ const testimonials = [
     title: "Sophie Lee",
     text: "As someone who shops online often, I’m usually skeptical about what arrives compared to the photos. But this exceeded all expectations. The earrings are even more beautiful in person, and they’re surprisingly lightweight and comfortable. I’ve received so many compliments from friends and colleagues. This is now my go-to place for accessories.",
   image: "/home/testimonials/3.webp",
-    bgColor: "#60d1a0",
+    bgColor: "#56cc99",
   },
   {
     title: "Aachal Hossain",

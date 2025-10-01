@@ -48,6 +48,14 @@ export function useLatestCollection() {
 	});
 }
 
+export function useExclusiveCollection() {
+  return useQuery({
+    queryKey: ["products", "exclusive-collection"],
+    queryFn: async () => (await apiClient.get(PRODUCT_ROUTES.exclusiveCollection)).data as Product[],
+    staleTime: 60_000,
+  });
+}
+
 const toFormData = (payload: CreateProductInput) => {
 	if (payload instanceof FormData) return payload;
 	const fd = new FormData();
