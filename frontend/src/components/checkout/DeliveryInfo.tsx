@@ -47,31 +47,23 @@ export default function DeliveryInfo() {
 
   const addresses = addressData?.addresses || [];
   
-  // Check if everything is loaded
   const isLoading = userLoading || addressLoading;
   
-  // Load existing data from store if available
-  useEffect(() => {
-    // No need to load selectedAddressDetails since we're not storing it
-  }, []);
-  
-  // Show loader until everything is ready
   if (isLoading) {
     return (
-      <section className="px-[150px] flex justify-center items-center min-h-[700px]">
+      <section className="3xl:px-[150px] 2xl:px-[60px] xl:px-10 flex justify-center items-center xl:min-h-[620px] 2xl:min-h-[700px] 3xl:min-h-[700px]">
         <div className="flex flex-col items-center">
           <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-          <p className="text-lg text-[#7D7D7D]">Loading delivery information...</p>
+          <p className="text-lg">Loading...</p>
         </div>
       </section>
     );
   }
   
-  // Update selected address details when selection changes
   const handleAddressSelection = (addressName: string, setFieldValue: (field: string, value: unknown) => void) => {
     const selectedAddress = addresses.find(addr => addr.addressName === addressName);
     if (selectedAddress) {
-      setFieldValue('selectedAddressId', addressName); // Store address name instead of ID
+      setFieldValue('selectedAddressId', addressName);
       setSelectedAddressDetails(selectedAddress as Record<string, unknown>);
     }
   };
@@ -81,7 +73,6 @@ export default function DeliveryInfo() {
       await updateAddressMutation.mutateAsync({ id: addressId, payload: addressData });
       setEditingAddress(false);
       toast.success("Address updated successfully");
-      // Update selected address details
       const updatedAddress = { ...selectedAddressDetails, ...addressData };
       setSelectedAddressDetails(updatedAddress);
     } catch (error) {
@@ -97,31 +88,20 @@ export default function DeliveryInfo() {
       }}
       validate={validateForm}
       onSubmit={(values) => {
-        // Find the selected address by name to get the actual ID
         const selectedAddress = addresses.find(addr => addr.addressName === values.selectedAddressId);
         
-        // Create the delivery info object with only essential data
         const deliveryInfo = {
           selectedAddressId: selectedAddress?.id || "",
           notes: values.notes,
         };
-        
-        // Store in Zustand
         setDeliveryInfo(deliveryInfo);
         setCurrentStep(2);
-        
-        // Console log the form data for debugging
-        console.log("=== STEP 2 COMPLETED ===");
-        console.log("Form values submitted:", values);
-        console.log("Delivery info stored:", deliveryInfo);
-        
-        // Proceed to next step
         next();
       }}
     >
       {({ values, errors, touched, setFieldValue, handleSubmit }) => (
         <Form>
-          <section className="px-[150px] grid md:grid-cols-[2fr_3fr] gap-20">
+          <section className="3xl:px-[150px] 2xl:px-[60px] xl:px-10 grid md:grid-cols-[2fr_3fr] gap-20">
             {/* Left: Personal & Payment */}
             <div className="space-y-10">
               <div>

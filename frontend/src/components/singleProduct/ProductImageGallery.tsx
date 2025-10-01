@@ -44,7 +44,7 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
           src={images[selectedImage]}
           alt={productName}
           
-          className="object-cover w-[600px] h-[750px]"
+          className="object-cover xl:w-[500px] xl:h-[580px] 3xl:w-[600px] 2xl:w-[500px] 2xl:h-[600px] 3xl:h-[750px]"
           width={600}
           height={900}
         />

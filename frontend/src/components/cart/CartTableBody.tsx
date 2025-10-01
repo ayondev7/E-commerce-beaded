@@ -26,7 +26,7 @@ export default function CartTableBody({ items, className, onQtyChange, onRemove,
   return (
     <div className={className}>
       {/* Scrollable body: only this region will scroll when items overflow. Parent can control overall height. */}
-      <div className="divide-y max-h-[80vh] overflow-x-hidden overflow-y-auto hide-scrollbar">
+      <div className="divide-y 2xl:max-h-[75vh] 3xl:max-h-[80vh] overflow-x-hidden overflow-y-auto hide-scrollbar">
         <ul>
           {items.map((item) => (
             <li

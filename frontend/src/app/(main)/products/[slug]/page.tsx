@@ -156,7 +156,7 @@ const Page = ({ params }: ProductPageProps) => {
   const product = productResponse.product;
 
   return (
-    <div className="px-[150px] pt-[48px] pb-[116px]">
+    <div className="2xl:px-[60px] xl:px-10 3xl:px-[150px] pt-[48px] pb-[116px]">
       <div className="flex gap-x-[55px]">
         <div className="flex justify-center">
           <ProductImageGallery

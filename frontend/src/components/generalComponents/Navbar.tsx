@@ -34,13 +34,13 @@ const Navbar = () => {
           <Image
             src="/logo.png"
             alt="Beaded Logo"
-            className="w-[180px] h-[54px] object-contain cursor-pointer"
+            className="2xl:w-[180px] xl:w-[120px] h-[54px] object-contain cursor-pointer"
             width={600}
             height={600}
           />
         </Link>
         <nav>
-          <ul className="flex xl:gap-x-[14px] 2xl:gap-x-[24px] text-[17px]">
+          <ul className="flex xl:gap-x-[10px] 2xl:gap-x-[24px] text-[17px]">
             {(() => {
               const items = navItems as {
                 id: number;
@@ -115,7 +115,7 @@ const Navbar = () => {
                 <LuUser size={20} />
               )}
               <span className="max-w-[160px] truncate" title={userName}>
-                {formatDisplayName(userName, 2)}
+                {formatDisplayName(userName, 1)}
               </span>
             </Link>
           ) : (

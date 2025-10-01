@@ -24,7 +24,7 @@ const AddressCard: React.FC<Props> = ({
   isSettingDefault = false,
 }) => {
   return (
-    <div className="relative">
+    <div className="relative flex flex-1">
       <div className="bg-[#f8f8f8]">
         <div className="px-5 py-5 flex justify-between items-center border-b-[2px] border-[#ebebeb]">
           <span className="text-xl leading-[26px] ">

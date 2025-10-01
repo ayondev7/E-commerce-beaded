@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { divisions, districtsByDivision, areasByDistrict } from "@/constants/addressConstants";
 import { FiLoader } from "react-icons/fi";
 import InputField, { baseInputClass } from "@/components/generalComponents/Form/InputField";
 import SelectField from "@/components/generalComponents/Form/SelectField";
@@ -24,7 +25,18 @@ interface AddressFormProps {
 const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, isEditing = false, isLoading = false }) => {
   const [form, setForm] = React.useState<AddressData>(initial);
 
-  const update = (k: keyof AddressData, v: string) => setForm((p) => ({ ...p, [k]: v }));
+  const update = (k: keyof AddressData, v: string) => {
+    setForm((p) => ({ ...p, [k]: v }));
+  };
+
+  // Helper handlers to clear dependent selects when parent changes
+  const handleDivisionChange = (v: string) => {
+    setForm((p) => ({ ...p, division: v, district: "", area: "" }));
+  };
+
+  const handleDistrictChange = (v: string) => {
+    setForm((p) => ({ ...p, district: v, area: "" }));
+  };
 
   return (
     <div className="bg-[#fafafa] pt-5 pb-6 px-6 rounded-sm border border-[#f1f1f1]">
@@ -65,16 +77,16 @@ const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, is
         <SelectField
           label="Division"
           value={form.division}
-          onChange={(v) => update("division", v)}
-          options={["Dhaka", "Chattogram", "Rajshahi"]}
+          onChange={handleDivisionChange}
+          options={divisions as unknown as string[]}
           placeholder="Select Division"
           triggerClassName={baseInputClass}
         />
         <SelectField
           label="District"
           value={form.district}
-          onChange={(v) => update("district", v)}
-          options={["Dhaka", "Gazipur", "Narayanganj"]}
+          onChange={handleDistrictChange}
+          options={districtsByDivision[form.division] ?? []}
           placeholder="Select District"
           triggerClassName={baseInputClass}
         />
@@ -89,7 +101,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, is
           label="Area"
           value={form.area}
           onChange={(v) => update("area", v)}
-          options={["Gulshan", "Bashundhara", "Dhanmondi"]}
+          options={areasByDistrict[form.district] ?? []}
           placeholder="Select Area"
           triggerClassName={baseInputClass}
         />
@@ -98,7 +110,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ initial, onCancel, onSave, is
           value={form.fullAddress}
           onChange={(v) => update("fullAddress", v)}
           placeholder="Enter full address"
-          textareaClassName={"col-span-1 md:col-span-2 w-[530px]"}
+          className={"col-span-1 md:col-span-2"}
         />
       </div>
     </div>
