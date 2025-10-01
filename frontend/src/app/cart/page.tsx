@@ -120,7 +120,7 @@ function CartPage() {
           <p className="text-lg text-gray-500 mb-4">Your cart is empty</p>
           <button 
             onClick={() => window.location.href = '/all/all/shop'} 
-            className="px-4 py-2 bg-[#00B5A5] text-white rounded hover:bg-[#00A095] transition-colors"
+            className="px-4 py-2 bg-gray-200/50 cursor-pointer text-white rounded transition-colors"
           >
             Continue Shopping
           </button>
@@ -145,7 +145,6 @@ function CartPage() {
           <div className="sticky">
             <CartSummary 
               subTotal={subTotal}
-              deliveryFee={60}
               discount={totalDiscount}
               onProceed={handleProceed}
               isProceedLoading={updateCartItemMutation.isPending}
