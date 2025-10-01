@@ -17,7 +17,7 @@ const page = ({ params }: PageProps) => {
   const readableCategory = slugToReadableName(category);
 
   return (
-    <div className="px-[150px] pt-[42px] pb-[100px]">
+    <div className="3xl:px-[150px] 2xl:px-[60px] xl:px-10 pt-[42px] pb-[100px]">
       <div className="flex gap-x-[57px]">
        <div className="pt-[160px] min-w-[355px]">
          <SideFilter 

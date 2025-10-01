@@ -242,13 +242,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
       </div>
       <div className="flex flex-col mt-[18px] uppercase items-center">
-        <h1 className={cn("text-sm text-[#6D6D6D]", categoryClassName)}>
+        <h1 className={cn("text-sm text-center text-[#6D6D6D]", categoryClassName)}>
           {category}
         </h1>
-        <h2 className={cn("mt-[12px] xl:text-lg 2xl:text-xl", titleClassName)}>{name}</h2>
+        <h2 className={cn("mt-[12px] text-center xl:text-lg 2xl:text-xl", titleClassName)}>{name}</h2>
         <div
           className={cn(
-            "mt-1.5 text-2xl font-medium text-[#00B5A5] flex items-center justify-center",
+            "mt-1.5 text-2xl font-medium  text-center text-[#00B5A5] flex items-center justify-center",
             priceClassName
           )}
         >
