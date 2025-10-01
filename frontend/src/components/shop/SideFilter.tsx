@@ -63,7 +63,7 @@ const SideFilter = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(
-              "pl-12 h-14 text-lg font-normal shadow-none placeholder:text-gray-400 placeholder:font-normal border border-gray-300 bg-white rounded-none",
+              "pl-12 h-14 md:text-lg font-normal shadow-none placeholder:text-gray-400 placeholder:font-normal border border-gray-300 bg-white rounded-none",
               "focus:!border-[#00B5A5] focus-visible:!border-[#00B5A5] focus:outline-none focus:shadow-none focus:ring-0 focus-visible:ring-0"
             )}
           />
