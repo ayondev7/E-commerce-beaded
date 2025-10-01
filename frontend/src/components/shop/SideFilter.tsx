@@ -65,7 +65,7 @@ const SideFilter = ({
             onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(
               "pl-12 h-14 md:text-lg font-normal shadow-none placeholder:text-gray-400 placeholder:font-normal border border-gray-300 bg-white rounded-none",
-              "focus:!border-[#00B5A5] focus-visible:!border-[#00B5A5] focus:outline-none focus:shadow-none focus:ring-0 focus-visible:ring-0"
+              "focus:!border-gray-900 focus-visible:!border-gray-900 focus:outline-none focus:shadow-none focus:ring-0 focus-visible:ring-0"
             )}
           />
         </div>
@@ -112,8 +112,8 @@ const SideFilter = ({
                 <RadioGroupItem
                   value={collection.id}
                   id={collection.id}
-                  className="w-5 h-5 border-2 border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
-                  dotClassName="radio-dot-accent"
+                  className="w-5 h-5 border-2 cursor-pointer border-gray-400 text-teal-500 focus:ring-teal-500 data-[state=checked]:border-teal-500 data-[state=checked]:bg-white data-[state=checked]:text-teal-500"
+                  dotClassName="radio-dot-accent bg-[#00B5A5] size-[10px]"
                 />
                 <Label
                   htmlFor={collection.id}

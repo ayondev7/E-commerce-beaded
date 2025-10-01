@@ -19,7 +19,7 @@ const page = ({ params }: PageProps) => {
   return (
     <div className="px-[150px] pt-[42px] pb-[100px]">
       <div className="flex gap-x-[57px]">
-       <div className="pt-[150px] min-w-[355px]">
+       <div className="pt-[160px] min-w-[355px]">
          <SideFilter 
            initialCollection={readableCollection} 
            initialCategory={readableCategory}
