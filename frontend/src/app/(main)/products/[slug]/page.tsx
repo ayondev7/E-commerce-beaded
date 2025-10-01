@@ -8,7 +8,7 @@ import { LuHeart } from "react-icons/lu";
 import { useProduct } from "@/hooks/productHooks";
 import { useAddToCart } from "@/hooks/cartHooks";
 import { useAddToWishlist } from "@/hooks/wishlistHooks";
-import { FiLoader } from "react-icons/fi";
+import LoaderComponent from "@/components/generalComponents/LoaderComponent";
 import toast from "react-hot-toast";
 
 interface ProductPageProps {
@@ -137,14 +137,7 @@ const Page = ({ params }: ProductPageProps) => {
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-[600px] w-full flex justify-center items-center">
-        <div className="flex flex-col items-center">
-          <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-          <p className="text-lg">Loading product details...</p>
-        </div>
-      </div>
-    );
+    return <LoaderComponent />;
   }
 
   if (error || !productResponse?.product) {

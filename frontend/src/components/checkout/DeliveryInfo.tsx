@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { FiLoader } from "react-icons/fi";
+import LoaderComponent from "@/components/generalComponents/LoaderComponent";
 import toast from "react-hot-toast";
 import { useStepper } from "./Stepper";
 import { useMe } from "@/hooks/customerHooks";
@@ -50,14 +50,7 @@ export default function DeliveryInfo() {
   const isLoading = userLoading || addressLoading;
   
   if (isLoading) {
-    return (
-      <section className="3xl:px-[150px] 2xl:px-[60px] xl:px-10 flex justify-center items-center xl:min-h-[620px] 2xl:min-h-[700px] 3xl:min-h-[700px]">
-        <div className="flex flex-col items-center">
-          <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-          <p className="text-lg">Loading...</p>
-        </div>
-      </section>
-    );
+    return <LoaderComponent />;
   }
   
   const handleAddressSelection = (addressName: string, setFieldValue: (field: string, value: unknown) => void) => {

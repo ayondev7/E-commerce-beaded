@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useOrderById } from "@/hooks/orderHooks";
-import { FiLoader } from "react-icons/fi";
+import LoaderComponent from "@/components/generalComponents/LoaderComponent";
 
 export type OrderLine = {
   id: string | number;
@@ -196,10 +196,7 @@ export default function ViewDetailsModal({
       >
         <ModalOverlay onClose={onClose} />
         <div className="relative z-10 w-full p-[60px] bg-white xl:max-w-[1100px] 2xl:max-w-[1200px] overflow-hidden max-h-[90vh] flex items-center justify-center">
-          <div className="flex flex-col items-center">
-            <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-            <p className="text-lg">Loading your cart...</p>
-          </div>
+          <LoaderComponent />
         </div>
       </div>
     );

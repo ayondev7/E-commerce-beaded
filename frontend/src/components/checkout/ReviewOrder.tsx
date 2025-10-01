@@ -6,6 +6,7 @@ import CartTableBody from "@/components/cart/CartTableBody";
 import { useCartList } from "@/hooks/cartHooks";
 import { useCreateOrder } from "@/hooks/orderHooks";
 import { useOrderFormStore } from "@/store/orderFormStore";
+import LoaderComponent from "@/components/generalComponents/LoaderComponent";
 import { FiLoader } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { 
@@ -100,14 +101,7 @@ export default function ReviewOrder() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <section className="px-[150px] gap-y-12 flex flex-col items-center">
-        <div className="flex flex-col items-center">
-          <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-          <p className="text-lg font-semibold">Loading your order...</p>
-        </div>
-      </section>
-    );
+    return <LoaderComponent />;
   }
 
   // Error state

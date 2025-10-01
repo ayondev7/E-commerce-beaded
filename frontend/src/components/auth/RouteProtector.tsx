@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { FiLoader } from "react-icons/fi";
+import LoaderComponent from "../generalComponents/LoaderComponent";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -10,14 +10,7 @@ interface RouteProtectorProps {
   fallback?: React.ReactNode;
 }
 
-const LoadingSpinner = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="flex flex-col items-center">
-      <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-      <p className="text-lg ">Loading...</p>
-    </div>
-  </div>
-);
+const LoadingSpinner = () => <LoaderComponent />;
 
 export default function RouteProtector({ children, fallback }: RouteProtectorProps) {
   const { data: session, status } = useSession();

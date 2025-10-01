@@ -5,7 +5,7 @@ import CartTable, { CartItem } from "@/components/cart/CartTable";
 import CartSummary from "@/components/cart/CartSummary";
 import { withRouteProtection } from "@/components/auth/RouteProtector";
 import { useCartList, useUpdateCartItem, useRemoveFromCart } from "@/hooks/cartHooks";
-import { FiLoader } from "react-icons/fi";
+import LoaderComponent from "@/components/generalComponents/LoaderComponent";
 import toast from "react-hot-toast";
 import { 
   calculateCartTotals, 
@@ -98,14 +98,7 @@ function CartPage() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <FiLoader className="animate-spin size-[40px] text-[#00B5A5] mb-5" />
-          <p className="text-lg">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoaderComponent />;
   }
 
   // Error state
