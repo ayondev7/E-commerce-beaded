@@ -10,7 +10,7 @@ const Hero = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
 
   const images = [
-    "/home/heroSlider/1.png",
+    "/home/heroSlider/1.jpg",
     "/home/heroSlider/2.jpg",
     "/home/heroSlider/3.jpg",
     "/home/heroSlider/4.jpg",

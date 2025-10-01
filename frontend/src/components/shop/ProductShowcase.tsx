@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import ProductCard from "../product/ProductCard";
+import ProductCardSkeleton from "@/components/skeleton/ProductCardSkeleton";
 import CustomPagination from "../generalComponents/CustomPagination";
 import SelectField from "../generalComponents/Form/SelectField";
 import { useProductList } from "@/hooks/productHooks";
@@ -101,10 +102,6 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
     setCurrentPage(page);
   };
 
-  if (isLoading) {
-    return <div className="text-center py-8">Loading products...</div>;
-  }
-
   return (
     <div>
       <h1 className="uppercase text-[48px]">Shop</h1>
@@ -122,21 +119,25 @@ const ProductShowcase = ({ initialCollection, initialCategory }: ProductShowcase
         />
       </div>
       <div className="grid grid-cols-3 gap-x-5 gap-y-20">
-        {filteredProducts.map((product, index) => (
-          <ProductCard 
-            key={index} 
-            productId={product.id}
-            productSlug={product.productSlug}
-            image={product.images[0] || "/home/categories/1.png"}
-            category={product.categoryName || ""}
-            name={product.productName}
-            price={product.price}
-            isInCart={product.isInCart}
-            isInWishlist={product.isInWishlist}
-          />
-        ))}
+        {isLoading
+          ? Array.from({ length: 6 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))
+          : filteredProducts.map((product, index) => (
+              <ProductCard
+                key={index}
+                productId={product.id}
+                productSlug={product.productSlug}
+                image={product.images[0] || "/home/categories/1.png"}
+                category={product.categoryName || ""}
+                name={product.productName}
+                price={product.price}
+                isInCart={product.isInCart}
+                isInWishlist={product.isInWishlist}
+              />
+            ))}
       </div>
-     <div className="mt-[30px]">
+     <div className="mt-[60px]">
        <CustomPagination 
          currentPage={currentPage}
          totalPages={productsData?.totalPages || 1}

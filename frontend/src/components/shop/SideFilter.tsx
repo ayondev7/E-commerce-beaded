@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -61,7 +62,10 @@ const SideFilter = ({
             placeholder="SEARCH"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-14 text-base font-normal placeholder:text-gray-400 placeholder:font-normal border-gray-300 bg-white focus:border-gray-400 focus:ring-0 rounded-none"
+            className={cn(
+              "pl-12 h-14 text-lg font-normal shadow-none placeholder:text-gray-400 placeholder:font-normal border border-gray-300 bg-white rounded-none",
+              "focus:!border-[#00B5A5] focus-visible:!border-[#00B5A5] focus:outline-none focus:shadow-none focus:ring-0 focus-visible:ring-0"
+            )}
           />
         </div>
       </div>
