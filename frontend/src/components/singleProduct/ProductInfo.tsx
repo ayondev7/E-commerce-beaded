@@ -1,3 +1,4 @@
+import { formatCurrency } from "@/utils/cartUtils";
 import Image from "next/image";
 import React from "react";
 
@@ -26,7 +27,7 @@ const ProductInfo = ({
 
       {/* Price */}
       <div className="text-[32px] text-[#00B5A5] mb-[14px] flex items-center justify-start gap-x-1">
-        <span>TK. {price}</span>
+        <span>{formatCurrency(price)}</span>
       </div>
 
       {/* Description */}

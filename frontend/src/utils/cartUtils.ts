@@ -54,8 +54,12 @@ export const calculateCartTotals = (cartItems: CartItem[]): CartCalculation => {
   };
 };
 
-export const formatCurrency = (amount: number): string => {
-  return `TK. ${amount.toLocaleString("en-BD", {
+export const formatCurrency = (amount: number | string): string => {
+  const num = typeof amount === "string" ? parseFloat(amount) : amount;
+
+  if (isNaN(num)) return "TK. 0";
+
+  return `TK. ${num.toLocaleString("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;

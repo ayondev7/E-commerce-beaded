@@ -7,6 +7,7 @@ import { LuHeart, LuShoppingBag, LuHeartOff } from "react-icons/lu";
 import { useAddToCart } from "@/hooks/cartHooks";
 import { useAddToWishlist, useRemoveFromWishlist } from "@/hooks/wishlistHooks";
 import toast from "react-hot-toast";
+import { formatCurrency } from "@/utils/cartUtils";
 
 interface ProductCardProps {
   productId: string;
@@ -248,7 +249,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             priceClassName
           )}
         >
-          <span>TK. {price}</span>
+          <span>{formatCurrency(price)}</span>
         </div>
       </div>
     </div>
