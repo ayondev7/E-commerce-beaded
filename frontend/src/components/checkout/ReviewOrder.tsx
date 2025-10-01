@@ -11,9 +11,10 @@ import { FiLoader } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { 
   calculateCartTotals, 
-  getCurrentQuantity, 
-  getEffectivePrice 
-} from "@/lib/utils";
+  getEffectivePrice,
+  formatCurrency,
+  DELIVERY_FEE
+} from "@/utils/cartUtils";
 
 export type CartItem = {
   id: string | number;
@@ -27,7 +28,7 @@ export default function ReviewOrder() {
   const { back, next } = useStepper();
   const { data: cartData, isLoading, error } = useCartList();
   const createOrderMutation = useCreateOrder();
-  const { orderData, setCartId, setOrderId } = useOrderFormStore();
+  const { orderData, setOrderId } = useOrderFormStore();
   
   // Transform backend cart data to match CartTable component expectations
   const items: CartItem[] = React.useMemo(() => {
@@ -48,29 +49,17 @@ export default function ReviewOrder() {
     });
   }, [cartData]);
 
-  // Store cart ID in Zustand store when cart data is available
-  useEffect(() => {
-    if (cartData?.cartItems && cartData.cartItems.length > 0) {
-      setCartId(cartData.cartItems[0].id);
-    }
-  }, [cartData, setCartId]);
-
   // Calculate cart totals using utility function
   const { subTotal, totalDiscount } = React.useMemo(() => {
     if (!cartData?.cartItems) return { subTotal: 0, totalDiscount: 0 };
     
-    return calculateCartTotals(cartData.cartItems, []); // No pending changes in review mode
+    return calculateCartTotals(cartData.cartItems);
   }, [cartData]);
 
-  const deliveryFee = 60;
+  const deliveryFee = DELIVERY_FEE;
   const grandTotal = subTotal + deliveryFee - totalDiscount;
 
   const handleConfirmOrder = async () => {
-    if (!orderData.cartId) {
-      toast.error("Cart ID is missing. Please try again.");
-      return;
-    }
-    
     if (!orderData.deliveryInfo.selectedAddressId) {
       toast.error("Please select a delivery address.");
       return;
@@ -78,7 +67,6 @@ export default function ReviewOrder() {
 
     try {
       const result = await createOrderMutation.mutateAsync({
-        cartId: orderData.cartId,
         addressId: orderData.deliveryInfo.selectedAddressId,
         notes: orderData.deliveryInfo.notes,
       });
@@ -153,7 +141,7 @@ export default function ReviewOrder() {
                   Sub-Total
                 </span>
                 <span className="text-base font-medium">
-                  TK. {subTotal.toFixed(2)}
+                  {formatCurrency(subTotal)}
                 </span>
               </div>
 
@@ -163,7 +151,7 @@ export default function ReviewOrder() {
                     Discount
                   </span>
                   <span className="text-base font-medium">
-                    -TK. {totalDiscount.toFixed(2)}
+                    -{formatCurrency(totalDiscount)}
                   </span>
                 </div>
               )}
@@ -173,7 +161,7 @@ export default function ReviewOrder() {
                   Delivery Fee
                 </span>
                 <span className="text-base font-medium">
-                  TK. {deliveryFee.toFixed(2)}
+                  {formatCurrency(deliveryFee)}
                 </span>
               </div>
 
@@ -182,7 +170,7 @@ export default function ReviewOrder() {
                   Grand Total
                 </span>
                 <span className="text-2xl">
-                  TK. {grandTotal.toFixed(2)}
+                  {formatCurrency(grandTotal)}
                 </span>
               </div>
             </div>

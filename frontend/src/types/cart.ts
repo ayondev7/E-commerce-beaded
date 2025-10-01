@@ -2,13 +2,9 @@ import { Product } from './product';
 
 export type CartItem = {
   id: string;
-  quantity: number;
-  subTotal: number;
-  deliveryFee: number;
-  discount: number;
-  grandTotal: number;
-  customerId: string;
+  cartId: string;
   productId: string;
+  quantity: number;
   product: Product & {
     category: {
       id: string;
@@ -53,5 +49,6 @@ export type QuantityChange = {
 export type CartTotals = {
   subTotal: number;
   totalDiscount: number;
+  deliveryFee: number;
   grandTotal: number;
 };

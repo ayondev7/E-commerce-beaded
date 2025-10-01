@@ -4,6 +4,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useOrderById } from "@/hooks/orderHooks";
 import LoaderComponent from "@/components/generalComponents/LoaderComponent";
+import { calculateCartTotals, getEffectivePrice, formatCurrency } from "@/utils/cartUtils";
 
 export type OrderLine = {
   id: string | number;
@@ -30,12 +31,6 @@ type Props = {
   orderId: string | null;
   className?: string;
 };
-
-const currency = (n: number) =>
-  `TK. ${n.toLocaleString("en-BD", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
 
 const ModalOverlay = ({ onClose }: { onClose: () => void }) => (
   <div
@@ -80,7 +75,7 @@ const OrderItemRow = ({ item }: { item: OrderLine }) => (
     <div className="flex items-center gap-20">
       <div className="text-[#1E1E1E] text-xl font-medium">{item.qty}x</div>
       <div className="text-[#1E1E1E] font-medium text-xl">
-        {currency(item.price)}
+        {formatCurrency(item.price)}
       </div>
     </div>
   </li>
@@ -122,20 +117,20 @@ const SummarySection = ({
     <div className="flex flex-col gap-y-4">
       <div className="flex items-center justify-between">
         <span className="text-[#7D7D7D] font-semibold">Sub-total</span>
-        <span className="text-[#1E1E1E]">{currency(subTotal)}</span>
+        <span className="text-[#1E1E1E]">{formatCurrency(subTotal)}</span>
       </div>
       <div className="flex items-center justify-between">
         <span className="text-[#7D7D7D] font-semibold">Delivery Fee</span>
-        <span className="text-[#1E1E1E]">{currency(deliveryFee)}</span>
+        <span className="text-[#1E1E1E]">{formatCurrency(deliveryFee)}</span>
       </div>
       <div className="flex items-center justify-between">
         <span className="text-[#7D7D7D] font-semibold">Discount</span>
-        <span className="text-[#1E1E1E]">- {currency(discount)}</span>
+        <span className="text-[#1E1E1E]">- {formatCurrency(discount)}</span>
       </div>
       <div className="flex items-center justify-between">
         <span className="text-[#1E1E1E] font-semibold">Grand Total</span>
         <span className="text-lg font-medium text-[#1E1E1E]">
-          {currency(grandTotal)}
+          {formatCurrency(grandTotal)}
         </span>
       </div>
     </div>
@@ -222,7 +217,6 @@ export default function ViewDetailsModal({
   }
 
   const order = orderData.order;
-  const cart = order.cart;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -243,18 +237,32 @@ export default function ViewDetailsModal({
     return statusMap[status] || "Pending";
   };
 
-  const orderItem: OrderLine = {
-    id: cart.id,
-    name: cart.product.productName || "",
-    price: Number(cart.product.price),
-    qty: cart.quantity,
-    image: cart.product.images?.[0] || "",
-  };
+  // Transform order items to OrderLine format
+  const orderItems: OrderLine[] = order.items.map(item => {
+    const regularPrice = Number(item.product.price);
+    const offerPrice = item.product.offerPrice ? Number(item.product.offerPrice) : undefined;
+    const effectivePrice = getEffectivePrice(regularPrice, offerPrice);
+    
+    return {
+      id: item.id,
+      name: item.product.productName || "",
+      price: effectivePrice,
+      qty: item.quantity,
+      image: item.product.images?.[0] || "",
+    };
+  });
 
-  const subTotal = Number(cart.subTotal);
-  const deliveryFee = Number(cart.deliveryFee);
-  const discount = Number(cart.discount);
-  const grandTotal = Number(cart.grandTotal);
+  // Calculate totals using utility function
+  const cartCalculationItems = order.items.map(item => ({
+    id: item.id,
+    quantity: item.quantity,
+    product: {
+      price: Number(item.product.price),
+      offerPrice: item.product.offerPrice ? Number(item.product.offerPrice) : undefined
+    }
+  }));
+
+  const { subTotal, totalDiscount, deliveryFee, grandTotal } = calculateCartTotals(cartCalculationItems);
 
   const addressText = `${order.address.fullAddress}, ${order.address.area}, ${order.address.district}, ${order.address.division} - ${order.address.zipCode}`;
 
@@ -262,9 +270,9 @@ export default function ViewDetailsModal({
     id: order.id,
     date: formatDate(order.createdAt),
     status: mapOrderStatus(order.orderStatus),
-    items: [orderItem],
+    items: orderItems,
     deliveryFee,
-    discount,
+    discount: totalDiscount,
     address: addressText,
     notes: order.notes,
   };

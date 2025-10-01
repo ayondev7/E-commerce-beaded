@@ -1,14 +1,10 @@
 import { Address } from './address';
 
-export type OrderCart = {
+export type OrderItem = {
   id: string;
+  orderId: string;
   productId: string;
-  customerId: string;
   quantity: number;
-  subTotal: number;
-  deliveryFee: number;
-  discount: number;
-  grandTotal: number;
   product: {
     id: string;
     categoryId: string;
@@ -34,11 +30,10 @@ export type OrderAddress = Address;
 export type Order = {
   id: string;
   customerId: string;
-  cartId: string;
   addressId: string;
   notes: string;
   orderStatus: "pending" | "shipped" | "delivered" | "cancelled";
-  cart: OrderCart;
+  items: OrderItem[];
   address: OrderAddress;
   createdAt: string;
   updatedAt: string;
@@ -53,7 +48,6 @@ export type OrderDetailResponse = {
 };
 
 export type CreateOrderPayload = {
-  cartId: string;
   addressId: string;
   notes?: string;
 };
@@ -68,7 +62,6 @@ export interface DeliveryInfo {
 }
 
 export interface OrderFormData {
-  cartId?: string;
   orderId?: string;
   deliveryInfo: DeliveryInfo;
   currentStep: number;
@@ -77,7 +70,6 @@ export interface OrderFormData {
 export interface OrderFormStore {
   orderData: OrderFormData;
   setDeliveryInfo: (deliveryInfo: DeliveryInfo) => void;
-  setCartId: (cartId: string) => void;
   setOrderId: (orderId: string) => void;
   setCurrentStep: (step: number) => void;
   resetOrderForm: () => void;

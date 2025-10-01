@@ -2,6 +2,7 @@
 import React from "react";
 import { FiLoader } from "react-icons/fi";
 import ReusableButton2 from "../generalComponents/ReusableButton2";
+import { formatCurrency, DELIVERY_FEE } from "@/utils/cartUtils";
 
 type Props = {
   subTotal: number;
@@ -13,15 +14,9 @@ type Props = {
   hasPendingChanges?: boolean;
 };
 
-const currency = (n: number) =>
-  `TK. ${n.toLocaleString("en-BD", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-
 export default function CartSummary({
   subTotal,
-  deliveryFee = 60,
+  deliveryFee = DELIVERY_FEE,
   discount = 0,
   onProceed,
   isProceedLoading = false,
@@ -42,7 +37,7 @@ export default function CartSummary({
               Sub-Total
             </div>
             <div className="text-white text-sm font-medium leading-[22.5px] tracking-[-1%]">
-              {currency(subTotal)}
+              {formatCurrency(subTotal)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -50,7 +45,7 @@ export default function CartSummary({
               Delivery Fee
             </div>
             <div className="text-white text-sm font-medium leading-[22.5px] tracking-[-1%]">
-              {currency(deliveryFee)}
+              {formatCurrency(deliveryFee)}
             </div>
           </div>
           <div className="flex items-center justify-between">
@@ -58,7 +53,7 @@ export default function CartSummary({
               Discount
             </div>
             <div className="text-white text-sm font-medium leading-[22.5px] tracking-[-1%]">
-              - {currency(discount)}
+              - {formatCurrency(discount)}
             </div>
           </div>
         </div>
@@ -70,7 +65,7 @@ export default function CartSummary({
             Grand Total
           </span>
           <span className="text-2xl leading-[32px] tracking-[-2%] text-white">
-            {currency(grandTotal)}
+            {formatCurrency(grandTotal)}
           </span>
         </div>
 

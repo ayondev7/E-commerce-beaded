@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware';
 import { DeliveryInfo, OrderFormData, OrderFormStore } from '@/types';
 
 const initialOrderData: OrderFormData = {
-  cartId: undefined,
   orderId: undefined,
   deliveryInfo: {
     selectedAddressId: '',
@@ -24,19 +23,6 @@ export const useOrderFormStore = create<OrderFormStore>()(
             orderData: {
               ...state.orderData,
               deliveryInfo,
-            },
-          };
-          return newState;
-        });
-      },
-      
-      setCartId: (cartId: string) => {
-        set((state) => {
-          const newState = {
-            ...state,
-            orderData: {
-              ...state.orderData,
-              cartId,
             },
           };
           return newState;

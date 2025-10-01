@@ -17,8 +17,12 @@ export const enrichProductsWithStatus = async (products, customerId) => {
   }
 
   const [cartItems, wishlistItems] = await Promise.all([
-    prisma.cart.findMany({
-      where: { customerId },
+    prisma.cartItem.findMany({
+      where: { 
+        cart: {
+          customerId
+        }
+      },
       select: { productId: true }
     }),
     prisma.wishlist.findMany({
@@ -48,8 +52,13 @@ export const enrichSingleProductWithStatus = async (product, customerId) => {
 
   if (customerId) {
     const [cartItem, wishlistItem] = await Promise.all([
-      prisma.cart.findFirst({
-        where: { customerId, productId: product.id }
+      prisma.cartItem.findFirst({
+        where: { 
+          productId: product.id,
+          cart: {
+            customerId
+          }
+        }
       }),
       prisma.wishlist.findFirst({
         where: { customerId, productId: product.id }

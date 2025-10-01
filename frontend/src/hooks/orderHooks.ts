@@ -4,9 +4,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ORDER_ROUTES from "@/routes/orderRoutes";
 import apiClient from "./apiClient";
 import {
-  OrderCart,
-  OrderAddress,
-  Order,
   OrdersListResponse,
   OrderDetailResponse,
   CreateOrderPayload,
@@ -62,6 +59,8 @@ export function useCreateOrder() {
     mutationFn: createOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["cart", "list"] });
+      queryClient.invalidateQueries({ queryKey: ["cart", "count"] });
     },
   });
 }

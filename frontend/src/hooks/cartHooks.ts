@@ -24,7 +24,6 @@ export function useCartList() {
     queryKey: ["cart", "list"],
     queryFn: fetchCartList,
     staleTime: 60_000,
-    // Only run the query if user is authenticated
     enabled: !!session?.accessToken,
   });
 }
@@ -41,7 +40,6 @@ export function useCartCount() {
     queryKey: ["cart", "count"],
     queryFn: fetchCartCount,
     staleTime: 60_000,
-    // Only run the query if user is authenticated
     enabled: !!session?.accessToken,
   });
 }

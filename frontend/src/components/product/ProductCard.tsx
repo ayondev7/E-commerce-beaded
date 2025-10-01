@@ -59,10 +59,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const cartPayload = {
       productId,
       quantity: 1,
-      subTotal: price,
-      deliveryFee: 0,
-      discount: 0,
-      grandTotal: price,
     };
     addToCartMutation.mutate(cartPayload, {
       onSuccess: () => {

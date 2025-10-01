@@ -34,10 +34,6 @@ const Page = ({ params }: ProductPageProps) => {
     const cartPayload = {
       productId: product.id,
       quantity: 1,
-      subTotal: product.offerPrice || product.price,
-      deliveryFee: 0,
-      discount: 0,
-      grandTotal: product.offerPrice || product.price,
     };
     
     addToCartMutation.mutate(cartPayload, {
