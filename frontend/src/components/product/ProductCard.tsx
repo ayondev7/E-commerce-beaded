@@ -191,7 +191,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     });
   };
   return (
-    <div className="2xl:max-w-[340px] 3xl:max-w-[390px]">
+    <div className="xl:max-w-[300px] 2xl:max-w-[340px] 3xl:max-w-[390px]">
       <div className="relative overflow-hidden group">
         <Image
           onClick={handleImageClick}

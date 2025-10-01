@@ -30,7 +30,7 @@ const ExclusiveCollection = () => {
     });
 
   return (
-    <div className="2xl:py-[100px] 2xl:px-[150px]">
+    <div className="xl:py-[100px] 2xl:px-[60px] xl:px-10 3xl:px-[150px]">
       <h1 className="uppercase text-[40px] text-center">Exclusive Collections</h1>
       <CardSlider products={products} isLoading={isLoading} />
     </div>

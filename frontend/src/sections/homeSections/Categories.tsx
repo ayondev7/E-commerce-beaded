@@ -17,7 +17,7 @@ const Categories = () => {
   })) || [];
 
   return (
-    <div className="bg-[#FAFAFA] py-[100px] px-[150px]">
+    <div className="bg-[#FAFAFA] py-[100px] xl:px-10 2xl:px-[60px] 3xl:px-[150px]">
       <div className="flex flex-col items-center">
         <h1 className="uppercase text-[48px] mb-[15px] text-center">
           Our Top Categories
@@ -28,7 +28,7 @@ const Categories = () => {
           of styles, all created with the highest quality materials.
         </h2>
       </div>
-      <div className="grid 2xl:grid-cols-4 gap-x-[19px] justify-center">
+      <div className="flex gap-x-5 justify-center">
         {isLoading
           ? Array.from({ length: 4 }).map((_, i) => (
               <ProductCardSkeleton key={`category-skeleton-${i}`} />
