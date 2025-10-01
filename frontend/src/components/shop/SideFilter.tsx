@@ -49,11 +49,12 @@ const SideFilter = ({
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl font-bold  tracking-wide">FILTERS</h2>
+        <h2 className="text-xl">FILTERS</h2>
         <LuFilter className="w-6 h-6 text-gray-700" />
       </div>
 
-      {/* Search Input */}
+     <div className="border border-[#B7B7B7] p-10">
+       {/* Search Input */}
       <div className="mb-10">
         <div className="relative">
           <LuSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -72,10 +73,10 @@ const SideFilter = ({
 
       {/* Tab Navigation */}
       <div className="mb-8">
-        <div className="flex border-b border-gray-300">
+        <div className="flex border-b justify-between border-gray-300">
           <button
             onClick={() => setActiveTab("collections")}
-            className={`pb-4 pr-8 text-sm font-semibold border-b-2 transition-colors tracking-wide ${
+            className={`pb-4 px-3 text-base font-medium cursor-pointer border-b-2 transition-colors tracking-wide ${
               activeTab === "collections"
                 ? "border-gray-900 text-gray-900"
                 : "border-transparent text-gray-400 hover:text-gray-600"
@@ -85,7 +86,7 @@ const SideFilter = ({
           </button>
           <button
             onClick={() => setActiveTab("categories")}
-            className={`pb-4 text-sm font-semibold border-b-2 transition-colors tracking-wide ${
+            className={`pb-4 px-3 text-base cursor-pointer font-medium border-b-2 transition-colors tracking-wide ${
               activeTab === "categories"
                 ? "border-gray-900 text-gray-900"
                 : "border-transparent text-gray-400 hover:text-gray-600"
@@ -168,6 +169,8 @@ const SideFilter = ({
           })}
         </RadioGroup>
       )}
+     </div>
+
     </div>
   );
 };
