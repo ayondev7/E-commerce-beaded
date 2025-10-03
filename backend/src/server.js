@@ -4,16 +4,21 @@ import cors from "cors";
 import rateLimit from "express-rate-limit";
 import routes from "./routes/index.js";
 import { connectDB } from "./config/db.js";
+import "dotenv/config";
 
 const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : [];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-
 app.use("/api", routes);
 
 app.use((req, res) => {
