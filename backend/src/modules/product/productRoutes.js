@@ -3,6 +3,7 @@ import productController from "./productController.js";
 import upload from "../../config/multer.js";
 import autMiddleware from "../../middleware/authMiddleware.js";
 import optionalAuthMiddleware from "../../middleware/optionalAuthMiddleware.js";
+import authMiddleware from "../../middleware/authMiddleware.js";
 
 const router = Router();
 
@@ -17,10 +18,10 @@ router.get("/get-latest-collection-products", optionalAuthMiddleware, productCon
 router.get("/get-exclusive-collection-products", optionalAuthMiddleware, productController.getExclusiveCollectionProducts);
 
 router.post(
-  "/add-new-product",upload.array("images", 3),productController.addNewProduct);
+  "/add-new-product",authMiddleware, upload.array("images", 3),productController.addNewProduct);
 
-router.patch("/patch-product/:productId",upload.array("images", 3),productController.patchProduct);
+router.patch("/patch-product/:productId",authMiddleware, upload.array("images", 3),productController.patchProduct);
 
-router.delete("/delete-product/:productId",autMiddleware,productController.deleteProduct);
+router.delete("/delete-product/:productId",authMiddleware, productController.deleteProduct);
 
 export default router;
