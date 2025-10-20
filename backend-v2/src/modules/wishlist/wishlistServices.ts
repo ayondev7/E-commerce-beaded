@@ -1,0 +1,52 @@
+import { prisma } from "../../config/db.js";
+
+export const getWishlistIncludeOptions = () => {
+  return {
+    product: {
+      include: {
+        category: true
+      }
+    }
+  };
+};
+
+export const enrichWishlistWithCartStatus = async (wishlistItems: any[], customerId: string) => {
+  const cartItems = await prisma.cart.findMany({
+    where: { customerId },
+    select: {
+      items: {
+        select: {
+          productId: true
+        }
+      }
+    }
+  });
+
+  const cartProductIds = new Set(cartItems.flatMap(cart => cart.items.map(item => item.productId)));
+
+  return wishlistItems.map(item => ({
+    ...item,
+    product: {
+      ...item.product,
+      isInCart: cartProductIds.has(item.productId)
+    }
+  }));
+};
+
+export const findExistingWishlistItem = async (customerId: string, productId: string) => {
+  return await prisma.wishlist.findFirst({
+    where: { 
+      customerId,
+      productId 
+    }
+  });
+};
+
+export const findWishlistItemByIdAndCustomer = async (wishlistItemId: string, customerId: string) => {
+  return await prisma.wishlist.findFirst({
+    where: { 
+      id: wishlistItemId,
+      customerId 
+    }
+  });
+};
