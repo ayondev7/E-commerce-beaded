@@ -26,7 +26,7 @@ const addNewCategory = async (req: Request, res: Response, next: NextFunction) =
 	}
 };
 
-const getAllCategories = async (req: Request, res: Response, next: NextFunction) => {
+const getAllCategories = async (_req: Request, res: Response, next: NextFunction) => {
 	try {
 		const categories = await prisma.category.findMany({ orderBy: { createdAt: "desc" } });
 		return res.status(200).json({ categories });

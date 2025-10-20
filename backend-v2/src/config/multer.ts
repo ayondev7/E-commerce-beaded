@@ -12,7 +12,7 @@ const MAX_FILE_SIZE_BYTES = 3 * 1024 * 1024;
 
 const storage = multer.memoryStorage();
 
-const fileFilter = (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
 	if (ALLOWED_MIME_TYPES.has(file.mimetype)) {
 		return cb(null, true);
 	}

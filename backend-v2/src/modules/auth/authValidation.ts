@@ -30,20 +30,17 @@ export function validateGoogleSignIn(data: any) {
 
 export const credentialSignupSchema = z.object({
   name: z
-    .string({ required_error: "Name is required" })
+    .string()
     .min(1, { message: "Name is required" })
     .transform((s) => s.trim()),
   email: z
-    .string({ required_error: "Email is required" })
+    .string()
     .min(1, { message: "Email is required" })
     .email({ message: "Invalid email" })
     .transform((s) => s.trim().toLowerCase()),
-  gender: z.enum(["male", "female"], {
-    required_error: "Gender is required",
-    invalid_type_error: "Gender must be 'male' or 'female'",
-  }),
+  gender: z.enum(["male", "female"]),
   dateOfBirth: z
-    .coerce.date({ required_error: "Date of birth is required" })
+    .coerce.date()
     .refine((d) => !Number.isNaN(d.getTime()), {
       message: "Date of birth is invalid",
     })
@@ -51,14 +48,14 @@ export const credentialSignupSchema = z.object({
       message: "Date of birth cannot be in the future",
     }),
   phoneNumber: z
-    .string({ required_error: "Phone number is required" })
+    .string()
     .trim()
     .regex(/^01\d{9}$/, {
       message:
         "Phone number must be 11 digits, start with 01, and contain only digits",
     }),
   password: z
-    .string({ required_error: "Password is required" })
+    .string()
     .min(6, { message: "Password must be at least 6 characters" })
     .transform((s) => s.trim()),
 });
@@ -74,12 +71,12 @@ export function validateCredentialSignup(data: any) {
 
 export const credentialSigninSchema = z.object({
   email: z
-    .string({ required_error: "Email is required" })
+    .string()
     .min(1, { message: "Email is required" })
     .email({ message: "Invalid email" })
     .transform((s) => s.trim().toLowerCase()),
   password: z
-    .string({ required_error: "Password is required" })
+    .string()
     .min(6, { message: "Password must be at least 6 characters" })
     .transform((s) => s.trim()),
 });

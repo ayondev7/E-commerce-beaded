@@ -27,8 +27,8 @@ export function generateTokens(payload: TokenPayload, opts: TokenOptions = {}): 
     throw new Error("JWT_SECRET is not set");
   }
 
-  const accessToken = jwt.sign(payload, secret, { expiresIn: accessExp });
-  const refreshToken = jwt.sign(payload, secret, { expiresIn: refreshExp });
+  const accessToken = jwt.sign(payload, secret, { expiresIn: accessExp } as any);
+  const refreshToken = jwt.sign(payload, secret, { expiresIn: refreshExp } as any);
   return { accessToken, refreshToken };
 }
 

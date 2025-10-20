@@ -1,15 +1,12 @@
 import { z } from "zod";
 
 export const createOrderSchema = z.object({
-	addressId: z.string({ required_error: "Address ID is required" }).uuid("Invalid address ID format"),
+	addressId: z.string().uuid("Invalid address ID format"),
 	notes: z.string().trim().default(""),
 });
 
 export const updateOrderStatusSchema = z.object({
-	orderStatus: z.enum(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"], {
-		required_error: "Order status is required",
-		invalid_type_error: "Invalid order status"
-	}),
+	orderStatus: z.enum(["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]),
 });
 
 export function validateCreateOrder(data: any) {

@@ -3,7 +3,7 @@ import { z } from "zod";
 export const createProductSchema = z
   .object({
     categoryId: z
-      .string({ required_error: "Category ID is required" })
+      .string()
       .uuid({ message: "Invalid category ID" }),
     productCollection: z
       .string()
@@ -11,11 +11,11 @@ export const createProductSchema = z
       .min(1, { message: "Product collection is required" })
       .default("all"),
     productName: z
-      .string({ required_error: "Product name is required" })
+      .string()
       .trim()
       .min(1, { message: "Product name is required" }),
     productDescription: z
-      .string({ required_error: "Product description is required" })
+      .string()
       .trim()
       .min(1, { message: "Product description is required" }),
     price: z

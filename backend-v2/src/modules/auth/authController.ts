@@ -4,7 +4,6 @@ import { hashPassword } from "../../utils/hashPassword.js";
 import processAndUploadImages from "../../utils/imageUtils.js";
 import { generateTokens } from "../../utils/tokenUtils.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import {
   verifyAccessToken,
   verifyRefreshToken,
@@ -126,7 +125,7 @@ export const credentialSignin = async (req: Request, res: Response, next: NextFu
   }
 };
 
-export const guestSignin = async (req: Request, res: Response, next: NextFunction) => {
+export const guestSignin = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const guestEmail = process.env.GUEST_EMAIL;
     const guestPassword = process.env.GUEST_PASSWORD;

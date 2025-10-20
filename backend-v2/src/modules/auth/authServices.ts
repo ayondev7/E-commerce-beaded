@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { prisma } from "../../config/db.js";
 import { generateTokens } from "../../utils/tokenUtils.js";
-import type { Customer } from "@prisma/client";
 
 export const verifyAccessToken = (token: string) => {
   try {

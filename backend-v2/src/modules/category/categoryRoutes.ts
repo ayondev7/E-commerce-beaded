@@ -1,6 +1,5 @@
 import { Router } from "express";
 import upload from "../../config/multer.js";
-import autMiddleware from "../../middleware/authMiddleware.js";
 import categoryController from "./categoryController.js";
 import authMiddleware from "../../middleware/authMiddleware.js";
 

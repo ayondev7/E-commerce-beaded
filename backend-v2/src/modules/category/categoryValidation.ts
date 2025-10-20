@@ -5,7 +5,7 @@ export const patchCategorySchema = z.object({
 });
 
 export const createCategorySchema = z.object({
-	name: z.string({ required_error: "Category name is required" }).trim().min(1, { message: "Category name is required" }),
+	name: z.string().trim().min(1, { message: "Category name is required" }),
 });
 
 export function validatePatchCategory(data: any) {

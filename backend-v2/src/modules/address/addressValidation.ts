@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const createAddressSchema = z.object({
-	addressType: z.string({ required_error: "Address type is required" }).trim().min(1, "Address type is required"),
-	addressName: z.string({ required_error: "Address name is required" }).trim().min(1, "Address name is required"),
-	division: z.string({ required_error: "Division is required" }).trim().min(1, "Division is required"),
-	district: z.string({ required_error: "District is required" }).trim().min(1, "District is required"),
-	area: z.string({ required_error: "Area is required" }).trim().min(1, "Area is required"),
-	zipCode: z.string({ required_error: "Zip code is required" }).trim().min(1, "Zip code is required"),
-	fullAddress: z.string({ required_error: "Full address is required" }).trim().min(1, "Full address is required"),
+	addressType: z.string().trim().min(1, "Address type is required"),
+	addressName: z.string().trim().min(1, "Address name is required"),
+	division: z.string().trim().min(1, "Division is required"),
+	district: z.string().trim().min(1, "District is required"),
+	area: z.string().trim().min(1, "Area is required"),
+	zipCode: z.string().trim().min(1, "Zip code is required"),
+	fullAddress: z.string().trim().min(1, "Full address is required"),
 	isDefault: z.boolean().default(false),
 });
 

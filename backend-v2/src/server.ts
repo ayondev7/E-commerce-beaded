@@ -21,11 +21,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use("/api", routes);
 
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: "Not Found" });
 });
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ message: "Internal Server Error" });
 });

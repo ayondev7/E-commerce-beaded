@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const addToWishlistSchema = z.object({
-	productId: z.string({ required_error: "Product ID is required" }).uuid("Invalid product ID format"),
+	productId: z.string().uuid("Invalid product ID format"),
 });
 
 export function validateAddToWishlist(data: any) {

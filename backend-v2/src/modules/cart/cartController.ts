@@ -1,7 +1,6 @@
 import { prisma } from "../../config/db.js";
 import { validateAddToCart, validateUpdateCartItem } from "./cartValidation.js";
 import {
-  calculateCartItemPrices,
   findCartItemByCustomerAndId,
   findExistingCartItem,
   findOrCreateCart,

@@ -58,7 +58,7 @@ export const createOrderFromCart = async (customerId: string, addressId: string,
       }
     });
 
-    const orderItems = await Promise.all(
+    await Promise.all(
       cartItems.map(async (cartItem) => {
         return await tx.orderItem.create({
           data: {
