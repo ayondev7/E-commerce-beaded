@@ -5,237 +5,207 @@ import {
   findExistingCartItem,
   getCartIncludeOptions
 } from "./cartServices.js";
-import type { Request, Response, NextFunction } from "express";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ValidationError, UnauthorizedError, BadRequestError, NotFoundError } from "../../utils/errors.js";
+import type { Request, Response } from "express";
 
-const getUserCart = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const customerId = req.customer!.id;
+const getUserCart = asyncHandler(async (req: Request, res: Response) => {
+  const customerId = req.customer!.id;
 
-    const cart = await prisma.cart.findFirst({
-      where: { customerId },
-      include: {
-        items: {
-          include: getCartIncludeOptions(),
-          orderBy: { createdAt: "desc" }
-        }
-      }
-    });
-
-    if (!cart) {
-      return res.status(200).json({ cartItems: [] });
-    }
-
-    return res.status(200).json({ cartItems: cart.items });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-const addToCart = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if (!req.customer || !req.customer.id) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-
-    const customerId = req.customer.id;
-    const validation = validateAddToCart(req.body);
-
-    if (!validation.success) {
-      return res
-        .status(400)
-        .json({ message: "Invalid input", errors: validation.errors });
-    }
-
-    const { productId, quantity } = validation.data;
-
-    const existingCartItem = await findExistingCartItem(customerId, productId);
-
-    if (existingCartItem) {
-      return res
-        .status(400)
-        .json({ message: "Product already exists in cart" });
-    }
-
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
-    });
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    const cartItem = await prisma.$transaction(async (tx) => {
-      let cart = await tx.cart.findFirst({
-        where: { customerId }
-      });
-
-      if (!cart) {
-        cart = await tx.cart.create({
-          data: { customerId }
-        });
-      }
-
-      return await tx.cartItem.create({
-        data: {
-          cartId: cart.id,
-          productId,
-          quantity
-        },
+  const cart = await prisma.cart.findFirst({
+    where: { customerId },
+    include: {
+      items: {
         include: getCartIncludeOptions(),
-      });
-    });
-
-    return res.status(201).json({
-      message: "Item added to cart successfully",
-      cartItem,
-    });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-const updateCartItem = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { cartItemId } = req.params;
-    const customerId = req.customer!.id;
-
-    if (!cartItemId) {
-      return res.status(400).json({ message: "Cart item ID is required" });
-    }
-
-    const validation = validateUpdateCartItem(req.body);
-    if (!validation.success) {
-      return res
-        .status(400)
-        .json({ message: "Invalid input", errors: validation.errors });
-    }
-
-    const existingCartItem = await findCartItemByCustomerAndId(cartItemId, customerId);
-
-    if (!existingCartItem) {
-      return res.status(404).json({ message: "Cart item not found" });
-    }
-
-    const { quantity } = validation.data;
-
-    if (quantity === existingCartItem.quantity) {
-      return res
-        .status(400)
-        .json({ message: "No valid fields provided to update" });
-    }
-
-    const updatedCartItem = await prisma.cartItem.update({
-      where: { id: cartItemId },
-      data: { quantity },
-      include: getCartIncludeOptions(),
-    });
-
-    return res.status(200).json({
-      message: "Cart item updated successfully",
-      cartItem: updatedCartItem,
-    });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-const removeFromCart = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if (!req.customer || !req.customer.id) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-
-    const { cartItemId } = req.params;
-    const customerId = req.customer.id;
-
-    if (!cartItemId) {
-      return res.status(400).json({ message: "Cart item ID is required" });
-    }
-
-    const existingCartItem = await findCartItemByCustomerAndId(cartItemId, customerId);
-
-    if (!existingCartItem) {
-      return res.status(404).json({ message: "Cart item not found" });
-    }
-
-    const deletedCartItem = await prisma.cartItem.delete({
-      where: { id: cartItemId },
-      include: getCartIncludeOptions(),
-    });
-
-    return res.status(200).json({
-      message: "Item removed from cart successfully",
-      cartItem: deletedCartItem,
-    });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-const clearCart = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if (!req.customer || !req.customer.id) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
-
-    const customerId = req.customer.id;
-
-    const result = await prisma.$transaction(async (tx) => {
-      const cart = await tx.cart.findFirst({
-        where: { customerId }
-      });
-
-      if (!cart) {
-        return { deletedCount: 0 };
+        orderBy: { createdAt: "desc" }
       }
-
-      const deletedItems = await tx.cartItem.deleteMany({
-        where: { cartId: cart.id },
-      });
-
-      return { deletedCount: deletedItems.count };
-    });
-
-    if (result.deletedCount === 0) {
-      return res.status(200).json({
-        message: "Cart is already empty",
-        deletedCount: 0,
-      });
     }
+  });
 
-    return res.status(200).json({
-      message: "Cart cleared successfully",
-      deletedCount: result.deletedCount,
-    });
-  } catch (err) {
-    return next(err);
+  if (!cart) {
+    return res.status(200).json({ cartItems: [] });
   }
-};
 
-const getCartCount = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if (!req.customer || !req.customer.id) {
-      return res.status(401).json({ message: "Authentication required" });
-    }
+  return res.status(200).json({ cartItems: cart.items });
+});
 
-    const customerId = req.customer.id;
+const addToCart = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.customer || !req.customer.id) {
+    throw new UnauthorizedError("Authentication required");
+  }
 
-    const cart = await prisma.cart.findFirst({
+  const customerId = req.customer.id;
+  const validation = validateAddToCart(req.body);
+
+  if (!validation.success) {
+    throw new ValidationError("Invalid input", validation.errors);
+  }
+
+  const { productId, quantity } = validation.data;
+
+  const existingCartItem = await findExistingCartItem(customerId, productId);
+
+  if (existingCartItem) {
+    throw new BadRequestError("Product already exists in cart");
+  }
+
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+  });
+  if (!product) {
+    throw new NotFoundError("Product not found");
+  }
+
+  const cartItem = await prisma.$transaction(async (tx) => {
+    let cart = await tx.cart.findFirst({
       where: { customerId }
     });
 
     if (!cart) {
-      return res.status(200).json({ count: 0 });
+      cart = await tx.cart.create({
+        data: { customerId }
+      });
     }
 
-    const count = await prisma.cartItem.count({
-      where: { cartId: cart.id }
+    return await tx.cartItem.create({
+      data: {
+        cartId: cart.id,
+        productId,
+        quantity
+      },
+      include: getCartIncludeOptions(),
+    });
+  });
+
+  return res.status(201).json({
+    message: "Item added to cart successfully",
+    cartItem,
+  });
+});
+
+const updateCartItem = asyncHandler(async (req: Request, res: Response) => {
+  const { cartItemId } = req.params;
+  const customerId = req.customer!.id;
+
+  if (!cartItemId) {
+    throw new BadRequestError("Cart item ID is required");
+  }
+
+  const validation = validateUpdateCartItem(req.body);
+  if (!validation.success) {
+    throw new ValidationError("Invalid input", validation.errors);
+  }
+
+  const existingCartItem = await findCartItemByCustomerAndId(cartItemId, customerId);
+
+  if (!existingCartItem) {
+    throw new NotFoundError("Cart item not found");
+  }
+
+  const { quantity } = validation.data;
+
+  if (quantity === existingCartItem.quantity) {
+    throw new BadRequestError("No valid fields provided to update");
+  }
+
+  const updatedCartItem = await prisma.cartItem.update({
+    where: { id: cartItemId },
+    data: { quantity },
+    include: getCartIncludeOptions(),
+  });
+
+  return res.status(200).json({
+    message: "Cart item updated successfully",
+    cartItem: updatedCartItem,
+  });
+});
+
+const removeFromCart = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.customer || !req.customer.id) {
+    throw new UnauthorizedError("Authentication required");
+  }
+
+  const { cartItemId } = req.params;
+  const customerId = req.customer.id;
+
+  if (!cartItemId) {
+    throw new BadRequestError("Cart item ID is required");
+  }
+
+  const existingCartItem = await findCartItemByCustomerAndId(cartItemId, customerId);
+
+  if (!existingCartItem) {
+    throw new NotFoundError("Cart item not found");
+  }
+
+  const deletedCartItem = await prisma.cartItem.delete({
+    where: { id: cartItemId },
+    include: getCartIncludeOptions(),
+  });
+
+  return res.status(200).json({
+    message: "Item removed from cart successfully",
+    cartItem: deletedCartItem,
+  });
+});
+
+const clearCart = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.customer || !req.customer.id) {
+    throw new UnauthorizedError("Authentication required");
+  }
+
+  const customerId = req.customer.id;
+
+  const result = await prisma.$transaction(async (tx) => {
+    const cart = await tx.cart.findFirst({
+      where: { customerId }
     });
 
-    return res.status(200).json({ count });
-  } catch (err) {
-    return next(err);
+    if (!cart) {
+      return { deletedCount: 0 };
+    }
+
+    const deletedItems = await tx.cartItem.deleteMany({
+      where: { cartId: cart.id },
+    });
+
+    return { deletedCount: deletedItems.count };
+  });
+
+  if (result.deletedCount === 0) {
+    return res.status(200).json({
+      message: "Cart is already empty",
+      deletedCount: 0,
+    });
   }
-};
+
+  return res.status(200).json({
+    message: "Cart cleared successfully",
+    deletedCount: result.deletedCount,
+  });
+});
+
+const getCartCount = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.customer || !req.customer.id) {
+    throw new UnauthorizedError("Authentication required");
+  }
+
+  const customerId = req.customer.id;
+
+  const cart = await prisma.cart.findFirst({
+    where: { customerId }
+  });
+
+  if (!cart) {
+    return res.status(200).json({ count: 0 });
+  }
+
+  const count = await prisma.cartItem.count({
+    where: { cartId: cart.id }
+  });
+
+  return res.status(200).json({ count });
+});
 
 const cartController = {
   getUserCart,

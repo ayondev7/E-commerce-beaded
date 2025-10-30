@@ -1,9 +1,10 @@
-import express, { type Request, type Response, type NextFunction } from "express";
+import express, { type Request, type Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import routes from "./routes/index.js";
 import { connectDB } from "./config/db.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 import "dotenv/config";
 
 const app = express();
@@ -25,10 +26,7 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: "Not Found" });
 });
 
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Internal Server Error" });
-});
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 
