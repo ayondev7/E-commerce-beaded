@@ -91,7 +91,35 @@ const deleteCategory = async (req: Request, res: Response, next: NextFunction) =
 		const existing = await prisma.category.findUnique({ where: { id: categoryId } });
 		if (!existing) return res.status(404).json({ message: "Category not found" });
 
-		const deleted = await prisma.category.delete({ where: { id: categoryId } });
+		const deleted = await prisma.$transaction(async (tx) => {
+			const products = await tx.product.findMany({
+				where: { categoryId },
+				select: { id: true }
+			});
+			
+			const productIds = products.map(p => p.id);
+			
+			if (productIds.length > 0) {
+				await tx.cartItem.deleteMany({
+					where: { productId: { in: productIds } }
+				});
+				
+				await tx.wishlist.deleteMany({
+					where: { productId: { in: productIds } }
+				});
+				
+				await tx.orderItem.deleteMany({
+					where: { productId: { in: productIds } }
+				});
+				
+				await tx.product.deleteMany({
+					where: { categoryId }
+				});
+			}
+			
+			return await tx.category.delete({ where: { id: categoryId } });
+		});
+		
 		return res.status(200).json({ message: "Category deleted successfully", category: deleted });
 	} catch (err) {
 		return next(err);

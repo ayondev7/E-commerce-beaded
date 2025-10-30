@@ -3,7 +3,6 @@ import { validateAddToCart, validateUpdateCartItem } from "./cartValidation.js";
 import {
   findCartItemByCustomerAndId,
   findExistingCartItem,
-  findOrCreateCart,
   getCartIncludeOptions
 } from "./cartServices.js";
 import type { Request, Response, NextFunction } from "express";
@@ -64,15 +63,25 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const cart = await findOrCreateCart(customerId);
+    const cartItem = await prisma.$transaction(async (tx) => {
+      let cart = await tx.cart.findFirst({
+        where: { customerId }
+      });
 
-    const cartItem = await prisma.cartItem.create({
-      data: {
-        cartId: cart.id,
-        productId,
-        quantity
-      },
-      include: getCartIncludeOptions(),
+      if (!cart) {
+        cart = await tx.cart.create({
+          data: { customerId }
+        });
+      }
+
+      return await tx.cartItem.create({
+        data: {
+          cartId: cart.id,
+          productId,
+          quantity
+        },
+        include: getCartIncludeOptions(),
+      });
     });
 
     return res.status(201).json({
@@ -170,24 +179,32 @@ const clearCart = async (req: Request, res: Response, next: NextFunction) => {
 
     const customerId = req.customer.id;
 
-    const cart = await prisma.cart.findFirst({
-      where: { customerId }
+    const result = await prisma.$transaction(async (tx) => {
+      const cart = await tx.cart.findFirst({
+        where: { customerId }
+      });
+
+      if (!cart) {
+        return { deletedCount: 0 };
+      }
+
+      const deletedItems = await tx.cartItem.deleteMany({
+        where: { cartId: cart.id },
+      });
+
+      return { deletedCount: deletedItems.count };
     });
 
-    if (!cart) {
+    if (result.deletedCount === 0) {
       return res.status(200).json({
         message: "Cart is already empty",
         deletedCount: 0,
       });
     }
 
-    const deletedItems = await prisma.cartItem.deleteMany({
-      where: { cartId: cart.id },
-    });
-
     return res.status(200).json({
       message: "Cart cleared successfully",
-      deletedCount: deletedItems.count,
+      deletedCount: result.deletedCount,
     });
   } catch (err) {
     return next(err);

@@ -187,7 +187,22 @@ export const deleteProduct = async (req: Request, res: Response, next: NextFunct
 		const existing = await prisma.product.findUnique({ where: { id: productId } });
 		if (!existing) return res.status(404).json({ message: "Product not found" });
 
-		const deleted = await prisma.product.delete({ where: { id: productId } });
+		const deleted = await prisma.$transaction(async (tx) => {
+			await tx.cartItem.deleteMany({
+				where: { productId }
+			});
+			
+			await tx.wishlist.deleteMany({
+				where: { productId }
+			});
+			
+			await tx.orderItem.deleteMany({
+				where: { productId }
+			});
+			
+			return await tx.product.delete({ where: { id: productId } });
+		});
+		
 		return res.status(200).json({ message: "Product deleted successfully", product: deleted });
 	} catch (err) {
 		return next(err);

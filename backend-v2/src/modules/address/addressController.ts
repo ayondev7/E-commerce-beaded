@@ -1,8 +1,6 @@
 import { prisma } from "../../config/db.js";
 import { validateCreateAddress, validateUpdateAddress } from "./addressValidation.js";
 import {
-  removeDefaultFromOtherAddresses,
-  ensureFirstAddressIsDefault,
   findAddressByIdAndCustomer,
   buildUpdateData
 } from "./addressServices.js";
@@ -37,24 +35,40 @@ const getUserAddresses = async (req: Request, res: Response, next: NextFunction)
 			
 			let { addressType, addressName, division, district, area, zipCode, fullAddress, isDefault } = validation.data;
 			
-			if (isDefault) {
-				await removeDefaultFromOtherAddresses(customerId);
-			}
-			
-			isDefault = await ensureFirstAddressIsDefault(customerId, isDefault);
-			
-			const address = await prisma.address.create({
-				data: {
-					customerId,
-					addressType,
-					addressName,
-					division,
-					district,
-					area,
-					zipCode,
-					fullAddress,
-					isDefault
+			const address = await prisma.$transaction(async (tx) => {
+				if (isDefault) {
+					await tx.address.updateMany({
+						where: {
+							customerId,
+							isDefault: true
+						},
+						data: { isDefault: false }
+					});
 				}
+				
+				if (!isDefault) {
+					const existingAddressCount = await tx.address.count({
+						where: { customerId }
+					});
+					
+					if (existingAddressCount === 0) {
+						isDefault = true;
+					}
+				}
+				
+				return await tx.address.create({
+					data: {
+						customerId,
+						addressType,
+						addressName,
+						division,
+						district,
+						area,
+						zipCode,
+						fullAddress,
+						isDefault
+					}
+				});
 			});
 			
 			return res.status(201).json({ 
@@ -86,17 +100,26 @@ const getUserAddresses = async (req: Request, res: Response, next: NextFunction)
 		
 		const data = buildUpdateData(validation.data, existingAddress);
 		
-		if (data.isDefault) {
-			await removeDefaultFromOtherAddresses(customerId, addressId);
-		}
-		
 		if (Object.keys(data).length === 0) {
 			return res.status(400).json({ message: "No fields provided to update" });
 		}
 		
-		const updatedAddress = await prisma.address.update({
-			where: { id: addressId },
-			data
+		const updatedAddress = await prisma.$transaction(async (tx) => {
+			if (data.isDefault) {
+				await tx.address.updateMany({
+					where: {
+						customerId,
+						isDefault: true,
+						id: { not: addressId }
+					},
+					data: { isDefault: false }
+				});
+			}
+			
+			return await tx.address.update({
+				where: { id: addressId },
+				data
+			});
 		});
 		
 		return res.status(200).json({ 
@@ -127,11 +150,19 @@ const setDefaultAddress = async (req: Request, res: Response, next: NextFunction
 			return res.status(400).json({ message: "Address is already set as default" });
 		}
 		
-		await removeDefaultFromOtherAddresses(customerId);
-		
-		const updatedAddress = await prisma.address.update({
-			where: { id: addressId },
-			data: { isDefault: true }
+		const updatedAddress = await prisma.$transaction(async (tx) => {
+			await tx.address.updateMany({
+				where: {
+					customerId,
+					isDefault: true
+				},
+				data: { isDefault: false }
+			});
+			
+			return await tx.address.update({
+				where: { id: addressId },
+				data: { isDefault: true }
+			});
 		});
 		
 		return res.status(200).json({ 
