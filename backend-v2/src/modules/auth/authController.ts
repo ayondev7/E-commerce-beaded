@@ -13,6 +13,7 @@ import {
 } from "./authServices.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ValidationError, ConflictError, UnauthorizedError, NotFoundError, BadRequestError } from "../../utils/errors.js";
+import { SessionCache } from "../../utils/cacheHelpers.js";
 import type { Request, Response } from "express";
 
 export const googleSignin = asyncHandler(async (req: Request, res: Response) => {
@@ -33,6 +34,8 @@ export const googleSignin = asyncHandler(async (req: Request, res: Response) => 
 
   const payload = { id: customer.id, email: customer.email };
   const { accessToken, refreshToken } = generateTokens(payload);
+
+  await SessionCache.set(customer.id, customer);
 
   return res.json({ accessToken, refreshToken, customer });
 });
@@ -77,6 +80,14 @@ export const credentialSignup = asyncHandler(async (req: Request, res: Response)
 
   const payload = { id: customer.id, email: customer.email };
   const { accessToken, refreshToken } = generateTokens(payload);
+  
+  await SessionCache.set(customer.id, {
+    id: customer.id,
+    name: customer.name,
+    email: customer.email,
+    image: customer.image,
+  } as any);
+  
   return res.status(201).json({ customer, accessToken, refreshToken });
 });
 
@@ -101,12 +112,16 @@ export const credentialSignin = asyncHandler(async (req: Request, res: Response)
   const payload = { id: customer.id, email: customer.email };
   const { accessToken, refreshToken } = generateTokens(payload);
 
-  return res.json({ accessToken, refreshToken, customer: {
+  const customerData = {
     id: customer.id,
     name: customer.name,
     email: customer.email,
     image: customer.image,
-  }});
+  };
+  
+  await SessionCache.set(customer.id, customerData as any);
+
+  return res.json({ accessToken, refreshToken, customer: customerData });
 });
 
 export const guestSignin = asyncHandler(async (_req: Request, res: Response) => {
@@ -130,12 +145,16 @@ export const guestSignin = asyncHandler(async (_req: Request, res: Response) => 
   const payload = { id: customer.id, email: customer.email };
   const { accessToken, refreshToken } = generateTokens(payload);
 
-  return res.json({ accessToken, refreshToken, customer: {
+  const customerData = {
     id: customer.id,
     name: customer.name,
     email: customer.email,
     image: customer.image,
-  }});
+  };
+  
+  await SessionCache.set(customer.id, customerData as any);
+
+  return res.json({ accessToken, refreshToken, customer: customerData });
 });
 
 export const verifyAuth = asyncHandler(async (req: Request, res: Response) => {
@@ -282,6 +301,8 @@ export const updateMyInfo = asyncHandler(async (req: Request, res: Response) => 
       password: false
     }
   });
+
+  await SessionCache.invalidate(customer.id);
 
   return res.json(updatedCustomer);
 });

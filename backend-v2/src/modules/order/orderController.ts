@@ -14,6 +14,7 @@ import {
 } from "./orderServices.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ValidationError, BadRequestError, NotFoundError } from "../../utils/errors.js";
+import { OrderCache, CartCache } from "../../utils/cacheHelpers.js";
 import type { Request, Response } from "express";
 
 const getUserOrders = asyncHandler(async (req: Request, res: Response) => {
@@ -69,6 +70,9 @@ const createOrder = asyncHandler(async (req: Request, res: Response) => {
 
   const order = await createOrderFromCart(customerId, addressId, notes, cart.items);
 
+  await CartCache.invalidate(customerId);
+  await OrderCache.invalidateUserOrders(customerId);
+
   return res.status(201).json({
     message: "Order created successfully",
     order,
@@ -107,6 +111,10 @@ const updateOrderStatus = asyncHandler(async (req: Request, res: Response) => {
     include: getOrderIncludeOptions(),
   });
 
+  await OrderCache.invalidate(orderId, customerId);
+  await OrderCache.setStatus(orderId, orderStatus);
+  await OrderCache.invalidateUserOrders(customerId);
+
   return res.status(200).json({
     message: "Order status updated successfully",
     order: updatedOrder,
@@ -137,6 +145,10 @@ const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
     data: { orderStatus: "cancelled" },
     include: getOrderIncludeOptions(),
   });
+
+  await OrderCache.invalidate(orderId, customerId);
+  await OrderCache.setStatus(orderId, "cancelled");
+  await OrderCache.invalidateUserOrders(customerId);
 
   return res.status(200).json({
     message: "Order cancelled successfully",

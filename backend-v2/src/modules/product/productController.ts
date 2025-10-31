@@ -11,6 +11,7 @@ import {
 } from "./productServices.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ValidationError, NotFoundError, BadRequestError } from "../../utils/errors.js";
+import { ProductCache } from "../../utils/cacheHelpers.js";
 import type { Request, Response } from "express";
 
 export const addNewProduct = asyncHandler(async (req: Request, res: Response) => {
@@ -58,6 +59,13 @@ export const getProductList = asyncHandler(async (req: Request, res: Response) =
 	const { page = "1", limit = "9", categoryId, collectionName } = req.query;
 	const customerId = req.customer?.id;
 
+	const cacheKey = `${page}:${limit}:${categoryId || 'all'}:${collectionName || 'all'}:${customerId || 'guest'}`;
+	const cached = await ProductCache.getList(cacheKey);
+	
+	if (cached) {
+		return res.status(200).json(cached);
+	}
+
 	const pagination = calculatePaginationData(page as string, limit as string, 0);
 	const where = buildProductWhereCondition(categoryId as string | undefined, collectionName as string | undefined);
 
@@ -76,14 +84,18 @@ export const getProductList = asyncHandler(async (req: Request, res: Response) =
 	const finalPagination = calculatePaginationData(page as string, limit as string, total);
 	const productsWithStatus = await enrichProductsWithStatus(products as any, customerId);
 
-	return res.status(200).json({
+	const response = {
 		page: finalPagination.pageNum,
 		limit: finalPagination.limitNum,
 		total,
 		totalPages: finalPagination.totalPages,
 		totalProductsInDb,
 		products: productsWithStatus,
-	});
+	};
+	
+	await ProductCache.setList(cacheKey, response);
+
+	return res.status(200).json(response);
 });
 
 export const getProductBySlug = asyncHandler(async (req: Request, res: Response) => {
@@ -92,6 +104,16 @@ export const getProductBySlug = asyncHandler(async (req: Request, res: Response)
 	
 	if (!productSlug) throw new BadRequestError("Product slug is required");
 
+	const cacheKey = `${productSlug}:${customerId || 'guest'}`;
+	const cached = await ProductCache.getBySlug(cacheKey);
+	
+	if (cached) {
+		if ((cached as any).id) {
+			await ProductCache.trackView((cached as any).id);
+		}
+		return res.status(200).json({ product: cached });
+	}
+
 	const product = await prisma.product.findFirst({ 
 		where: { productSlug: productSlug },
 		include: getProductIncludeOptions(),
@@ -99,6 +121,9 @@ export const getProductBySlug = asyncHandler(async (req: Request, res: Response)
 	if (!product) throw new NotFoundError("Product not found");
 
 	const productWithStatus = await enrichSingleProductWithStatus(product as any, customerId);
+	
+	await ProductCache.setBySlug(cacheKey, productWithStatus);
+	await ProductCache.trackView(product.id);
 
 	return res.status(200).json({ product: productWithStatus });
 });
@@ -162,6 +187,9 @@ export const patchProduct = asyncHandler(async (req: Request, res: Response) => 
 	}
 
 	const updated = await prisma.product.update({ where: { id: productId }, data });
+	
+	await ProductCache.invalidate();
+	
 	return res.status(200).json({ message: "Product updated successfully", product: updated });
 });
 
@@ -187,6 +215,8 @@ export const deleteProduct = asyncHandler(async (req: Request, res: Response) =>
 		
 		return await tx.product.delete({ where: { id: productId } });
 	});
+	
+	await ProductCache.invalidate();
 	
 	return res.status(200).json({ message: "Product deleted successfully", product: deleted });
 });

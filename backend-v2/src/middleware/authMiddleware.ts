@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { prisma } from "../config/db.js";
+import { SessionCache } from "../utils/cacheHelpers.js";
 import type { Request, Response, NextFunction } from "express";
 import type { Customer } from "@prisma/client";
 
@@ -35,11 +36,19 @@ export default async function authMiddleware(req: Request, res: Response, next: 
     const customerId = payload && payload.id;
     if (!customerId) return res.status(401).json({ message: "Unauthorized" });
 
+    const cached = await SessionCache.get(customerId);
+    if (cached) {
+      req.customer = cached as Customer;
+      return next();
+    }
+
     const customer = await prisma.customer.findUnique({
       where: { id: customerId },
     });
     if (!customer) return res.status(401).json({ message: "Unauthorized" });
 
+    await SessionCache.set(customerId, customer);
+    
     req.customer = customer;
     return next();
   } catch (err) {

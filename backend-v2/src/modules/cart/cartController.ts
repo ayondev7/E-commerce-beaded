@@ -7,6 +7,7 @@ import {
 } from "./cartServices.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ValidationError, UnauthorizedError, BadRequestError, NotFoundError } from "../../utils/errors.js";
+import { CartCache, ProductCache } from "../../utils/cacheHelpers.js";
 import type { Request, Response } from "express";
 
 const getUserCart = asyncHandler(async (req: Request, res: Response) => {
@@ -77,6 +78,9 @@ const addToCart = asyncHandler(async (req: Request, res: Response) => {
     });
   });
 
+  await CartCache.invalidate(customerId);
+  await ProductCache.invalidateLists();
+
   return res.status(201).json({
     message: "Item added to cart successfully",
     cartItem,
@@ -114,6 +118,8 @@ const updateCartItem = asyncHandler(async (req: Request, res: Response) => {
     include: getCartIncludeOptions(),
   });
 
+  await CartCache.invalidate(customerId);
+
   return res.status(200).json({
     message: "Cart item updated successfully",
     cartItem: updatedCartItem,
@@ -143,6 +149,9 @@ const removeFromCart = asyncHandler(async (req: Request, res: Response) => {
     include: getCartIncludeOptions(),
   });
 
+  await CartCache.invalidate(customerId);
+  await ProductCache.invalidateLists();
+
   return res.status(200).json({
     message: "Item removed from cart successfully",
     cartItem: deletedCartItem,
@@ -171,6 +180,8 @@ const clearCart = asyncHandler(async (req: Request, res: Response) => {
 
     return { deletedCount: deletedItems.count };
   });
+
+  await CartCache.invalidate(customerId);
 
   if (result.deletedCount === 0) {
     return res.status(200).json({

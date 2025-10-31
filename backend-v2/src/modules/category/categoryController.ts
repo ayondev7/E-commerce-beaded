@@ -3,6 +3,7 @@ import processAndUploadImages from "../../utils/imageUtils.js";
 import { validatePatchCategory, validateCreateCategory } from "./categoryValidation.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ValidationError, BadRequestError, NotFoundError } from "../../utils/errors.js";
+import { CategoryCache } from "../../utils/cacheHelpers.js";
 import type { Request, Response } from "express";
 
 const addNewCategory = asyncHandler(async (req: Request, res: Response) => {
@@ -21,19 +22,39 @@ const addNewCategory = asyncHandler(async (req: Request, res: Response) => {
 	const category = await prisma.category.create({
 		data: { name, image: imageUrl },
 	});
+	
+	await CategoryCache.invalidate();
+	
 	return res.status(201).json({ message: "Category created successfully", category });
 });
 
 const getAllCategories = asyncHandler(async (_req: Request, res: Response) => {
+	const cached = await CategoryCache.getAll();
+	if (cached) {
+		return res.status(200).json({ categories: cached });
+	}
+	
 	const categories = await prisma.category.findMany({ orderBy: { createdAt: "desc" } });
+	
+	await CategoryCache.setAll(categories);
+	
 	return res.status(200).json({ categories });
 });
 
 const getCategoryById = asyncHandler(async (req: Request, res: Response) => {
 	const { categoryId } = req.params;
 	if (!categoryId) throw new BadRequestError("Category ID is required");
+	
+	const cached = await CategoryCache.getById(categoryId);
+	if (cached) {
+		return res.status(200).json({ category: cached });
+	}
+	
 	const category = await prisma.category.findUnique({ where: { id: categoryId } });
 	if (!category) throw new NotFoundError("Category not found");
+	
+	await CategoryCache.setById(categoryId, category);
+	
 	return res.status(200).json({ category });
 });
 
@@ -66,6 +87,9 @@ const patchCategory = asyncHandler(async (req: Request, res: Response) => {
 	}
 
 	const updated = await prisma.category.update({ where: { id: categoryId }, data });
+	
+	await CategoryCache.invalidateById(categoryId);
+	
 	return res.status(200).json({ message: "Category updated successfully", category: updated });
 });
 
@@ -104,6 +128,8 @@ const deleteCategory = asyncHandler(async (req: Request, res: Response) => {
 		
 		return await tx.category.delete({ where: { id: categoryId } });
 	});
+	
+	await CategoryCache.invalidate();
 	
 	return res.status(200).json({ message: "Category deleted successfully", category: deleted });
 });
